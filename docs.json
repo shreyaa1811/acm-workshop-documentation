@@ -21,7 +21,8 @@
     {
       "group": "Week 1 — Cybersecurity",
       "pages": [
-        "week-1-cybersecurity/day-1"
+        "week1/day1",
+        "week1/day2"
       ]
     }
   ]

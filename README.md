@@ -1,55 +1,63 @@
-# Mintlify Starter Kit
+# Make the Future Feel Practical
 
-Use the starter kit to get your docs deployed and ready to customize.
+Four weeks. Four technology tracks. One hands-on journey through the ideas, tools, and systems shaping how we build.
 
-Click the green **Use this template** button at the top of this repo to copy the Mintlify starter kit. The starter kit contains examples with
+<Badge color="blue">ACM TECHNOLOGY WORKSHOP · 4 WEEKS</Badge>
 
-- Guide pages
-- Navigation
-- Customizations
-- API reference pages
-- Use of popular components
+## Explore. Experiment. Build.
 
-**[Follow the full quickstart guide](https://starter.mintlify.com/quickstart)**
+Go beyond theory with guided lessons, practical activities, and a structured introduction to four areas of modern technology. Start with the fundamentals, explore real-world applications, and discover what you can build next.
 
-## AI-assisted writing
+<Columns cols={2}>
+  <Card title="Start Learning" icon="shield-check" href="/week1/day1" cta="Explore Cybersecurity">
+    Begin with cybersecurity foundations and learn how to identify threats, protect systems, and think critically about digital security.
+  </Card>
+  <Card title="Explore the Workshop" icon="map" href="#workshop-route" cta="View All Tracks">
+    Discover all four tracks and follow the learning journey from securing systems to building with intelligent technologies.
+  </Card>
+</Columns>
 
-Set up your AI coding tool to work with Mintlify:
+## The Workshop Tracks {#workshop-route}
 
-```bash
-npx skills add https://mintlify.com/docs
-```
+Each week introduces a different perspective on technology, combining core concepts with practical exploration.
 
-This command installs Mintlify's documentation skill for your configured AI tools like Claude Code, Cursor, Windsurf, and others. The skill includes component reference, writing standards, and workflow guidance.
+<Columns cols={2}>
+  <Card title="01 · Cybersecurity" icon="shield-check" href="/week1/day1" horizontal>
+    Understand digital threats, security fundamentals, and the principles behind protecting systems.
+  </Card>
+  <Card title="02 · Cloud Computing" icon="cloud" href="/week2/day1" horizontal>
+    Explore cloud infrastructure, computing services, and how applications run beyond your local machine.
+  </Card>
+  <Card title="03 · Agentic AI" icon="brain-circuit" href="/week3/day1" horizontal>
+    Discover AI agents, tool use, decision-making, and how intelligent systems can perform useful tasks.
+  </Card>
+  <Card title="04 · Data Analytics" icon="chart-no-axes-combined" href="/week4/day1" horizontal>
+    Learn to explore datasets, identify patterns, and turn raw information into meaningful insights.
+  </Card>
+</Columns>
 
-See the [AI tools guides](/ai-tools) for tool-specific setup.
+## A Hands-On Learning Journey
 
-## Development
+<Steps>
+  <Step title="Understand the Foundations">
+    Build the vocabulary and core concepts needed to understand each technology track.
+  </Step>
+  <Step title="Put Concepts into Practice">
+    Work through examples and activities that connect technical ideas to practical applications.
+  </Step>
+  <Step title="Explore What Comes Next">
+    Use what you've learned to ask better questions, experiment with new tools, and identify opportunities for further projects.
+  </Step>
+</Steps>
 
-Install the [Mintlify CLI](https://www.npmjs.com/package/mint) to preview your documentation changes locally. To install, use the following command:
+<Callout type="info" icon="rocket" title="Ready to get started?">
+  Head to [Cybersecurity Foundations](/week1/day1) to begin Week 1. Work through the sessions, experiment with the concepts, and build your understanding one step at a time.
+</Callout>
 
-```
-npm i -g mint
-```
+<div align="center">
 
-Run the following command at the root of your documentation, where your `docs.json` is located:
+**Learn boldly. Build thoughtfully. Explore what is next.**
 
-```
-mint dev
-```
+*ACM Technology Workshop*
 
-View your local preview at `http://localhost:3000`.
-
-## Publishing changes
-
-Install our GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app) to propagate changes from your repo to your deployment. Changes are deployed to production automatically after pushing to the default branch.
-
-## Need help?
-
-### Troubleshooting
-
-- If your dev environment isn't running: Run `mint update` to ensure you have the most recent version of the CLI.
-- If a page loads as a 404: Make sure you are running in a folder with a valid `docs.json`.
-
-### Resources
-- [Mintlify documentation](https://mintlify.com/docs)
+</div>
