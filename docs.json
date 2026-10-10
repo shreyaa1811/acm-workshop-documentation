@@ -8,43 +8,23 @@
     "light": "#4A90D9",
     "dark": "#0B2E59"
   },
-  "favicon": "/favicon.svg",
+  "favicon": "/favicon.png",
   "logo": {
-    "light": "/light.png",
-    "dark": "/dark.png",
-    "href": "/"
-  },
-  "navigation": {
-    "pages": [
-      "index",
-      {
-        "group": "Week 1 — Cybersecurity",
-        "pages": [
-          "week1/day-1",
-          "week1/day-2"
-        ]
-      },
-      {
-        "group": "Week 2 — Cloud",
-        "pages": [
-          "week2/day-1",
-          "week2/day-2"
-        ]
-      },
-      {
-        "group": "Week 3 — Agentic AI",
-        "pages": [
-          "week3/day-1",
-          "week3/day-2"
-        ]
-      },
-      {
-        "group": "Week 4 — Data Analytics",
-        "pages": [
-          "week4/day-1",
-          "week4/day-2"
-        ]
-      }
-    ]
-  }
+  "light": "/logo/light.png",
+  "dark": "/logo/dark.png",
+  "href": "/"
+},
+  
+"navigation": {
+  "pages": [
+    "index",
+    {
+      "group": "Week 1 — Cybersecurity",
+      "pages": [
+        "week-1-cybersecurity/day-1"
+      ]
+    }
+  ]
+}
+
 }
