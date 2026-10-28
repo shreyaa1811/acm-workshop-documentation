@@ -7,9 +7,9 @@ Yesterday, you learned the vocabulary and mindset of cybersecurity. Today, you u
 
 You will investigate a fictional company called **MegaCorp**, test the small web application built for this workshop, and then switch to the defender's seat to explain what happened. Every activity is authorized, isolated, and designed for this exercise.
 
-<Callout type="warning" title="Stay inside the lab">
+<Warning title="Stay inside the lab">
   Only test the MegaCorp application provided by your instructor. Do not scan, probe, or submit payloads to any other website, account, or network.
-</Callout>
+</Warning>
 
 ## 1. Your mission
 
@@ -101,9 +101,9 @@ The application is deliberately small so that you can follow cause and effect:
 
 Use `/logout` between runs when you need to clear the demo session. The activity log is sanitized and disposable; it is not a substitute for centralized production logging.
 
-<Callout type="info" title="Keep an evidence trail">
+<Info>
   For each checkpoint, record the URL or feature, the input you tested, the result, the security concept involved, and one recommended defense. Do not record or reuse credentials outside the lab.
-</Callout>
+</Info>
 
 ## 4. Checkpoint one: reconnaissance
 
@@ -237,7 +237,7 @@ Review the sample logs and find the requests associated with your test. Then map
 | Script-like input returned by directory search | Exploitation | Output encoding, safe templates, and Content Security Policy |
 | A weak hash found in a lookup | Credential access | Strong hashing, unique salts, MFA, and password screening |
 
-<Callout type="success" title="The defender's goal">
+<Callout>
   You do not need to block every request perfectly. You need enough prevention, detection, and response to break the attack chain before sensitive data is lost.
 </Callout>
 
