@@ -1,22 +1,339 @@
-
 ---
-title: "Day 2 - Cybersecurity in practice"
-sidebarTitle: "Day 2"
-description: "Apply core cybersecurity concepts through practical activities."
+title: "Day 2"
+description: "Apply Day 1 cybersecurity concepts in a guided web application security exercise."
 ---
 
-# Cybersecurity in practice
+Yesterday, you learned the vocabulary and mindset of cybersecurity. Today, you use them.
 
-Welcome to Day 2 of the cybersecurity workshop!
+You will investigate a fictional company called **MegaCorp**, test the small web application built for this workshop, and then switch to the defender's seat to explain what happened. Every activity is authorized, isolated, and designed for this exercise.
 
-## Learning objectives
+<Callout type="warning" title="Stay inside the lab">
+  Only test the MegaCorp application provided by your instructor. Do not scan, probe, or submit payloads to any other website, account, or network.
+</Callout>
 
-By the end of this session, you should be able to:
+## 1. Your mission
 
-- Explain the basic principles of cybersecurity.
-- Identify common cybersecurity threats.
-- Understand the importance of protecting data and systems.
+You have been hired to perform a short, ethical assessment before MegaCorp launches a new employee portal. Your objective is not to cause damage. Your objective is to answer four questions:
 
-## Session content
+1. What information does MegaCorp expose before a user logs in?
+2. Can the employee login be bypassed?
+3. What data becomes visible after login, and why is it sensitive?
+4. How could a defender detect and prevent the activity?
 
-Your Day 1 notes, examples, and practical activities will go here.
+### What you need
+
+- A browser with developer tools
+- The MegaCorp URL supplied by your instructor
+- The worksheet or notes area provided for the workshop
+- Curiosity, patience, and a habit of recording evidence
+
+You do not need to install tools or interact with a real company.
+
+### The two-mode experiment
+
+MegaCorp has two instructor-controlled modes. The default **vulnerable** mode preserves the unsafe behavior so you can observe and explain each finding. **Hardened** mode applies the first round of fixes so you can repeat the same tests and verify the difference.
+
+| Mode | Login | Directory search | Portal data |
+| --- | --- | --- | --- |
+| **Vulnerable** | Uses unsafe string-built SQL | Returns search input without escaping | Displays the seeded password hashes |
+| **Hardened** | Uses parameterized SQL and rejects the bypass | Escapes the search output | Hides password hashes and adds defensive response headers |
+
+The hardened mode is a teaching toggle, not a complete production security program. Real systems also need secure password hashing, secret management, authorization checks, rate limiting, MFA, centralized logging, and automated security tests.
+
+## 2. Day 1 recap: the concepts you will use
+
+Use this section as a quick reference rather than rereading the entire first session.
+
+### Security fundamentals
+
+| Concept | Remember this | How it appears today |
+| --- | --- | --- |
+| **Confidentiality** | Only authorized people should see data. | The portal exposes employee records after a login bypass. |
+| **Integrity** | Data should not be changed without authorization. | An unsafe input can alter how an application interprets a request. |
+| **Availability** | Systems should remain usable. | Safe testing means you do not delete data or disrupt the lab. |
+| **Vulnerability** | A weakness in a system. | An input field trusts data it should validate or encode. |
+| **Threat** | Something capable of exploiting a weakness. | An attacker, script, or malicious request can use the flaw. |
+| **Risk** | The likelihood and impact of exploitation. | A public login flaw is more serious when it reveals sensitive records. |
+| **Exploit** | The technique used to take advantage of a weakness. | You will demonstrate the lab's SQL injection and reflected XSS flaws. |
+
+### The attacker and defender mindsets
+
+An attacker needs one path into a system. A defender must reduce every realistic path and detect what gets through.
+
+| Red-team question | Blue-team question |
+| --- | --- |
+| What can I learn without logging in? | Is this information necessary to expose? |
+| Where does user input enter the application? | Is input validated before it reaches a query or page? |
+| What can I access after one successful action? | Are permissions and data access limited by role? |
+| What evidence would I leave behind? | Which logs, alerts, and controls would reveal it? |
+
+### The web security concepts
+
+- **SQL injection (SQLi):** untrusted input changes the meaning of a database query.
+- **Cross-site scripting (XSS):** untrusted input is returned to a browser as executable content.
+- **Authentication:** proves who a user is. A login bypass breaks this control.
+- **Authorization:** decides what an authenticated user may access. A valid login should not automatically expose everything.
+- **Cookies and sessions:** keep a browser associated with a logged-in user. A stolen session token can represent that user's identity.
+- **Hashing:** transforms a password into a one-way value for storage. It is not encryption and should not be treated as reversible.
+
+### The Kill Chain
+
+Today follows a small version of the same sequence:
+
+**Reconnaissance → Exploitation → Actions on objectives → Detection and response**
+
+The full Kill Chain from Day 1 also includes weaponization, delivery, installation, and command and control. Those stages happen outside this intentionally small lab. The important habit is to connect each action to the stage it represents and ask where a defender could break the chain.
+
+## 3. Understand the application before testing it
+
+The MegaCorp exercise is organized as a simple path:
+
+**Public homepage → exposed clues → `/login` → `/portal` → directory search → user records → `/portal/activity`**
+
+The application is deliberately small so that you can follow cause and effect:
+
+1. The public pages provide reconnaissance clues.
+2. The login demonstrates unsafe query construction.
+3. The portal shows the impact of a successful login.
+4. The directory search demonstrates reflected XSS.
+5. The user records connect data exposure to password hygiene.
+6. The activity log and CSV let you replay the attack from a defender's perspective.
+
+Use `/logout` between runs when you need to clear the demo session. The activity log is sanitized and disposable; it is not a substitute for centralized production logging.
+
+<Callout type="info" title="Keep an evidence trail">
+  For each checkpoint, record the URL or feature, the input you tested, the result, the security concept involved, and one recommended defense. Do not record or reuse credentials outside the lab.
+</Callout>
+
+## 4. Checkpoint one: reconnaissance
+
+Reconnaissance means learning about a target before attempting exploitation. Start with normal browser features:
+
+1. Open the MegaCorp homepage.
+2. Use **View Page Source** or **Inspect**.
+3. Read the HTML comments and note what they reveal about the application.
+4. Open the **About** page and look for naming patterns.
+5. Visit `/robots.txt` on the MegaCorp host and record any disclosed paths.
+
+### Pause and predict
+
+Before opening the login page, discuss:
+
+- Which clues are useful to an attacker?
+- Which clues are merely untidy documentation?
+- What should MegaCorp remove, restrict, or monitor?
+
+**Day 1 connection:** this is reconnaissance in the Kill Chain and an example of attack-surface exposure. Public information can make later exploitation easier without a single vulnerability being triggered.
+
+## 5. Checkpoint two: test the login safely
+
+Open `/login`. In **vulnerable** mode, enter the following instructor-approved input in the **username** field and leave the password blank or enter any value:
+
+```text
+' OR '1'='1' --
+```
+
+The application should log you in as the first matching demo user, `admin`, and show **ACCESS GRANTED**. Use this exact payload only against the authorized MegaCorp lab.
+
+The login is designed to demonstrate SQL injection in a controlled environment. A normal login check might look like this:
+
+```sql
+SELECT * FROM users
+WHERE username = 'bob' AND password = '1234';
+```
+
+In vulnerable mode, raw form values are inserted into the query:
+
+```sql
+SELECT * FROM users
+WHERE username = '{username}' AND password = '{password}';
+```
+
+### What happened?
+
+The application treated part of the input as SQL syntax instead of as ordinary data. A condition that should have checked a specific password was changed into a condition that evaluates as true.
+
+**Day 1 connection:** this is injection and broken authentication. The correct defenses are parameterized queries, server-side input handling, least privilege for the database account, rate limiting, and useful security logging. Escaping alone is not a complete fix.
+
+### Blue-team pause
+
+Write down:
+
+- What event should be logged?
+- What repeated attempts would look suspicious?
+- What should the application return to the user without revealing implementation details?
+
+## 6. Checkpoint three: measure the impact
+
+After the lab grants access, open `/portal` and inspect the Employee Portal without changing anything.
+
+Record:
+
+- Which fields are visible?
+- Which roles exist?
+- Is a password hash present?
+- Does the account see more data than its role requires?
+- What would happen if this were a real employee database?
+
+This is the point where a small login flaw becomes a confidentiality and privacy incident. The technical exploit is only one part of the risk; the exposed data and excessive access are the impact.
+
+**Day 1 connection:** this is an action on objectives. Least privilege, access control, data minimization, database permissions, and monitoring reduce the blast radius.
+
+## 7. Checkpoint four: see reflected XSS
+
+The portal's **Directory Search** feature reflects search text into the response without safely encoding it. In vulnerable mode, enter this harmless demonstration input:
+
+```html
+<script>alert(1)</script>
+```
+
+Observe whether the browser executes the input or displays it as ordinary text. Stop after the demonstration; do not attempt to steal cookies, access another person's browser, or send data anywhere.
+
+### Why a popup matters
+
+The popup is a visible proof that the browser interpreted input as code. In a real application, the same class of flaw could be used to manipulate a page or target a user's session.
+
+**Day 1 connection:** XSS targets the browser viewing the page, while SQL injection targets the server-side query. Output encoding, safe templating, a strong Content Security Policy, and secure cookie settings help reduce the risk.
+
+## 8. Checkpoint five: hashes are not passwords
+
+The portal contains password hashes so you can compare two outcomes:
+
+- A weak, common password may be found quickly in a precomputed lookup.
+- A long, unique passphrase may not be found in that lookup.
+
+This is a demonstration of password strength, not a license to crack real credentials. Use only the sample values provided for the exercise and never upload personal or real organizational hashes to a public service.
+
+The app seeds two fake classroom values:
+
+| Account | MD5 value to test | Expected result |
+| --- | --- | --- |
+| `admin` | `482c811da5d5b4bc6d497ffa98491e38` | Found quickly in the lookup |
+| `f.hassan` | `2facae4090a05fbdc79d890284e97ab3` | Not found in the lookup |
+
+Do not present or reuse the seeded plaintext values as real credentials. The values exist only to make the contrast visible during the workshop.
+
+### What defenders should change
+
+- Store passwords with a slow, modern password-hashing function such as Argon2id, bcrypt, or scrypt.
+- Use a unique salt for every password.
+- Encourage long, unique passphrases and block known-compromised passwords.
+- Add multi-factor authentication and rate limiting.
+- Protect the database and alert on unusual access.
+
+**Day 1 connection:** attacker tooling such as password guessing is answered by MFA, password policy, secure hashing, and monitoring.
+
+## 9. Blue-team debrief: rebuild the timeline
+
+After the attacks, open `/portal/activity`. The Analyst Activity Log contains sanitized, in-memory events from the current run. You can also download `/portal/activity.csv` for a spreadsheet exercise. The toy log intentionally omits secrets and keeps only the last 100 events; it is not a production monitoring design.
+
+Review the sample logs and find the requests associated with your test. Then map them to controls.
+
+| Evidence from the exercise | Attack stage | Control that could help |
+| --- | --- | --- |
+| HTML comments, naming patterns, and `robots.txt` | Reconnaissance | Minimize public details and review exposure regularly |
+| Repeated unusual login input | Exploitation | Parameterized queries, validation, WAF rules, and alerting |
+| A successful login followed by broad record access | Actions on objectives | Least privilege, authorization checks, and database monitoring |
+| Script-like input returned by directory search | Exploitation | Output encoding, safe templates, and Content Security Policy |
+| A weak hash found in a lookup | Credential access | Strong hashing, unique salts, MFA, and password screening |
+
+<Callout type="success" title="The defender's goal">
+  You do not need to block every request perfectly. You need enough prevention, detection, and response to break the attack chain before sensitive data is lost.
+</Callout>
+
+## 10. Checkpoint six: harden and replay
+
+This is the most important comparison in the exercise. After completing the vulnerable run, stop and restart the app in hardened mode:
+
+```powershell
+$env:MEGACORP_MODE = "hardened"
+python app.py
+```
+
+Repeat the same login and search tests:
+
+1. The SQL injection now produces a normal login failure because the query uses parameterized values.
+2. The XSS input appears as text because the search term is escaped.
+3. The portal no longer displays password hashes.
+4. The response includes defensive headers such as `Content-Security-Policy`, `X-Content-Type-Options`, and `Referrer-Policy`.
+
+Record the result in the same worksheet. A control is easier to understand when you can show that the original test no longer succeeds.
+
+## 11. Run the evidence exercise
+
+Give each pair this worksheet. Ask them to complete it during the vulnerable run and revise the recommended control after the hardened replay.
+
+| Finding | Evidence collected | Business impact | Recommended control |
+| --- | --- | --- | --- |
+| Exposed endpoint or clue |  |  |  |
+| Authentication weakness |  |  |  |
+| Unsafe browser output |  |  |  |
+| Password/hash weakness |  |  |  |
+
+End with a 30-second client report:
+
+> We found ___, proved it with ___, the impact is ___, and we recommend ___.
+
+## 12. Suggested 120-minute schedule
+
+| Time | Activity |
+| --- | --- |
+| 0–10 min | Client brief, scope, lab URL, and safety rules |
+| 10–30 min | Recon: source comments, `/about`, and `/robots.txt` |
+| 30–55 min | SQL injection, `/portal`, and reflected XSS |
+| 55–70 min | Compare the two seeded hashes |
+| 70–90 min | Reconstruct the timeline in `/portal/activity` and the CSV |
+| 90–110 min | Restart in hardened mode and replay both attacks |
+| 110–120 min | Client reports and Day 1 concept mapping |
+
+## 13. Make the mission more interesting
+
+Use these extensions if your group finishes early or if the instructor wants a more interactive format.
+
+### Choose a role
+
+Work in pairs. One person is the red-team analyst who records evidence; the other is the blue-team analyst who predicts detections. Swap roles at every checkpoint.
+
+### Run a prediction board
+
+Before each test, write **input → expected result → actual result → defense**. Award a point for a correct prediction and a second point for naming a practical control.
+
+### Add a purple-team handoff
+
+Give the blue team only the red team's timeline and logs. Ask them to identify the first preventable or detectable event, then compare answers.
+
+### Finish with a risk rating
+
+Rate each finding by likelihood and impact:
+
+| Finding | Likelihood | Impact | Priority |
+| --- | --- | --- | --- |
+| Public reconnaissance clues |  |  |  |
+| Login bypass |  |  |  |
+| Broad employee data access |  |  |  |
+| Reflected XSS |  |  |  |
+| Weak password hash |  |  |  |
+
+The goal is not to choose the most dramatic finding. It is to justify which fix reduces the most risk first.
+
+## 14. What you should be able to explain
+
+By the end of Day 2, you should be able to:
+
+- Describe how reconnaissance can expose an attack surface.
+- Explain why unsafe query construction can bypass authentication.
+- Distinguish SQL injection from reflected XSS.
+- Explain why a password hash is not the same as an encrypted password.
+- Connect an exposed record to confidentiality, least privilege, and risk.
+- Map an attack action to a Kill Chain stage and a defensive control.
+- Explain why testing authorization matters as much as testing authentication.
+- Explain how vulnerable and hardened modes demonstrate the effect of parameterized queries and output encoding.
+
+**Day 1 gave you the concepts. Day 2 gives you the evidence. The professional skill is connecting the two.**
+
+## 15. Instructor cleanup
+
+- Stop or remove the public web app after the workshop.
+- If you reuse the exercise, deploy a fresh instance with fresh seeded data.
+- Never load real user data into the application.
+- Treat the disposable SQLite reset-on-start behavior as a classroom convenience, not a production pattern.
