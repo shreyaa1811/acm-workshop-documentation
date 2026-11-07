@@ -27,29 +27,29 @@ Power Query is the **ETL** tool inside Power BI: **E**xtract, **T**ransform, **L
 
 <Steps>
   <Step title="Extract: load the CSV">
-    **Home** â†’ **Get data** â†’ **Text/CSV** â†’ select `dataset.csv` â†’ **Transform Data** (not Load).
+    **Home** → **Get data** → **Text/CSV** → select `dataset.csv` → **Transform Data** (not Load).
   </Step>
   <Step title="Transform: remove the junk index column">
-    If there is a first column called `Column1` or `Unnamed: 0`, right-click it â†’ **Remove**. It is only a row number.
+    If there is a first column called `Column1` or `Unnamed: 0`, right-click it → **Remove**. It is only a row number.
   </Step>
   <Step title="Transform: fix data types">
     Click the small icon in each column header. Set `popularity` to **Whole Number**; `danceability`, `energy`, `valence`, `acousticness`, `tempo` and similar to **Decimal Number**; `explicit` to **True/False**.
   </Step>
   <Step title="Transform: remove blank rows">
-    Select `track_name` â†’ **Home** â†’ **Remove Rows** â†’ **Remove Blank Rows**. A handful of tracks have no name.
+    Select `track_name` → **Home** → **Remove Rows** → **Remove Blank Rows**. A handful of tracks have no name.
   </Step>
   <Step title="Transform: remove duplicates">
-    Select `track_id` â†’ right-click â†’ **Remove Duplicates**. Why? The same track appears once per genre it belongs to.
+    Select `track_id` → right-click → **Remove Duplicates**. Why? The same track appears once per genre it belongs to.
   </Step>
   <Step title="Add the target column">
-    **Add Column** â†’ **Custom Column**, name it `viral_label`, formula:
+    **Add Column** → **Custom Column**, name it `viral_label`, formula:
 
     ```text
     if [popularity] >= 58.0 then "Viral" else "Not viral"
     ```
   </Step>
   <Step title="Load">
-    **Home** â†’ **Close & Apply**.
+    **Home** → **Close & Apply**.
   </Step>
 </Steps>
 
@@ -68,12 +68,12 @@ You will build this dashboard in a **starter template**
 The template already has the dark page, the green panel shapes, the **OVERVIEW**, **GENRES** and **SOUND** titles, and the theme. Open the file first, then load the data into it using Part 1. You only need to add the charts.
 
 <Note>
-  The theme is applied inside the template, so you don't need to import a theme file. If a chart appears with a white background, ask your instructor for the theme file and import it from **Design**â†’ **Themes** â†’ **Browse for themes**.
+  The theme is applied inside the template, so you don't need to import a theme file. If a chart appears with a white background, ask your instructor for the theme file and import it from **Design** → **Themes** → **Browse for themes**.
 </Note>
 
 ### Step 1: Create two helper columns
 
-A helper column is a new column we build from existing ones. Right-click the table in the **Data** pane â†’ **New column**, and add each of these.
+A helper column is a new column we build from existing ones. Right-click the table in the **Data** pane → **New column**, and add each of these.
 
 **Explicitness.** The `explicit` column holds True/False, which looks awkward on a slicer. This turns it into readable text:
 
@@ -108,7 +108,7 @@ SWITCH(
 
 - **Count of** `track_id`, renamed "Tracks"
 - **Average of** `popularity` (not Sum), renamed "Avg.pop"
-- A **Viral %** measure. **Modeling** â†’ **New measure**:
+- A **Viral %** measure. **Modeling** → **New measure**:
 
 ```text
 Viral Share = DIVIDE(COUNTROWS(FILTER('dataset', 'dataset'[popularity] >= 58)), COUNTROWS('dataset'))
@@ -228,7 +228,7 @@ export const HypothesisBuilder = () => {
           ? <span><strong>My hypothesis:</strong> {g ? "In " + g + ", v" : "V"}iral tracks tend to have {d} {f} than non-viral ones, based on {v}.</span>
           : <span className="opacity-70">Your sentence appears here once you've picked a feature, a direction and your evidence.</span>}
       </div>
-      <p className="mt-2 mb-0 text-sm">{checks.map(([ok, label]) => <span key={label} className="mr-3" style={{ color: ok ? "#1DB954" : "inherit", opacity: ok ? 1 : 0.6 }}>{ok ? "âœ“" : "â—‹"} {label}</span>)}</p>
+      <p className="mt-2 mb-0 text-sm">{checks.map(([ok, label]) => <span key={label} className="mr-3" style={{ color: ok ? "#1DB954" : "inherit", opacity: ok ? 1 : 0.6 }}>{ok ? "✓" : "○"} {label}</span>)}</p>
       <p className="m-0 mt-1 text-xs opacity-70">Write your sentence down. After the model runs, you'll check it against the feature importance chart.</p>
     </div>
   );
@@ -387,7 +387,7 @@ Features with large swings have more influence on the model. Compare this with t
 
 Executives do not read Python scripts. They open a dashboard. For model results to change decisions, they need to appear where decision-makers already look.
 
-{/* ILLUSTRATION I-22: Loop diagram: Data â†’ Colab model â†’ predictions CSV â†’ Power BI dashboard â†’ decision â†’ new data. Each arrow clickable for one sentence of detail. */}
+{/* ILLUSTRATION I-22: Loop diagram: Data → Colab model → predictions CSV → Power BI dashboard → decision → new data. Each arrow clickable for one sentence of detail. */}
 
 ## Step 1: Export predictions from Colab
 
@@ -406,7 +406,7 @@ files.download("predictions.csv")
 
 <Steps>
   <Step title="Import the new file">
-    **Get data** â†’ **Text/CSV** â†’ `predictions.csv` â†’ **Load**.
+    **Get data** → **Text/CSV** → `predictions.csv` → **Load**.
   </Step>
   <Step title="Add a visual">
     Create a bar chart: **Y** = `track_genre`, **X** = **Average of** `predicted_viral_prob`, Top 10.
@@ -428,8 +428,8 @@ In a real company the export step is automated: the model runs on a schedule, wr
 
 ## Save your work
 
-- In Power BI: **File** â†’ **Save as** â†’ keep your `.pbix` file.
-- In Colab: **File** â†’ **Save a copy in Drive**, and download your `predictions.csv`.
+- In Power BI: **File** → **Save as** → keep your `.pbix` file.
+- In Colab: **File** → **Save a copy in Drive**, and download your `predictions.csv`.
 
 ## Where to go next
 

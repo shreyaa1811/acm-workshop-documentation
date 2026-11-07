@@ -360,7 +360,7 @@ export const SpotTheProblem = () => {
               <tr key={ri}>
                 {row.map((v, ci) => {
                   const k = ri + "-" + cols[ci];
-                  return <td key={k} onClick={() => toggle(k)} className="px-2 py-2 cursor-pointer font-mono text-xs hover:opacity-70" style={Object.assign({ borderRadius: 6, background: "rgba(127,127,127,0.10)" }, cellStyle(k))}>{checked ? (keys.includes(k) ? (flagged.includes(k) ? " " : " ") : (flagged.includes(k) ? "âŒ " : "")) : (flagged.includes(k) ? "ðŸš© " : "")}{v === "" ? "\u00A0" : v}</td>;
+                  return <td key={k} onClick={() => toggle(k)} className="px-2 py-2 cursor-pointer font-mono text-xs hover:opacity-70" style={Object.assign({ borderRadius: 6, background: "rgba(127,127,127,0.10)" }, cellStyle(k))}>{checked ? (keys.includes(k) ? (flagged.includes(k) ? " " : " ") : (flagged.includes(k) ? "❌ " : "")) : (flagged.includes(k) ? "🚩 " : "")}{v === "" ? "\u00A0" : v}</td>;
                 })}
               </tr>
             ))}
@@ -574,7 +574,7 @@ We use **Cards** in this workshop because they are the simplest. The KPI visual 
 - **Vanity numbers.** A big total that nobody can act on is not a KPI.
 
 <Note>
-**Heads-up about the dataset:** it has a `popularity` score (0â€“100) but no raw stream counts, so wherever you see "streams" in other material, we use **popularity** instead.
+**Heads-up about the dataset:** it has a `popularity` score (0–100) but no raw stream counts, so wherever you see "streams" in other material, we use **popularity** instead.
 </Note>
 
 ## How this connects to Day 2's ML model
@@ -590,12 +590,12 @@ Before touching Spotify, we practice on something simpler. The **California Hous
     Download the [california_housing_train.csv](https://raw.githubusercontent.com/ageron/handson-ml/master/datasets/housing/housing.csv) dataset directly, or in Colab, open the Files panel on the left sidebar, go to `sample_data`, and download it from there.
   </Step>
   <Step title="Load it into the Power BI Web App">
-    Go to **app.powerbi.com** and open your Workspace. Click **New** â†’ **Upload a file** â†’ select your CSV. Once loaded, click the dataset and select **Create a report** â†’ **Start from scratch**.
+    Go to **app.powerbi.com** and open your Workspace. Click **New** → **Upload a file** → select your CSV. Once loaded, click the dataset and select **Create a report** → **Start from scratch**.
   </Step>
   <Step title="Build The Map (Scatter Chart)">
     Add a **Scatter chart**. Put `longitude` on the **X-axis** and `latitude` on the **Y-axis** 
 
-    _Format visual menu â†’ Markers â†’ Color â†’ **fx** to apply a color gradient based on Average median_house_value)._
+    _Format visual menu → Markers → Color → **fx** to apply a color gradient based on Average median_house_value)._
   </Step>
   <Step title="Add the Headlines (KPI Cards)">
     Add a **Card** visual to the blank canvas. Drag `median_house_value` into the card, click the dropdown arrow in the build pane, and change it from Sum to **Average**. Add a second **Card** next to it for `median_income` (also set to **Average**).
@@ -634,7 +634,7 @@ Our workshop uses **supervised learning**, because we know each track's populari
 - **Features** are the inputs: things we know about a song before release.
 - **Target** (or **label**) is the output we want to predict.
 
-{/* ILLUSTRATION I-10: Interactive "prediction machine". Features on the left as sliders (danceability, tempo, acousticness), a box labelled "model" in the middle, and "Viral / Not viral" on the right. Moving sliders changes the output with a toy rule so students see inputs â†’ output. */}
+{/* ILLUSTRATION I-10: Interactive "prediction machine". Features on the left as sliders (danceability, tempo, acousticness), a box labelled "model" in the middle, and "Viral / Not viral" on the right. Moving sliders changes the output with a toy rule so students see inputs → output. */}
 
 | Role | Spotify columns |
 |---|---|
@@ -674,10 +674,10 @@ export const OverfitDemo = () => {
         <circle cx={x(depth)} cy={y(train(depth))} r="5" fill="#1DB954" />
         <circle cx={x(depth)} cy={y(test(depth))} r="5" fill="#F59E0B" />
         <text x="45" y="16" fontSize="10" fill="currentColor">accuracy</text>
-        <text x="250" y="194" fontSize="10" fill="currentColor">model complexity â†’</text>
+        <text x="250" y="194" fontSize="10" fill="currentColor">model complexity →</text>
       </svg>
       <input type="range" min="1" max="20" value={depth} onChange={(e) => setDepth(Number(e.target.value))} className="w-full" />
-      <p className="m-0 text-sm"><span style={{ color: "#1DB954" }}>â– </span> Training accuracy {Math.round(train(depth) * 100)}% &nbsp; <span style={{ color: "#F59E0B" }}>â– </span> Test accuracy {Math.round(test(depth) * 100)}% &nbsp; Gap: {gap} points</p>
+      <p className="m-0 text-sm"><span style={{ color: "#1DB954" }}>■</span> Training accuracy {Math.round(train(depth) * 100)}% &nbsp; <span style={{ color: "#F59E0B" }}>■</span> Test accuracy {Math.round(test(depth) * 100)}% &nbsp; Gap: {gap} points</p>
       <p className="m-0 mt-1 font-medium">{verdict}</p>
       <p className="m-0 mt-1 text-xs opacity-70">Illustrative curves for teaching, not real model output.</p>
     </div>
@@ -881,7 +881,7 @@ Our Day 2 export to Power BI is a small example of **batch** scoring.
 - **In a spreadsheet or dashboard** (predictions loaded into Power BI).
 - **As a report** (a monthly list of likely hits).
 
-{/* ILLUSTRATION I-13: Animated request/response flow: App â†’ API â†’ Model â†’ App, with a sample JSON request and response that students can edit (change energy and see a new fake probability). */}
+{/* ILLUSTRATION I-13: Animated request/response flow: App → API → Model → App, with a sample JSON request and response that students can edit (change energy and see a new fake probability). */}
 
 ## Model drift
 
@@ -964,7 +964,7 @@ export const Reveal = ({ question, answer }) => {
 
 <Steps>
   <Step title="Open Power BI Desktop">
-    On your computer, find **Power BI Desktop**Â /Â **Power BI Web AppÂ **in the Start menu. Open it and confirm you reach the blank report canvas.(Try downloading the App from the Microsoft Store).
+    On your computer, find **Power BI Desktop** / **Power BI Web App** in the Start menu. Open it and confirm you reach the blank report canvas. (Try downloading the App from the Microsoft Store).
   </Step>
   <Step title="Check Google Colab">
     Go to [colab.research.google.com](https://colab.research.google.com), sign in, click **New notebook**. In the first cell, type `print("hello")` and press **Shift + Enter**. You should see `hello`.

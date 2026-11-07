@@ -20,7 +20,7 @@ You have been hired to perform a short, ethical assessment before MegaCorp launc
 3. What data becomes visible after login, and why is it sensitive?
 4. How could a defender detect and prevent the activity?
 
-### What you need
+### 1.1 What you need
 
 - A browser with developer tools
 - The [MegaCorp workshop application](https://shreyaa1811.pythonanywhere.com/)
@@ -33,7 +33,7 @@ You do not need to install tools or interact with a real company.
 
 Use this section as a quick reference rather than rereading the entire first session.
 
-### Security fundamentals
+### 2.1 Security fundamentals
 
 | Concept | Remember this | How it appears today |
 | --- | --- | --- |
@@ -45,7 +45,7 @@ Use this section as a quick reference rather than rereading the entire first ses
 | **Risk** | The likelihood and impact of exploitation. | A public login flaw is more serious when it reveals sensitive records. |
 | **Exploit** | The technique used to take advantage of a weakness. | You will demonstrate the lab's SQL injection and reflected XSS flaws. |
 
-### The attacker and defender mindsets
+### 2.2 The attacker and defender mindsets
 
 An attacker needs one path into a system. A defender must reduce every realistic path and detect what gets through.
 
@@ -56,7 +56,7 @@ An attacker needs one path into a system. A defender must reduce every realistic
 | What can I access after one successful action? | Are permissions and data access limited by role? |
 | What evidence would I leave behind? | Which logs, alerts, and controls would reveal it? |
 
-### The web security concepts
+### 2.3 The web security concepts
 
 - **SQL injection (SQLi):** untrusted input changes the meaning of a database query.
 - **Cross-site scripting (XSS):** untrusted input is returned to a browser as executable content.
@@ -65,7 +65,7 @@ An attacker needs one path into a system. A defender must reduce every realistic
 - **Cookies and sessions:** keep a browser associated with a logged-in user. A stolen session token can represent that user's identity.
 - **Hashing:** transforms a password into a one-way value for storage. It is not encryption and should not be treated as reversible.
 
-### The Kill Chain
+### 2.4 The Kill Chain
 
 Today follows a small version of the same sequence:
 
@@ -104,7 +104,7 @@ Reconnaissance means learning about a target before attempting exploitation. Sta
 4. Open the [About page](https://shreyaa1811.pythonanywhere.com/about) and look for naming patterns.
 5. Visit [`/robots.txt`](https://shreyaa1811.pythonanywhere.com/robots.txt) and record any disclosed paths.
 
-### Pause and predict
+### 4.1 Pause and predict
 
 Before opening the login page, discuss:
 
@@ -138,13 +138,13 @@ SELECT * FROM users
 WHERE username = '{username}' AND password = '{password}';
 ```
 
-### What happened?
+### 5.1 What happened?
 
 The application treated part of the input as SQL syntax instead of as ordinary data. A condition that should have checked a specific password was changed into a condition that evaluates as true.
 
 **Day 1 connection:** this is injection and broken authentication. The correct defenses are parameterized queries, server-side input handling, least privilege for the database account, rate limiting, and useful security logging. Escaping alone is not a complete fix.
 
-### Blue-team pause
+### 5.2 Blue-team pause
 
 Write down:
 
@@ -178,7 +178,7 @@ The portal's **Directory Search** feature reflects search text into the response
 
 Observe whether the browser executes the input or displays it as ordinary text. Stop after the demonstration; do not attempt to steal cookies, access another person's browser, or send data anywhere.
 
-### Why a popup matters
+### 7.1 Why a popup matters
 
 The popup is a visible proof that the browser interpreted input as code. In a real application, the same class of flaw could be used to manipulate a page or target a user's session.
 
@@ -202,7 +202,7 @@ The app seeds two fake classroom values:
 
 Do not present or reuse the seeded plaintext values as real credentials. The values exist only to make the contrast visible during the workshop.
 
-### What defenders should change
+### 8.1 What defenders should change
 
 - Store passwords with a slow, modern password-hashing function such as Argon2id, bcrypt, or scrypt.
 - Use a unique salt for every password.
