@@ -1,242 +1,399 @@
 ---
 title: "Day 1"
-description: "Build a foundation in cybersecurity concepts, web application security, and defensive thinking."
+description: "Build a foundation in cloud computing concepts"
 ---
 
-## 1. Introduction to the Workshop
+# Day 1 — Student Guide: Cloud, Containers and DevOps
 
-### 1.1 The Cybersecurity Career Roadmap
+**What you'll get out of today:** a mental map of the cloud (what it is, how AWS, Azure and Google Cloud compare, who is responsible for what), a working understanding of Docker, and a laptop that's ready for Day 2. At the end you'll **build a game into a container and play it** to prove your setup works.
 
-Cybersecurity is not just one job, it's a whole ecosystem of roles. A cybersecurity career roadmap **starts with IT and networking foundations, moves into hands-on technical skills, and branches into specialized security roles**.
+**Tomorrow (Day 2, with Kalyani):** you take an AI meme generator from your laptop to a live public URL on Google Cloud, then make it deploy itself with GitHub Actions.
 
-Quick tour of where people usually start and where they go:
+[![Get the game code — Cloud Quest](https://img.shields.io/badge/%F0%9F%8E%AE%20Get%20the%20game%20code-Cloud%20Quest-3d5afe?style=for-the-badge)](https://github.com/aaaditt/acm-cloud-devops-workshop)
 
-![image.png](image.png)
+---
 
-|  | What they actually do | Entry point |
+## Contents
+
+1. [Before the session: get your laptop ready](#before-the-session-get-your-laptop-ready)
+2. [Part 1: The cloud in plain words](#part-1-the-cloud-in-plain-words)
+3. [Part 2: AWS, Azure and Google Cloud side by side](#part-2-aws-azure-and-google-cloud-side-by-side)
+4. [Part 3: Docker and containers](#part-3-docker-and-containers)
+5. [Part 4: DevOps and CI/CD](#part-4-devops-and-cicd)
+6. [Part 5: Setup lab: play Cloud Quest](#part-5-setup-lab-play-cloud-quest-)
+7. [Glossary](#glossary)
+8. [Troubleshooting](#troubleshooting)
+9. [Ready for Day 2?](#ready-for-day-2)
+
+---
+
+## Before the session: get your laptop ready
+
+Takes about 30–45 minutes. If something doesn't work, don't worry: there's a setup lab at the end of Day 1, and you can ask in the chat.
+
+You need a laptop (Windows 10/11, macOS or Linux) where you can install software, a stable connection, and a few GB of free disk space.
+
+1. **Install Git** from [git-scm.com](https://git-scm.com). Check: `git --version` shows a version number.
+2. **Install VS Code** from [code.visualstudio.com](https://code.visualstudio.com). Open it once.
+3. **Install Docker Desktop** from [docker.com](https://www.docker.com/products/docker-desktop/). On Windows it may ask to enable WSL 2 and restart. Start Docker Desktop and wait until the whale icon is steady. Check: `docker run hello-world` prints "Hello from Docker!".
+4. **Install the Google Cloud CLI** from [cloud.google.com/sdk/docs/install](https://cloud.google.com/sdk/docs/install). Open a **new** terminal, then check: `gcloud version`, then `gcloud auth login` (opens your browser to sign in).
+5. **Activate the Google Cloud free trial** at [cloud.google.com/free](https://cloud.google.com/free). New accounts get free credit for 90 days. Google asks for a card to verify you're a real person; you are **not** charged unless you choose to upgrade. No card? Tell us and you'll pair with someone on Day 2.
+6. **Get the Day 1 game:** `git clone https://github.com/aaaditt/acm-cloud-devops-workshop.git cloud-quest` ([Cloud Quest](https://github.com/aaaditt/acm-cloud-devops-workshop)). You'll build and play it in the setup lab.
+7. **Save time later:** `docker pull python:3.12-slim` (the base image you'll build on).
+
+```bash
+git --version
+docker run hello-world
+gcloud version
+gcloud auth login
+```
+
+> ⚠️ Cloud resources can cost money (or eat your credit) while they exist. On Day 2 we delete everything at the end. If you create anything while practising, delete it afterwards.
+
+---
+
+## Part 1: The cloud in plain words
+
+### What is "the cloud"?
+
+Renting someone else's computers over the internet, by the minute, instead of buying your own.
+
+| | On-premises (your own servers) | Cloud |
 | --- | --- | --- |
-| **SOC Analyst** | Watches alerts 24/7, triages incidents, first responder | Most common entry-level role |
-| **Penetration Tester** | Gets paid to legally hack companies before criminals do | Usually 2-3 yrs experience + certs (OSCP, CEH) |
-| **GRC / Compliance** | Makes sure the company follows security laws & frameworks (ISO 27001, NIST) | Good fit for non-technical/business-minded people |
-| **Cloud Security** | Locks down AWS/Azure/GCP environments | Growing fast, high demand |
-| **Incident Response** | The "fire department" - called in when a breach actually happens | Senior-track, high pressure, high pay |
+| Cost | Pay for hardware up front (CapEx) | Pay for what you use (OpEx) |
+| Speed | Weeks to order and install | Minutes to start |
+| Capacity | Guess, then over-buy | Grow and shrink on demand (**elasticity**) |
 
-![image.png](16083916-c7dc-42d4-99c6-589ebc56849e.png)
+Think buying a car vs using a ride-hailing app. The cloud isn't always cheaper, but you get capacity in minutes and only pay while you use it.
 
-     *You **don't** need to code to work in cybersecurity!!  GRC and awareness roles are just as real.*
+### IaaS, PaaS, SaaS: how much do you manage?
 
-Cybersecurity is a contact sport. Every single day, somewhere in the world, attackers and defenders are fighting over the same systems, and by the end of tomorrow, you'll have played both sides of that fight yourself!
+| Model | Think of it as… | You manage | Examples |
+| --- | --- | --- | --- |
+| **IaaS** (Infrastructure) | Renting an empty flat | The OS, runtime and your app | AWS EC2, Azure VMs, Google Compute Engine |
+| **PaaS** (Platform) | Renting a furnished flat | Just your app | **Google Cloud Run**, App Engine, Azure App Service |
+| **SaaS** (Software) | A hotel room | Nothing, just use it | Gmail, Google Docs, Zoom |
 
-**Real example: The 2017 Equifax breach -** One of the most damaging breaches in history. Exposed data on ~159 million Americans.
+> On Day 2 you deploy to **Cloud Run** (PaaS). You never touch an operating system.
 
-- Cause: An unpatched vulnerability in a web software component (Apache Struts).
-- Attackers sat undetected inside the network for over **two months.**
-- Exposed: Social Security numbers, birth dates, addresses, driver's license numbers, and **~209,000 credit card numbers**.
+### Public, private, hybrid
 
-![image.png](image%201.png)
+- **Public cloud:** shared provider infrastructure (AWS, Azure, Google Cloud)
+- **Private cloud:** infrastructure used by one organisation only
+- **Hybrid:** a mix, e.g. sensitive data on-premises, the website in the public cloud
 
-- Why it matters: Equifax is a major credit agency. The stolen data was directly tied to people's financial identity, fueling long-term identity theft risk
+### Where the cloud physically lives
 
-![image.png](image%202.png)
+- **Region:** a geographic area with datacentres
+- **Availability zone:** a separate datacentre inside a region, so one failure doesn't take you down
+- **Edge location:** a small site near users that caches content
 
-One unpatched update took down a company holding financial data on half the US population. This isn't Hollywood hacking - it's **one missed patch**.
+Region choice matters for **latency** (closer is faster), **data residency** (some laws keep data in-country) and **price**.
 
-So what actually goes wrong in breaches like this? That's what we're breaking down next.
+Nearby: AWS has a UAE region; Azure has UAE North (Dubai) and UAE Central (Abu Dhabi); Google Cloud's nearest are `me-central1` (Doha) and `me-central2` (Dammam). **Day 2 uses `me-central1`.**
 
-## 2. Security Fundamentals
+### Shared responsibility: who secures what?
 
-### 2.1 The CIA Triad: A foundational information security model
+| Layer | IaaS | PaaS | SaaS |
+| --- | --- | --- | --- |
+| Datacentre and hardware | Provider | Provider | Provider |
+| Operating system | **You** | Provider | Provider |
+| Runtime and platform | **You** | Provider | Provider |
+| Your app's code and config | **You** | **You** | Provider |
+| Your data and who can access it | **You** | **You** | **You** |
 
-Every security concept boils down to protecting three things:
+> The provider secures **the cloud**. You secure **what you put in it**. The bottom row never moves: leak your own API key and it's on you, in every model. That's why on Day 2 your AI key goes in Secret Manager, never in code.
 
-![image.png](image%203.png)
+### Scaling and pricing
 
-| Pillar | Means | Real breach example |
+- **Scale up:** a bigger machine. **Scale out:** more machines (usually preferred)
+- **Elasticity:** adding and removing resources automatically as demand changes
+- **Pay-as-you-go** bills you for usage; **free tiers and trial credits** are for learning
+- **Idle resources can still cost money.** A VM bills even with zero visitors. Cloud Run scales to zero, but always delete what you don't need
+
+<details>
+<summary><b>Check yourself</b> (click to reveal answers)</summary>
+
+1. Is Gmail IaaS, PaaS or SaaS? → **SaaS**
+2. Your Compute Engine VM gets hacked because nobody installed OS updates. Whose fault? → **Yours**: in IaaS, the OS is your job.
+3. Which is usually preferred: scale up or scale out? → **Scale out**: more machines, no single point of failure.
+
+</details>
+
+---
+
+## Part 2: AWS, Azure and Google Cloud side by side
+
+The three big clouds offer the same building blocks under different names. Learn the idea once and you can translate.
+
+### How each cloud organises your stuff
+
+| AWS | Azure | Google Cloud |
 | --- | --- | --- |
-| **Confidentiality** | Only the right people can see the data | Data leak exposing customer passwords |
-| **Integrity** | Data can't be secretly changed | Attacker altering a bank transaction amount mid-transfer |
-| **Availability** | Systems stay up and usable | A DDoS attack knocking a website offline |
+| Organization → account → region → resources | Tenant → subscription → **resource group** → resources | Organization → folders → **project** → resources |
+| Tags | Tags | Labels |
 
-### 2.2 Four Terms Everyone Mixes Up
+> On Google Cloud, a **project** is the box that holds everything for one app: resources, permissions, billing and enabled APIs. **Delete the project and everything inside goes with it.** On Day 2 you create one, and delete it at the end.
 
-- **Vulnerability:** a weakness (an unlocked door)
-- **Threat:** someone who could exploit it (a burglar)
-- **Risk:**  likelihood × impact if it happens
-- **Exploit:**  the actual method used to break in
+### The cheat sheet: save this table 📸
 
-### 2.3 Attack Surface
+| Area | AWS | Azure | Google Cloud | The idea |
+| --- | --- | --- | --- | --- |
+| Virtual machines | EC2 | Virtual Machines | Compute Engine | Rentable servers sized by CPU and memory |
+| Object storage | S3 | Blob Storage | Cloud Storage | Files over HTTP |
+| Identity | IAM | Entra ID + RBAC | Cloud IAM + service accounts | Least privilege: only the access needed |
+| Network | VPC | VNet | VPC | Your private network |
+| Firewall | Security groups | NSGs | Firewall rules | Who can talk to what |
+| Database | RDS | Azure SQL | Cloud SQL | Provider handles backups and patching |
+| Serverless functions | Lambda | Azure Functions | Cloud Run functions | Run code on events, no server |
+| Container registry | ECR | ACR | **Artifact Registry** ⭐ | Store your Docker images |
+| Run containers | ECS / Fargate | Container Apps / ACI | **Cloud Run** ⭐ | Run an image, get a URL |
+| Kubernetes | EKS | AKS | GKE | Orchestrate many containers |
+| App hosting | Elastic Beanstalk | App Service | App Engine / Cloud Run | Upload your app, it runs |
+| Secrets | Secrets Manager | Key Vault | **Secret Manager** ⭐ | Keep keys out of your code |
+| AI models | Bedrock | Azure OpenAI | Vertex AI / **Gemini** ⭐ | Call an AI model via an API |
+| Grouping | Account, tags | Subscription, resource group | **Project** ⭐, labels | One box per app |
 
-Everything an attacker could touch: endpoints, APIs, people, third-party vendors. If it's connected, it's exposed.
+⭐ = you use it on Day 2.
 
-![image.png](image%204.png)
+**How do companies choose?** Existing tools (Microsoft shops lean Azure; Google Workspace and data/AI teams often lean GCP), pricing deals and credits, team skills, compliance and data residency. Plenty use more than one.
 
-### 2.4 Threat Actors:  Who's Actually Attacking
+<details>
+<summary><b>Check yourself</b></summary>
 
-| Actor | Motive |
+1. AWS S3 on Google Cloud? → **Cloud Storage**
+2. Azure resource group on Google Cloud? → **Project**
+3. Where will your Docker image live on Day 2? → **Artifact Registry**
+
+</details>
+
+---
+
+## Part 3: Docker and containers
+
+### The problem containers solve
+
+"It works on my machine." Your app needs the right Python version, the right packages, the right settings. A **container** packages the app *with* everything it needs, so it runs the same on your laptop, your friend's laptop and the cloud.
+
+### Containers vs virtual machines
+
+| | Virtual machine | Container |
+| --- | --- | --- |
+| What's inside | A full guest operating system + your app | Just your app and its dependencies (shares the host's OS kernel) |
+| Size | Gigabytes | Megabytes |
+| Start time | Minutes | Seconds |
+| How many per machine | A few | Many |
+
+A container is an **isolated process**, not a mini-VM.
+
+### Images, containers and layers
+
+- **Image:** a read-only template, like a class in programming
+- **Container:** a running instance of an image, like an object. One image → many containers
+- **Layers:** each Dockerfile instruction makes a layer, and Docker **caches** unchanged layers. Put slow, rarely-changing steps (installing packages) first and often-changing steps (your code) last
+
+### A Dockerfile, line by line
+
+```dockerfile
+# Start from a small official Python image
+FROM python:3.12-slim
+
+# Work inside /app in the image
+WORKDIR /app
+
+# Copy ONLY the requirements first, so the slow install layer stays cached
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+# Now copy the rest of your code
+COPY . .
+
+# Document the port the app listens on
+EXPOSE 8080
+
+# What runs when a container starts
+CMD ["python", "app.py"]
+```
+
+| Instruction | What it does |
 | --- | --- |
-| Script kiddies | Bragging rights |
-| Hacktivists | Ideology |
-| Organized crime | Money |
-| Nation-state / APT | Espionage, sabotage |
-| Malicious insiders | Grudge, money, mistake |
+| `FROM` | Base image to start from |
+| `WORKDIR` | Working folder inside the image |
+| `COPY` | Copy files from your machine into the image |
+| `RUN` | Run a command at **build** time (install things) |
+| `EXPOSE` | Document the port (doesn't publish it by itself) |
+| `CMD` | Command that runs at **container start** |
 
-![image.png](image%205.png)
+> **`RUN` vs `CMD`** is the classic mix-up: `RUN` happens once while *building*. `CMD` happens every time a container *starts*.
 
-*The motive changes the whole threat model. A bored teenager and a nation-state don't attack the same way.*
+### Registries, names and tags
 
-### 2.5 CVE & CVSS
+- Full image name: `registry/name:tag`. On Google Cloud it looks like `me-central1-docker.pkg.dev/my-project/my-repo/myapp:v1`
+- Registries: Docker Hub, Google Artifact Registry, Amazon ECR, Azure ACR
+- **Avoid `:latest`.** It's a moving label, so you can't tell which version is running. Use explicit tags like `:v1`
+- **`.dockerignore`** keeps `.git`, secrets and junk out of your image
 
-When a vulnerability is discovered, it gets a public ID (CVE) and a severity score (CVSS), so the whole industry can talk about the same flaw.
+### Ports and lifecycle
 
-### The Human Factor
+- `-p 8080:8080` means **host port : container port**. Containers are isolated until you map a port
+- Containers are **disposable**: anything saved inside is lost when the container is removed. **Volumes** are storage that outlives a container; **Docker Compose** runs several containers together from one file
 
-The weakest link is rarely the firewall. **It's people.**
+### Commands you'll use
 
-The **UAE Cyber Security Council** has reported that over 75% of cyber breaches in the UAE start with phishing emails and fraudulent messages, not complex technical hacks, but tricking a person into clicking or replying. The Council points to **human behavior as the weakest link**, more than any technical flaw.
+```bash
+docker build -t myapp:v1 .         # build an image from the Dockerfile in this folder
+docker run -p 8080:8080 myapp:v1   # start a container, map the port
+docker ps                          # list running containers
+docker ps -a                       # ...including stopped ones
+docker logs <container-id>         # see what the app printed
+docker stop <container-id>         # stop it
+docker rm <container-id>           # delete it
+docker images                      # list images on your machine
+```
 
-Locally, the **Dubai Electronic Security Center (DESC)** runs public awareness campaigns for exactly this reason, warning residents about evolving scam tactics that use fake images, videos, and voices to spread misleading or malicious content, and urging people to verify before they click or share.
+<details>
+<summary><b>Check yourself</b></summary>
 
-Firewalls can't stop someone from typing their password into a fake login page. That's why the UAE's own cybersecurity bodies spend as much energy on public awareness as they do on technical defense.
+1. `RUN pip install ...` happens when? → At **build** time.
+2. Why copy `requirements.txt` before the rest of the code? → So the install layer stays **cached** when only your code changes.
+3. Your app runs in the container but `localhost:8080` won't load. Two likely causes? → No `-p 8080:8080`, or the app listens on `127.0.0.1` instead of `0.0.0.0`.
 
-*Security is everyone's job - same way 'shared responsibility' trips up people new to cloud computing. The tools only work if the humans using them do too.*
+</details>
 
-## 3. Red Team vs. Blue Team, Side by Side
+---
 
-**Mindset & goals:**
+## Part 4: DevOps and CI/CD
 
-- Attacker: find *one* way in
-- Defender: cover *every* way in
-- Purple team: make both sides talk to each other
+- **DevOps** is a culture and set of practices where developers and operations work together and **automate** the path from code to production. Not a job title, not a tool.
+- **CI (Continuous Integration):** every push triggers an automated build and tests.
+- **CD:** continuous *delivery* = ready to release, a human clicks the button; continuous *deployment* = it ships automatically.
 
-![image.png](image%206.png)
+### The pipeline: from `git push` to a live URL
 
-### 3.1 Tooling, Mapped Side by Side
+```text
+Source  →  Build  →  Test  →  Package  →  Deploy
+git push   docker    auto      tagged image    Cloud Run
+           build     tests     in Artifact     runs it
+                               Registry
+```
 
-| Attack Move | Defensive Move |
+The **image is the artifact**: the exact image that passed the tests is what runs in production. On Day 2, **GitHub Actions** runs this whole pipeline every time you push.
+
+**Where to go next:** Infrastructure as Code (Terraform), monitoring and observability, DevSecOps.
+
+**Career path:** Linux, networking and Git → one cloud's fundamentals (AWS Cloud Practitioner, AZ-900 or Google Cloud Digital Leader) → Docker, then Kubernetes → CI/CD, IaC, monitoring, security. Roles: Cloud Engineer, DevOps Engineer, SRE, Platform Engineer, Cloud Security Engineer.
+
+---
+
+## Part 5: Setup lab: play Cloud Quest 🎮
+
+Time to prove your setup works, in the most fun way possible. **Cloud Quest** is a five-level game about everything from today, and you're going to run it inside a Docker container you build yourself. Nothing gets deployed today: it only runs on your laptop. (Deploying to the cloud is Day 2.)
+
+Code: [github.com/aaaditt/acm-cloud-devops-workshop](https://github.com/aaaditt/acm-cloud-devops-workshop)
+
+### 1. Check your tools
+
+```bash
+docker run hello-world      # Docker works
+gcloud version              # Google Cloud CLI installed
+gcloud auth login           # you can sign in
+git --version               # Git installed
+```
+
+Free trial active? Say so in the chat. If not, tell us and you'll pair with someone on Day 2.
+
+### 2. Build the game
+
+Skip the clone if you already did it during setup.
+
+```bash
+git clone https://github.com/aaaditt/acm-cloud-devops-workshop.git cloud-quest
+cd cloud-quest
+docker build -t cloud-quest:v1 .
+```
+
+Open the `Dockerfile` while it builds: it's the exact Dockerfile from Part 3.
+
+> **On an Apple Silicon Mac?** This works as is. (On Day 2 you'll add `--platform linux/amd64` for Cloud Run.)
+
+### 3. Run it and play
+
+```bash
+docker run -p 8080:8080 cloud-quest:v1
+```
+
+Open **http://localhost:8080**, enter your name and play the five levels:
+
+1. **Guess the Model:** IaaS, PaaS or SaaS?
+2. **Whose Fault?** Shared responsibility scenarios
+3. **Cloud Translator:** AWS ↔ Azure ↔ Google Cloud
+4. **Spot the Bugs:** find 3 bugs in a Dockerfile
+5. **Build the Pipeline:** put CI/CD in order
+
+Answer fast for bonus points and keep your streak going 🔥. At the end, **copy your score line into the Meet chat**. The top scorer is crowned Cloud Architect 🏆.
+
+### 4. Bonus: see Docker in action
+
+- Look at the footer: **"Served by container a1b2c3…"**. In a second terminal, run `docker ps`. Same ID! That's your container.
+- Start a **second** container from the **same image** with different config:
+
+  ```bash
+  docker run -p 8081:8080 -e VERSION=v2 cloud-quest:v1
+  ```
+
+  Open http://localhost:8081: the footer shows `v2` and a different container ID. Same image, different behaviour, driven by `-e`. Day 2 uses exactly this trick for your AI key.
+- Clean up: `docker ps`, then `docker stop <id>` for each container.
+
+If you can play the game, **your laptop is ready for Day 2.** ✅
+
+---
+
+## Glossary
+
+| Term | Meaning |
 | --- | --- |
-| **Recon:** OSINT, Shodan | Attack surface management |
-| **Exploitation:** Metasploit, manual exploits | Patch management, EDR |
-| **Password attacks:** hashcat, credential stuffing | MFA, password policy, rate limiting |
-| **Social engineering:** phishing kits | Security awareness training, email filtering |
-| **Persistence & lateral movement** | Network segmentation, least privilege |
+| Region / zone | Where datacentres are; a zone is one datacentre inside a region |
+| IaaS / PaaS / SaaS | How much the provider manages: servers / platform / whole app |
+| Elasticity | Automatically adding and removing resources as demand changes |
+| Project (GCP) | The box holding everything for one app, including billing; delete it to delete everything |
+| Image | Read-only template for a container |
+| Container | A running instance of an image |
+| Layer | One cached step of an image build |
+| Registry | Where images are stored (Artifact Registry, Docker Hub, ECR, ACR) |
+| Tag | Version label on an image (`:v1`). Avoid `:latest` |
+| Port mapping | `-p host:container`, opening a container's port to your machine |
+| Environment variable | Config passed at run time (`-e NAME=value`), kept out of the image |
+| CI / CD | Automatic build and test / automatic release |
+| Artifact | The thing you ship; for us, the Docker image |
+| Service account | A robot identity for automation (GitHub Actions uses one on Day 2) |
 
-### 3.2 Kill Chain Walkthrough
+---
 
-Every attack tends to follow the same seven steps:
+## Troubleshooting
 
-          **  *Recon → Weaponize → Deliver → Exploit → Installation → C2 → Actions on Objectives***
-
-![image.png](image%207.png)
-
-![image.png](image%208.png)
-
-![image.png](image%209.png)
-
-![image.png](image%2010.png)
-
-![image.png](image%2011.png)
-
-![image.png](image%2012.png)
-
-![image.png](image%2013.png)
-
-| Attack Stage | Defensive Control |
+| Problem | Fix |
 | --- | --- |
-| **Reconnaissance** | Limit public info exposure (LinkedIn oversharing, exposed metadata) |
-| **Weaponization** | Can't be blocked directly (happens off-network), but threat intel feeds help predict incoming techniques |
-| **Delivery** | Email filtering, spam gateways, USB port controls |
-| **Exploitation** | Patch management, endpoint hardening |
-| **Installation** | EDR/antivirus, application allowlisting |
-| **Command & Control (C2)** | Network monitoring, DNS filtering, egress traffic restrictions |
-| **Actions on Objectives** | Data loss prevention (DLP), backups, incident response plan |
+| `docker` not recognised | Open a new terminal. Still failing? Restart the computer and check Docker Desktop is installed and running |
+| `Cannot connect to the Docker daemon` | Open Docker Desktop and wait for the steady whale. On Windows, check WSL 2 is installed and virtualization is on in the BIOS |
+| Docker blocked on a work laptop | Company policy may block it. Pair with someone whose setup works |
+| `docker build` is very slow | It's downloading the base image. Next time, pre-pull: `docker pull python:3.12-slim` |
+| `port is already allocated` | Something already uses 8080. `docker ps`, then `docker stop <id>`, or use `-p 8081:8080` |
+| Game won't load at localhost:8080 | Check you used `-p 8080:8080` and the container is running (`docker ps`) |
+| `COPY failed: file not found` | You're in the wrong folder. `cd cloud-quest` (the folder `git clone` created) first |
+| `gcloud` not recognised | Open a new terminal. On Windows, re-run the installer with "add to PATH" ticked |
+| `gcloud auth login` opens no browser | Run `gcloud auth login --no-launch-browser` and follow the link |
+| No billing account after signing in | Finish the free trial at cloud.google.com/free, or pair for Day 2 |
+| Card rejected | Don't burn lab time on it. Pair for Day 2 |
+| `git clone` fails | Check the link in the chat and that you copied all of it |
 
-*Attackers don't need to win every stage, defenders just need to break the chain at one link.*
+---
 
-### 3.3 Career Paths
+## Ready for Day 2?
 
-| Path | Day-to-day |
-| --- | --- |
-| Pen-tester / Red teamer | Actively attacks systems (legally) to find gaps |
-| SOC Analyst / Blue teamer | Monitors, detects, and responds to real-time threats |
-| GRC | Ensures policies, audits, and compliance are met |
+- [ ] `docker run hello-world` works
+- [ ] `gcloud auth login` works
+- [ ] Google Cloud free trial is active (or I know who I'm pairing with)
+- [ ] `git clone` works (Day 2 starts by cloning the meme generator app)
+- [ ] I played Cloud Quest in a container and posted my score 🎮
 
-*Different day-to-day, same mission: keeping the organization safe.*
-
-## 4. Web Application Security: OWASP Top 10
-
-**Web apps are the #1 attack surface:** always on, always public, and running on huge, messy codebases. 
-
-### 4.1 OWASP Top 5
-
-| Vulnerability | In one line |
-| --- | --- |
-| **Injection (SQLi)** | Sneaking commands into a data query |
-| **Broken Authentication** | Weak or bypassable login systems |
-| **Cross-Site Scripting (XSS)** | Tricking a browser into running attacker code |
-| **Broken Access Control** | Getting access to things you shouldn't see |
-| **Security Misconfiguration** | Default passwords, exposed settings, unpatched servers |
-
-### 4.2 SQL Injection, Conceptually
-
-**Expected query:**`SELECT * FROM users WHERE user='bob' AND pass='1234'`
-
-**Attacker input in the password field:** `' OR '1'='1` 
-
-**What the database actually runs:**`SELECT * FROM users WHERE user='bob' AND pass='' OR '1'='1'`
-
-Since `'1'='1'` is always true, the login check passes - no valid password needed.
-
-![image.png](image%2014.png)
-
-### 4.3 XSS, Conceptually
-
--Tricking the browser into running someone else's script instead of trusting the page. Instead of stealing data from the *server*, XSS targets whoever's *viewing* the page.
-
-#### Your Browser Is Already a Hacking Tool
-
-- **Inspect Element / View Source:** see the raw code behind any page.
-- **Network tab:** watch every request a page makes, including hidden ones.
-
-No installs needed, recon starts with tools already built into Chrome/Firefox.
-
-![image.png](image%2015.png)
-
-### 4.4 Cookies & Sessions
-
-A stolen session token = a stolen identity. If an attacker grabs your session cookie, they don't need your password, they just *become* you to the website.
-
-#### HTTPS / TLS
-
-The padlock icon only proves the connection is **encrypted,** not that the site is **trustworthy**. Phishing sites can (and do) have valid padlocks too.
-
-## 5. Social Engineering & Human Hacking
-
-**Why humans get targeted:** it's cheaper and scales better than trying to break firewalls.
-
-### 5.1 Four Tactics:
-
-| Tactic | What it looks like |
-| --- | --- |
-| **Phishing** | Fake emails designed to steal credentials or info |
-| **Pretexting** | Attacker invents a fake scenario/identity to gain trust ("IT support calling about your account") |
-| **Baiting** | A "free" USB drive or download left somewhere tempting |
-| **Tailgating** | Walking into a secure building right behind someone with access |
-
-### 5.2 Anatomy of a Phishing Email
-
-- **Spoofed sender:** looks like a real address, one letter off.
-- **Urgency:** "Act now or your account will be suspended".
-- **Mismatched links:** hover before you click; the display text lies
-
-![image.png](image%2016.png)
-
-## 6. Conclusion
-
-| Major Topics Covered | The one thing to remember |
-| --- | --- |
-| Fundamentals | Security = Confidentiality + Integrity + Availability. Vulnerability ≠ threat ≠ risk ≠ exploit. |
-| Red vs. Blue | Attackers need *one* way in. Defenders need to cover *all* of them. |
-| Web App Security | Most hacks aren't genius. They're one missed patch or one unescaped input (SQLi/XSS). |
-| Social Engineering | Humans get breached more than firewalls do. It's cheaper and faster. |
-
-**`Security isn't a product, it's a mindset.** The Equifax breach wasn't caused by a lack of tools, it was one unpatched update. Today you learned to think like both the person trying to break in, and the person trying to stop them.`
+**See you tomorrow, when your container goes live on the internet.** 🚀

@@ -1,262 +1,415 @@
 ---
 title: "Day 2"
-description: "Apply Day 1 cybersecurity concepts in a guided web application security exercise."
+description: "Host your own application using concepts from the first session!"
 ---
 
-Yesterday, you learned the vocabulary and mindset of cybersecurity. Today, you use them.
 
-You will investigate a fictional company called **MegaCorp**, test the small web application built for this workshop, and then switch to the defender's seat to explain what happened. Every activity is authorized, isolated, and designed for this exercise.
+# Day 2 — Student Guide: Ship an AI Meme Generator to Google Cloud
 
-<Warning title="Stay inside the lab">
-  Only test the MegaCorp application provided by your instructor. Do not scan, probe, or submit payloads to any other website, account, or network.
-</Warning>
+**What you'll build today:** a small web app (upload a photo → AI writes a caption → you get a meme) and take it all the way from your laptop to a **live public URL** on Google Cloud — then make it deploy itself with GitHub Actions.
 
-## 1. Your mission
+[![Get the app code — AI Meme Generator](https://img.shields.io/badge/%F0%9F%93%A6%20Get%20the%20app%20code-AI%20Meme%20Generator-2ea44f?style=for-the-badge)](https://github.com/kalyani-2024/ai-meme-generator)
 
-You have been hired to perform a short, ethical assessment before MegaCorp launches a new employee portal. Your objective is not to cause damage. Your objective is to answer four questions:
+---
 
-1. What information does MegaCorp expose before a user logs in?
-2. Can the employee login be bypassed?
-3. What data becomes visible after login, and why is it sensitive?
-4. How could a defender detect and prevent the activity?
+## What you need
 
-### What you need
+- **Docker Desktop** running (the whale icon in your tray is steady, not animating)
+- **Google Cloud CLI** (`gcloud`), **Git**, and **VS Code** installed — get the CLI from [cloud.google.com/sdk/docs/install](https://cloud.google.com/sdk/docs/install)
+- A **Google Cloud account with billing turned on** (the free trial is fine; if you don't have one, pair up with someone who does)
+- The workshop repo **cloned** to your machine — [the AI Meme Generator app](https://github.com/kalyani-2024/ai-meme-generator) (`git clone https://github.com/kalyani-2024/ai-meme-generator.git`)
+- A free **Gemini API key** — you'll create it in the setup step below
 
-- A browser with developer tools
-- The MegaCorp URL supplied by your instructor
-- The worksheet or notes area provided for the workshop
-- Curiosity, patience, and a habit of recording evidence
+Quick check that your tools are ready:
 
-You do not need to install tools or interact with a real company.
-
-### The two-mode experiment
-
-MegaCorp has two instructor-controlled modes. The default **vulnerable** mode preserves the unsafe behavior so you can observe and explain each finding. **Hardened** mode applies the first round of fixes so you can repeat the same tests and verify the difference.
-
-| Mode | Login | Directory search | Portal data |
-| --- | --- | --- | --- |
-| **Vulnerable** | Uses unsafe string-built SQL | Returns search input without escaping | Displays the seeded password hashes |
-| **Hardened** | Uses parameterized SQL and rejects the bypass | Escapes the search output | Hides password hashes and adds defensive response headers |
-
-The hardened mode is a teaching toggle, not a complete production security program. Real systems also need secure password hashing, secret management, authorization checks, rate limiting, MFA, centralized logging, and automated security tests.
-
-## 2. Day 1 recap: the concepts you will use
-
-Use this section as a quick reference rather than rereading the entire first session.
-
-### Security fundamentals
-
-| Concept | Remember this | How it appears today |
-| --- | --- | --- |
-| **Confidentiality** | Only authorized people should see data. | The portal exposes employee records after a login bypass. |
-| **Integrity** | Data should not be changed without authorization. | An unsafe input can alter how an application interprets a request. |
-| **Availability** | Systems should remain usable. | Safe testing means you do not delete data or disrupt the lab. |
-| **Vulnerability** | A weakness in a system. | An input field trusts data it should validate or encode. |
-| **Threat** | Something capable of exploiting a weakness. | An attacker, script, or malicious request can use the flaw. |
-| **Risk** | The likelihood and impact of exploitation. | A public login flaw is more serious when it reveals sensitive records. |
-| **Exploit** | The technique used to take advantage of a weakness. | You will demonstrate the lab's SQL injection and reflected XSS flaws. |
-
-### The attacker and defender mindsets
-
-An attacker needs one path into a system. A defender must reduce every realistic path and detect what gets through.
-
-| Red-team question | Blue-team question |
-| --- | --- |
-| What can I learn without logging in? | Is this information necessary to expose? |
-| Where does user input enter the application? | Is input validated before it reaches a query or page? |
-| What can I access after one successful action? | Are permissions and data access limited by role? |
-| What evidence would I leave behind? | Which logs, alerts, and controls would reveal it? |
-
-### The web security concepts
-
-- **SQL injection (SQLi):** untrusted input changes the meaning of a database query.
-- **Cross-site scripting (XSS):** untrusted input is returned to a browser as executable content.
-- **Authentication:** proves who a user is. A login bypass breaks this control.
-- **Authorization:** decides what an authenticated user may access. A valid login should not automatically expose everything.
-- **Cookies and sessions:** keep a browser associated with a logged-in user. A stolen session token can represent that user's identity.
-- **Hashing:** transforms a password into a one-way value for storage. It is not encryption and should not be treated as reversible.
-
-### The Kill Chain
-
-Today follows a small version of the same sequence:
-
-**Reconnaissance → Exploitation → Actions on objectives → Detection and response**
-
-The full Kill Chain from Day 1 also includes weaponization, delivery, installation, and command and control. Those stages happen outside this intentionally small lab. The important habit is to connect each action to the stage it represents and ask where a defender could break the chain.
-
-## 3. Understand the application before testing it
-
-The MegaCorp exercise is organized as a simple path:
-
-**Public homepage → exposed clues → `/login` → `/portal` → directory search → user records → `/portal/activity`**
-
-The application is deliberately small so that you can follow cause and effect:
-
-1. The public pages provide reconnaissance clues.
-2. The login demonstrates unsafe query construction.
-3. The portal shows the impact of a successful login.
-4. The directory search demonstrates reflected XSS.
-5. The user records connect data exposure to password hygiene.
-6. The activity log and CSV let you replay the attack from a defender's perspective.
-
-Use `/logout` between runs when you need to clear the demo session. The activity log is sanitized and disposable; it is not a substitute for centralized production logging.
-
-<Info>
-  For each checkpoint, record the URL or feature, the input you tested, the result, the security concept involved, and one recommended defense. Do not record or reuse credentials outside the lab.
-</Info>
-
-## 4. Checkpoint one: reconnaissance
-
-Reconnaissance means learning about a target before attempting exploitation. Start with normal browser features:
-
-1. Open the MegaCorp homepage.
-2. Use **View Page Source** or **Inspect**.
-3. Read the HTML comments and note what they reveal about the application.
-4. Open the **About** page and look for naming patterns.
-5. Visit `/robots.txt` on the MegaCorp host and record any disclosed paths.
-
-### Pause and predict
-
-Before opening the login page, discuss:
-
-- Which clues are useful to an attacker?
-- Which clues are merely untidy documentation?
-- What should MegaCorp remove, restrict, or monitor?
-
-**Day 1 connection:** this is reconnaissance in the Kill Chain and an example of attack-surface exposure. Public information can make later exploitation easier without a single vulnerability being triggered.
-
-## 5. Checkpoint two: test the login safely
-
-Open `/login`. In **vulnerable** mode, enter the following instructor-approved input in the **username** field and leave the password blank or enter any value:
-
-```text
-' OR '1'='1' --
+```bash
+docker run hello-world      # Docker works
+gcloud version              # Google Cloud CLI installed
+git --version               # Git installed
 ```
 
-The application should log you in as the first matching demo user, `admin`, and show **ACCESS GRANTED**. Use this exact payload only against the authorized MegaCorp lab.
+---
 
-The login is designed to demonstrate SQL injection in a controlled environment. A normal login check might look like this:
+## Set your variables once
 
-```sql
-SELECT * FROM users
-WHERE username = 'bob' AND password = '1234';
-```
+Your **project ID** must be **globally unique**, so add your initials and a few digits where you see the placeholders. Paste this block into your terminal at the start — every later command reuses it.
 
-In vulnerable mode, raw form values are inserted into the query:
-
-```sql
-SELECT * FROM users
-WHERE username = '{username}' AND password = '{password}';
-```
-
-### What happened?
-
-The application treated part of the input as SQL syntax instead of as ordinary data. A condition that should have checked a specific password was changed into a condition that evaluates as true.
-
-**Day 1 connection:** this is injection and broken authentication. The correct defenses are parameterized queries, server-side input handling, least privilege for the database account, rate limiting, and useful security logging. Escaping alone is not a complete fix.
-
-### Blue-team pause
-
-Write down:
-
-- What event should be logged?
-- What repeated attempts would look suspicious?
-- What should the application return to the user without revealing implementation details?
-
-## 6. Checkpoint three: measure the impact
-
-After the lab grants access, open `/portal` and inspect the Employee Portal without changing anything.
-
-Record:
-
-- Which fields are visible?
-- Which roles exist?
-- Is a password hash present?
-- Does the account see more data than its role requires?
-- What would happen if this were a real employee database?
-
-This is the point where a small login flaw becomes a confidentiality and privacy incident. The technical exploit is only one part of the risk; the exposed data and excessive access are the impact.
-
-**Day 1 connection:** this is an action on objectives. Least privilege, access control, data minimization, database permissions, and monitoring reduce the blast radius.
-
-## 7. Checkpoint four: see reflected XSS
-
-The portal's **Directory Search** feature reflects search text into the response without safely encoding it. In vulnerable mode, enter this harmless demonstration input:
-
-```html
-<script>alert(1)</script>
-```
-
-Observe whether the browser executes the input or displays it as ordinary text. Stop after the demonstration; do not attempt to steal cookies, access another person's browser, or send data anywhere.
-
-### Why a popup matters
-
-The popup is a visible proof that the browser interpreted input as code. In a real application, the same class of flaw could be used to manipulate a page or target a user's session.
-
-**Day 1 connection:** XSS targets the browser viewing the page, while SQL injection targets the server-side query. Output encoding, safe templating, a strong Content Security Policy, and secure cookie settings help reduce the risk.
-
-## 8. Checkpoint five: hashes are not passwords
-
-The portal contains password hashes so you can compare two outcomes:
-
-- A weak, common password may be found quickly in a precomputed lookup.
-- A long, unique passphrase may not be found in that lookup.
-
-This is a demonstration of password strength, not a license to crack real credentials. Use only the sample values provided for the exercise and never upload personal or real organizational hashes to a public service.
-
-The app seeds two fake classroom values:
-
-| Account | MD5 value to test | Expected result |
-| --- | --- | --- |
-| `admin` | `482c811da5d5b4bc6d497ffa98491e38` | Found quickly in the lookup |
-| `f.hassan` | `2facae4090a05fbdc79d890284e97ab3` | Not found in the lookup |
-
-Do not present or reuse the seeded plaintext values as real credentials. The values exist only to make the contrast visible during the workshop.
-
-### What defenders should change
-
-- Store passwords with a slow, modern password-hashing function such as Argon2id, bcrypt, or scrypt.
-- Use a unique salt for every password.
-- Encourage long, unique passphrases and block known-compromised passwords.
-- Add multi-factor authentication and rate limiting.
-- Protect the database and alert on unusual access.
-
-**Day 1 connection:** attacker tooling such as password guessing is answered by MFA, password policy, secure hashing, and monitoring.
-
-## 9. Blue-team debrief: rebuild the timeline
-
-After the attacks, open `/portal/activity`. The Analyst Activity Log contains sanitized, in-memory events from the current run. You can also download `/portal/activity.csv` for a spreadsheet exercise. The toy log intentionally omits secrets and keeps only the last 100 events; it is not a production monitoring design.
-
-Review the sample logs and find the requests associated with your test. Then map them to controls.
-
-| Evidence from the exercise | Attack stage | Control that could help |
-| --- | --- | --- |
-| HTML comments, naming patterns, and `robots.txt` | Reconnaissance | Minimize public details and review exposure regularly |
-| Repeated unusual login input | Exploitation | Parameterized queries, validation, WAF rules, and alerting |
-| A successful login followed by broad record access | Actions on objectives | Least privilege, authorization checks, and database monitoring |
-| Script-like input returned by directory search | Exploitation | Output encoding, safe templates, and Content Security Policy |
-| A weak hash found in a lookup | Credential access | Strong hashing, unique salts, MFA, and password screening |
-
-<Callout>
-  You do not need to block every request perfectly. You need enough prevention, detection, and response to break the attack chain before sensitive data is lost.
-</Callout>
-
-## 10. Checkpoint six: harden and replay
-
-This is the most important comparison in the exercise. After completing the vulnerable run, stop and restart the app in hardened mode:
-
+**PowerShell (Windows):**
 ```powershell
-$env:MEGACORP_MODE = "hardened"
+$PROJECT   = "meme-workshop-<yourinitials>-<4digits>"   # 6-30 chars: lowercase letters, digits, hyphens
+$REGION    = "me-central1"
+$REPO      = "meme-repo"
+$SERVICE   = "meme-generator"
+$IMAGE     = "ai-meme-generator"
+$IMAGE_URI = "$REGION-docker.pkg.dev/$PROJECT/$REPO/${IMAGE}:v1"
+```
+
+**Bash (macOS / Linux / WSL):**
+```bash
+PROJECT="meme-workshop-<yourinitials>-<4digits>"
+REGION="me-central1"; REPO="meme-repo"
+SERVICE="meme-generator"; IMAGE="ai-meme-generator"
+IMAGE_URI="$REGION-docker.pkg.dev/$PROJECT/$REPO/${IMAGE}:v1"
+```
+
+> If a command later fails, 90% of the time it's a typo in a name or a variable you forgot to set. Check here first. If you change `$PROJECT`, re-run the `$IMAGE_URI` line too.
+
+---
+
+## Setup — your project and your AI key
+
+### Sign in and create today's project
+
+```bash
+gcloud auth login                       # sign in (opens your browser)
+gcloud projects create $PROJECT         # if the ID is taken, change the digits
+gcloud config set project $PROJECT
+
+gcloud billing accounts list            # copy your ACCOUNT_ID
+gcloud billing projects link $PROJECT --billing-account=<ACCOUNT_ID>
+
+gcloud services enable run.googleapis.com artifactregistry.googleapis.com secretmanager.googleapis.com
+```
+
+> A **project** is a labelled box that holds everything you create today. Delete the box at the end and it all goes.
+
+### Get a free Gemini API key
+
+1. Go to [aistudio.google.com](https://aistudio.google.com) and sign in.
+2. Click **Get API key → Create API key**.
+3. Copy the key and keep it somewhere safe for now. It's a **secret** — never paste it into code or Git.
+
+> ⚠️ Keep the project AI Studio suggests for the key. **Don't** create it in your workshop project — that project has billing on, so Gemini calls there would be charged instead of free.
+
+---
+
+## Part 1 — Containerise the app
+
+### 1a. Run it locally first (no Docker)
+
+```bash
+cd ai-meme-generator
+pip install -r requirements.txt
 python app.py
 ```
 
-Repeat the same login and search tests:
+Open **http://localhost:8080**. The page loads and says "AI not configured yet" — that's expected, we haven't given it a key. Stop it with `Ctrl+C`.
 
-1. The SQL injection now produces a normal login failure because the query uses parameterized values.
-2. The XSS input appears as text because the search term is escaped.
-3. The portal no longer displays password hashes.
-4. The response includes defensive headers such as `Content-Security-Policy`, `X-Content-Type-Options`, and `Referrer-Policy`.
+> This only works because your laptop happens to have the right Python and packages installed. That's the "works on my machine" problem — which is exactly what a container fixes.
 
-Record the result in the same worksheet. A control is easier to understand when you can show that the original test no longer succeeds.
+### 1b. Write the Dockerfile
 
-**Day 1 gave you the concepts. Day 2 gives you the evidence. The professional skill is connecting the two.**
+Create a file named **`Dockerfile`** (no extension) in the project folder.
+
+```dockerfile
+# Start from a small official Python image
+FROM python:3.12-slim
+
+# Work inside this folder in the image
+WORKDIR /app
+
+# Copy ONLY requirements first so this layer caches and installs don't re-run on every code change
+COPY requirements.txt .
+
+# RUN happens at BUILD time — installs packages into the image
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the rest of the app (code + fonts + samples)
+COPY . .
+
+# Document the port the app listens on
+EXPOSE 8080
+
+# CMD happens at CONTAINER START time — runs the app
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "app:app"]
+```
+
+Key things to remember:
+- **`RUN` vs `CMD`** — `RUN` runs while *building* the image (install stuff). `CMD` runs when the container *starts* (run the app).
+- **Requirements copied before the code** — layers are cached top to bottom, so dependencies don't reinstall every time you tweak code.
+- **No API key anywhere** — secrets never go inside the image. We add the key later, at run time.
+
+### 1c. Build the image
+
+```bash
+docker build -t ai-meme-generator:v1 .
+```
+
+> **On an Apple Silicon Mac (M1/M2/M3/M4)?** Use `docker build --platform linux/amd64 -t ai-meme-generator:v1 .` instead — Cloud Run needs `amd64` images.
+
+Watch each instruction become a **layer**. Build again after a small edit and you'll see some layers say `CACHED`.
+
+### 1d. Run the container (with the AI key)
+
+Paste your Gemini key:
+
+```powershell
+# PowerShell
+docker run -d -p 8080:8080 `
+  -e GEMINI_API_KEY="<your-gemini-key>" `
+  -e MEME_STYLE="classic" `
+  ai-meme-generator:v1
+```
+
+```bash
+# bash
+docker run -d -p 8080:8080 \
+  -e GEMINI_API_KEY="<your-gemini-key>" \
+  -e MEME_STYLE="classic" \
+  ai-meme-generator:v1
+```
+
+Open **http://localhost:8080**, upload a photo, click **Make Meme**. 🎉
+
+> `-p 8080:8080` means `host:container`. The `-e` flags inject config at run time — same image, different behaviour.
+
+### 1e. Useful container commands
+
+```bash
+docker ps                 # what's running (shows the container ID/name)
+docker logs <container>   # see the app's logs
+docker stop <container>   # stop it , containers are disposable
+```
+
+> Stop and start a fresh container and your meme is **gone**. Containers don't keep files. To save memes you'd use cloud storage (like Google Cloud Storage).
+
+---
+
+## Part 2 — Push the image to Artifact Registry
+
+### 2a. Create the registry repository
+
+```bash
+gcloud artifacts repositories create $REPO `
+  --repository-format=docker `
+  --location=$REGION
+```
+
+*(Bash: swap the backtick line-breaks for `\`.)*
+
+### 2b. Log in, tag, and push
+
+```bash
+# Let Docker use your gcloud login for this registry (answer Y if asked)
+gcloud auth configure-docker "$REGION-docker.pkg.dev"
+
+# Tag the image so it points at YOUR registry (full name = region-host/project/repo/image:tag)
+docker tag ${IMAGE}:v1 $IMAGE_URI
+
+# Push it to the cloud
+docker push $IMAGE_URI
+```
+
+> We use an explicit tag `:v1`, never `:latest` — so you always know exactly what's deployed.
+
+### 2c. See it in the console
+
+Go to [console.cloud.google.com](https://console.cloud.google.com) (check your project is selected at the top) → **Artifact Registry → `meme-repo` → `ai-meme-generator`**. Your image is now sitting in the cloud.
+
+---
+
+## Part 3 — Deploy to Cloud Run (the live URL)
+
+### 3a. First deploy (no key yet)
+
+```bash
+gcloud run deploy $SERVICE `
+  --image $IMAGE_URI `
+  --region $REGION `
+  --port 8080 `
+  --allow-unauthenticated `
+  --set-env-vars "MEME_STYLE=classic"
+```
+
+> **Cloud Run** runs your container for you — no servers to set up. `--port 8080` tells it which port the app listens on (like `-p` in Docker). `--allow-unauthenticated` makes the URL public. When nobody's using it, it scales to zero and costs nothing.
+
+It prints a **Service URL**. Open it — the page says "AI not configured yet". Let's fix that.
+
+### 3b. Store your AI key in Secret Manager
+
+```powershell
+# PowerShell
+$GEMINI_KEY = "<your-gemini-key>"
+$GEMINI_KEY | gcloud secrets create gemini-api-key --data-file=-
+
+$PROJECT_NUMBER = gcloud projects describe $PROJECT --format="value(projectNumber)"
+gcloud secrets add-iam-policy-binding gemini-api-key `
+  --member="serviceAccount:$PROJECT_NUMBER-compute@developer.gserviceaccount.com" `
+  --role="roles/secretmanager.secretAccessor"
+```
+
+```bash
+# bash
+GEMINI_KEY="<your-gemini-key>"
+printf "%s" "$GEMINI_KEY" | gcloud secrets create gemini-api-key --data-file=-
+
+PROJECT_NUMBER=$(gcloud projects describe $PROJECT --format="value(projectNumber)")
+gcloud secrets add-iam-policy-binding gemini-api-key \
+  --member="serviceAccount:$PROJECT_NUMBER-compute@developer.gserviceaccount.com" \
+  --role="roles/secretmanager.secretAccessor"
+```
+
+> **Secret Manager** is a locked vault for secrets. The second command gives your Cloud Run app — and only your app — permission to read this one secret.
+
+### 3c. Attach the secret to your app
+
+```bash
+gcloud run services update $SERVICE --region $REGION `
+  --set-secrets "GEMINI_API_KEY=gemini-api-key:latest"
+```
+
+> Notice: the secret key was **never** in your Dockerfile, image, or Git. Cloud Run hands it to your app at run time.
+
+### 3d. Open your live app
+
+```bash
+gcloud run services describe $SERVICE --region $REGION --format="value(status.url)"
+```
+
+Open that URL, upload a photo, and make a meme. Now it's a real public website serving *your* container. 🚀
+
+> If the first load takes a few seconds, that's a **cold start** — Cloud Run starting your app up from zero.
+
+### 3e. Change the humor without rebuilding
+
+```bash
+gcloud run services update $SERVICE --region $REGION --update-env-vars "MEME_STYLE=sarcastic"
+```
+
+Make another meme — same image, funnier captions. Each change creates a new **revision**:
+
+```bash
+gcloud run revisions list --service $SERVICE --region $REGION
+```
+
+### 3f. Handy Cloud Run commands
+
+```bash
+# see recent logs
+gcloud run services logs read $SERVICE --region $REGION --limit 30
+
+# limit how many copies can run (also caps your bill)
+gcloud run services update $SERVICE --region $REGION --max-instances 3
+```
+
+In the console, explore **Cloud Run → `meme-generator`**: **Metrics** (requests and instance count), **Revisions**, **Logs**, and **Edit & deploy new revision → Variables & Secrets** (your key shows as a Secret Manager reference, never the raw value).
+
+---
+
+## Part 4 — CI/CD with GitHub Actions
+
+The idea: instead of running all those commands by hand, **push code → it builds and deploys itself.**
+
+The pipeline lives in `.github/workflows/deploy.yml` and does exactly what you did manually: checkout → build image → push to Artifact Registry → deploy to Cloud Run.
+
+To run it on your own fork later, first create a robot account (a **service account**) for GitHub with only the permissions it needs:
+
+```powershell
+# PowerShell
+gcloud iam service-accounts create gha-deployer --display-name "GitHub Actions deployer"
+$SA = "gha-deployer@$PROJECT.iam.gserviceaccount.com"
+foreach ($ROLE in "roles/run.developer", "roles/artifactregistry.writer", "roles/iam.serviceAccountUser") {
+  gcloud projects add-iam-policy-binding $PROJECT --member="serviceAccount:$SA" --role=$ROLE --condition=None
+}
+gcloud iam service-accounts keys create gha-key.json --iam-account=$SA
+```
+
+```bash
+# bash
+gcloud iam service-accounts create gha-deployer --display-name "GitHub Actions deployer"
+SA="gha-deployer@$PROJECT.iam.gserviceaccount.com"
+for ROLE in roles/run.developer roles/artifactregistry.writer roles/iam.serviceAccountUser; do
+  gcloud projects add-iam-policy-binding $PROJECT --member="serviceAccount:$SA" --role=$ROLE --condition=None
+done
+gcloud iam service-accounts keys create gha-key.json --iam-account=$SA
+```
+
+Then add these under **GitHub → Settings → Secrets and variables → Actions**:
+
+| Secret | Value |
+|---|---|
+| `GCP_SA_KEY` | the entire contents of `gha-key.json` |
+| `GCP_PROJECT_ID` | your project ID |
+| `GCP_REGION` | `me-central1` |
+| `CLOUD_RUN_SERVICE` | `meme-generator` |
+
+> Delete `gha-key.json` from your laptop once it's in GitHub, and **never commit it** — it's a password for your project.
+
+Then make a change, commit, and push:
+
+```bash
+git add .
+git commit -m "Change page colour"
+git push origin main
+```
+
+Watch it run in the **Actions** tab, then refresh your live URL — the change is there, and you never ran a deploy command. That's CI/CD.
+
+---
+
+## Part 5 — Clean up (IMPORTANT — do this so you don't get billed)
+
+One command deletes everything you created today:
+
+```bash
+gcloud projects delete $PROJECT --quiet
+```
+
+> This removes the registry, the Cloud Run service, the secret, and the GitHub robot account in one go. Check in the console under **IAM & Admin → Manage resources** that your project shows *Pending deletion*. Billing stops straight away.
+
+Your Gemini key lives in AI Studio's own free project, so it costs nothing if you keep it. To delete it, go to **aistudio.google.com → API keys**.
+
+---
+
+## Troubleshooting
+
+| Problem | Likely cause | Fix |
+|---|---|---|
+| `docker build` can't connect | Docker Desktop not running | Start it; wait for the steady whale icon |
+| `gcloud` not recognised | CLI just installed | Open a new terminal, re-paste your variables |
+| `localhost:8080` won't load | wrong port mapping | use `-p 8080:8080` |
+| Page says "AI not configured yet" | key not set | add `-e GEMINI_API_KEY=...` / attach the secret (step 3c) |
+| "AI call failed: ... valid API key" | wrong key or typo | re-copy the key from AI Studio |
+| "AI call failed: ... 429" | free-tier rate limit | wait a minute and try again |
+| `projects create` fails | ID taken / bad characters | lowercase letters, digits, hyphens; change the digits |
+| "billing must be enabled" / "API not used in project" | billing not linked / APIs off | re-run the billing link and `services enable` commands |
+| `docker push` → denied | Docker not linked to gcloud | re-run `gcloud auth configure-docker $REGION-docker.pkg.dev` |
+| Deploy fails: "failed to start and listen on the port" | wrong port | use `--port 8080` |
+| Logs show `exec format error` | built on an Apple Silicon Mac | rebuild with `--platform linux/amd64`, push, redeploy |
+| "Permission denied on secret" | app can't read the secret | re-run the `add-iam-policy-binding` command in 3b |
+| URL shows 403 Forbidden | service isn't public | redeploy with `--allow-unauthenticated` |
+
+---
+
+## Quick command reference
+
+```bash
+# Setup
+gcloud auth login
+gcloud projects create $PROJECT
+gcloud config set project $PROJECT
+gcloud billing projects link $PROJECT --billing-account=<ACCOUNT_ID>
+gcloud services enable run.googleapis.com artifactregistry.googleapis.com secretmanager.googleapis.com
+
+# Containers
+docker build -t ai-meme-generator:v1 .
+docker run -d -p 8080:8080 ai-meme-generator:v1
+docker ps / docker logs <id> / docker stop <id>
+
+# Artifact Registry
+gcloud artifacts repositories create $REPO --repository-format=docker --location=$REGION
+gcloud auth configure-docker $REGION-docker.pkg.dev
+docker tag ai-meme-generator:v1 $IMAGE_URI
+docker push $IMAGE_URI
+
+# Cloud Run
+gcloud run deploy $SERVICE --image $IMAGE_URI --region $REGION --port 8080 --allow-unauthenticated
+gcloud run services update $SERVICE --region $REGION --set-secrets "GEMINI_API_KEY=gemini-api-key:latest"
+gcloud run services update $SERVICE --region $REGION --update-env-vars "MEME_STYLE=sarcastic"
+gcloud run services logs read $SERVICE --region $REGION --limit 30
+
+# Clean up
+gcloud projects delete $PROJECT --quiet
+```
+
+**Nice work — you took an AI app from your laptop to a public cloud service, and never put a secret in your code.**

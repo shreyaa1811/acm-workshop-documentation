@@ -1,0 +1,500 @@
+---
+title: "Day 1"
+description: "Learn the concepts behind AI agents, including tools, loops, memory, patterns, and LangGraph."
+---
+
+# Agentic AI Workshop
+
+**ACM BPDC · Online · 2 days × 2 hours**
+
+| Day | Focus | Format |
+|---|---|---|
+| **Day 1** | How AI agents work | Concepts + live demos by the speaker (nothing to install) |
+| **Day 2** | Build an AI app-builder agent with LangGraph | Hands-on coding |
+
+![Workshop arc](assets/08-workshop-arc.png)
+
+> **The big idea:** an AI agent is an LLM running in a loop. It thinks about what to do, uses a tool, looks at the result and repeats until the job is done.
+> On Day 1 we learn each piece of that loop. On Day 2 we build an agent that turns one sentence into a working web app.
+
+---
+
+# How Agents Work (120 min)
+
+**Day 1 is concepts only.** Participants watch, ask questions in chat and answer polls. All coding is on Day 2. The speaker runs every demo live over screen share.
+
+| # | Topic | Time |
+|---|---|---|
+| 0 | Welcome & intro | 5 |
+| 1 | From chatbots to agents | 15 |
+| 2 | LLMs: the agent's brain | 15 |
+| 3 | Structured output & tool calling | 20 |
+| 4 | The agent loop | 15 |
+| – | Break | 5 |
+| 5 | Memory & context | 15 |
+| 6 | Agent design patterns | 15 |
+| 7 | LangGraph basics | 10 |
+| 8 | Safety, evals & wrap-up | 5 |
+
+---
+
+## 0. Welcome & Intro (5 min)
+
+- Quick intro of the speakers and ACM BPDC
+- **Poll:** "Have you used ChatGPT / Claude / Gemini?" and "Have you ever called an AI API from code?"
+- **The plan:**
+  - Today: understand how agents work
+  - Tomorrow: build one
+- **What you'll build tomorrow:** you type *"Build me a habit tracker app"* and your agent plans it, writes the code, checks it and fixes its own mistakes.
+- Ask questions in chat anytime. There are Q&A breaks after each section.
+
+---
+
+## 1. From Chatbots to Agents (15 min)
+
+### What is "agentic" AI?
+
+- A **chatbot** answers your question and stops.
+- An **agent** is given a *goal*. It works out the steps, takes actions with tools, checks what happened and keeps going until the goal is done.
+- **Analogy:**
+  - A chatbot is like asking a friend for directions.
+  - An agent is like a taxi driver. You give the destination and they handle the route, traffic and detours.
+
+### The three levels of AI apps
+
+![Autonomy spectrum](assets/01-autonomy-spectrum.png)
+
+| Level | Who decides the steps? | Example |
+|---|---|---|
+| **1. Single LLM call** | Nobody, it's one step | "Summarise this paragraph" |
+| **2. Workflow** | **Your code** decides the steps, and the LLM fills them in | Email → classify → draft reply → send |
+| **3. Agent** | **The LLM** decides the steps at runtime | "Fix the failing tests in this repo" |
+
+### Workflow vs agent: when to use which
+
+- **Use a workflow** when you already know the steps. It's predictable, cheaper and easier to debug.
+- **Use an agent** when the steps depend on what happens along the way, like research, debugging or open-ended tasks.
+- **Golden rule:** use the *simplest* option that works. More autonomy means more cost and more ways to go wrong.
+
+### Agents you've already seen
+
+| Agent | What it does |
+|---|---|
+| **Claude Code / Cursor** | Reads your codebase, edits files, runs tests, fixes errors |
+| **Lovable / Bolt** | Builds full web apps from a prompt |
+| **Deep research tools** | Search the web many times, read sources, write a report |
+| **Customer-support agents** | Look up orders, issue refunds, escalate to humans |
+
+### Where the AI engineer fits
+
+- AI engineers usually **don't train models**. They build the system **around** the model:
+  - **Tools:** what the agent can do
+  - **Loop:** how it keeps going and when it stops
+  - **Memory:** what it remembers
+  - **Guardrails:** what it's *not* allowed to do
+  - **Evals:** how we know it's actually good
+
+**Chat question:** "Name one boring task you'd love an agent to do for you."
+
+---
+
+## 2. LLMs: The Agent's Brain (15 min)
+
+We only need enough LLM background to understand agents.
+
+### Traditional ML vs generative AI
+
+| Traditional ML | Generative AI (LLMs) |
+|---|---|
+| Predicts a label or number | Generates text, code, plans |
+| "Is this email spam?" | "Write a reply to this email" |
+| Trained for one task | One model, many tasks |
+
+### Foundation models
+
+- Huge models pretrained on internet-scale text by providers: **OpenAI, Anthropic, Google, Meta**, plus open-weight models.
+- Training costs millions of dollars, so **we don't train them, we use them** through an API. This is called **inference**.
+- There are two ways to run them:
+  - **Hosted API:** easy and powerful, but you pay per use
+  - **Local model:** private and free to run, but needs a good GPU
+- Our workshop uses **Groq**, a hosted API that is very fast and has a free tier.
+
+### How an LLM works (the simple version)
+
+- Text is split into **tokens**, chunks of roughly ¾ of a word.
+- The model predicts the **next token**, again and again, to build up a response.
+- **Context window:** the maximum amount of text the model can see at once. It's like its working desk.
+- **Key insight: LLMs have no memory.** Every API call starts from zero. If the model "remembers" your earlier messages, that's because the app *sent the whole conversation again*.
+- **This is why agents need state and memory** (Section 5).
+
+### Anatomy of an API call
+
+```python
+messages = [
+    {"role": "system", "content": "You are a helpful coding assistant."},
+    {"role": "user",   "content": "Write a function to reverse a string."},
+]
+response = llm.invoke(messages)
+```
+
+- **System message:** sets the role, the rules and the output format
+- **User message:** the actual request
+- **Assistant message:** the model's reply
+
+### Prompting basics
+
+A good prompt has four parts:
+1. **Instructions:** what to do
+2. **Context:** background the model needs
+3. **Examples:** show the format or style you want
+4. **Output format:** "Reply in JSON", "Use bullet points", etc.
+
+### Temperature
+
+- **Low (0–0.3):** consistent, focused output. Best for agents and code.
+- **High (0.7–1.0):** more creative and varied output. Good for brainstorming.
+
+**Live demo:** send the same prompt at temperature 0 and at 1 and compare the outputs.
+
+### Key takeaway
+
+> The LLM is the **brain**. It can reason, but on its own it **can't act** and **can't remember**. The next sections fix both problems.
+
+---
+
+## 3. Structured Output & Tool Calling (20 min)
+
+**This is the most important section of the day. An agent is basically tool calling in a loop.**
+
+### Part A: Structured output
+
+**The problem:** LLMs reply in free text, which code can't use reliably.
+
+```
+"Sure! The app should be called TaskMaster and it needs
+ a few features like adding tasks and..."     ← hard for code to use
+```
+
+**The fix:** ask for **JSON in a fixed shape** (a *schema*).
+
+```json
+{
+  "name": "TaskMaster",
+  "features": ["add tasks", "mark done", "delete tasks"],
+  "files": ["index.html", "style.css", "app.js"]
+}
+```
+
+- We define the shape in Python with **Pydantic**:
+
+```python
+from pydantic import BaseModel
+
+class Plan(BaseModel):
+    name: str
+    features: list[str]
+    files: list[str]
+```
+
+- Then we **validate** the response. If the JSON is broken, retry or raise an error.
+- **Why it matters for agents:** each step's output becomes the next step's input, so it has to be reliable.
+- **Day 2 link:** our planner agent returns a `Plan` exactly like this.
+
+### Part B: Tool calling
+
+**The problem:** an LLM can only produce text. It can't check the weather, read a file or send an email.
+
+**The fix:** give it **tools**.
+
+1. You **describe** your tools to the model: a name, a description and the inputs.
+2. The model reads the user's request and **asks** for a tool call, e.g. `get_weather(city="Dubai")`.
+3. **Your code** runs the tool. The model never runs anything itself.
+4. You **send the result back** to the model.
+5. The model either calls another tool or gives the final answer.
+
+![Tool calling flow](assets/02-tool-calling.png)
+
+**Analogy:** the LLM is a manager who can't use a computer. It tells an assistant (your code) "look up the weather in Dubai". The assistant does it and reports back, and then the manager decides what's next.
+
+### Examples of tools
+
+| Tool | What it lets the agent do |
+|---|---|
+| Web search | Get current information |
+| Calculator | Do exact maths (LLMs are bad at arithmetic!) |
+| Database query | Look up real data |
+| Read / write file | Work with code and documents |
+| Run code | Test what it wrote |
+| Send email / API call | Take actions in the real world |
+
+### Live demo: tool calling in 10 lines
+
+```python
+from langchain_core.tools import tool
+from langchain_groq import ChatGroq
+
+@tool
+def get_weather(city: str) -> str:
+    """Get today's weather for a city."""
+    return "31°C, 5% chance of rain"
+
+llm = ChatGroq(model="openai/gpt-oss-120b").bind_tools([get_weather])
+msg = llm.invoke("Do I need an umbrella in Dubai today?")
+print(msg.tool_calls)
+# → [{'name': 'get_weather', 'args': {'city': 'Dubai'}, ...}]
+```
+
+- Point out that the model didn't answer the question. It **asked to use a tool**.
+- Then run the tool, send the result back and show the final answer.
+
+### Writing good tools
+
+- **Clear name:** `search_orders`, not `tool1`
+- **Description that says *when* to use it:** the model reads it to decide
+- **Few, simple inputs**
+- **Helpful error messages:** "City not found, try a full city name" helps the model recover
+
+### Bonus: MCP (Model Context Protocol)
+
+- A **standard way** to connect tools to any AI agent, like USB for AI tools.
+- Someone builds an MCP server for GitHub, Slack or Google Drive once, and any agent can use it.
+- Worth exploring after the workshop.
+
+**Poll:** "Which tool would you give your first agent?" (search / files / email / calendar)
+
+---
+
+## 4. The Agent Loop (15 min)
+
+### ReAct: Reason + Act
+
+The pattern most agents follow:
+
+1. **Think:** "What should I do next?"
+2. **Act:** call a tool
+3. **Observe:** read the result
+4. **Repeat** until the goal is done
+
+![Agent loop](assets/03-agent-loop.png)
+
+### Walkthrough: "Build me a calculator web app"
+
+| Step | Agent thinks | Agent does | Sees |
+|---|---|---|---|
+| 1 | "I need a plan first" | Makes a plan | 3 files: HTML, CSS, JS |
+| 2 | "Start with the HTML" | `write_file("index.html")` | File created ✅ |
+| 3 | "Now the logic" | `write_file("app.js")` | File created ✅ |
+| 4 | "Let me check it works" | `check_code()` | ❌ Button ID doesn't match |
+| 5 | "Fix the ID" | `write_file("app.js")` | File updated ✅ |
+| 6 | "Check again" | `check_code()` | ✅ All good |
+| 7 | "Done!" | Returns the result | — |
+
+Notice that **step 4 found a mistake and the agent fixed it on its own.** That's what makes it agentic.
+
+### Planning
+
+- **Plan-and-execute:** make the full plan first, then do each step. Good for building things.
+- **Step-by-step (ReAct):** decide one step at a time. Good for exploring and research.
+- Day 2 uses **plan-and-execute**.
+
+### Stop conditions
+
+An agent without stop conditions can run forever and burn money. Always have:
+
+- ✅ **Goal reached:** the model gives a final answer
+- 🔢 **Max steps:** e.g. stop after 10 loops
+- 💰 **Budget limit:** max tokens or cost
+- ❌ **Error it can't recover from**
+- 🙋 **A human says stop**
+
+### Errors are feedback
+
+- If a tool fails, **don't crash. Send the error back to the model.**
+- "File not found" → the agent can try a different path.
+- This is how agents fix themselves.
+
+### Common ways agents fail
+
+| Failure | Example | Fix |
+|---|---|---|
+| Infinite loop | Keeps "fixing" the same thing | Max steps |
+| Wrong tool | Searches the web for a local file | Better tool descriptions |
+| Hallucination | Uses a file or package that doesn't exist | Verify before using |
+| Gives up early | Says "done" when it isn't | A reviewer step |
+
+**Chat question:** "What could go wrong if an agent could send emails with no stop conditions?"
+
+---
+
+## ☕ Break (5 min)
+
+---
+
+## 5. Memory & Context (15 min)
+
+### Context is everything
+
+The agent only knows what's in its **context window** at each step. Deciding what to put there is called **context engineering**.
+
+![Context window](assets/04-context-memory.png)
+
+What goes in:
+- **System prompt:** role, rules, format
+- **Tool descriptions:** what it can do
+- **Retrieved knowledge:** relevant docs or files
+- **Long-term memory:** saved facts about the user
+- **Conversation and tool history:** what has happened so far
+- **Current task**
+
+### Two kinds of memory
+
+| | Short-term memory | Long-term memory |
+|---|---|---|
+| **What** | Everything in *this* task so far | Facts saved *across* sessions |
+| **Example** | "I already wrote index.html" | "This user prefers dark mode" |
+| **Stored in** | The message list / graph state | A database or memory store |
+
+### State vs memory
+
+- **State** = the structured data your program passes between steps (plan, files, errors).
+- **Memory** = what you choose to show the model.
+- On Day 2, the agent's **state** carries the plan and the list of files from step to step.
+
+### RAG (Retrieval-Augmented Generation)
+
+**The problem:** the model doesn't know your private or recent data, like your college handbook or your company docs.
+
+**How RAG works:**
+1. Split documents into small **chunks**.
+2. Turn each chunk into an **embedding**, a list of numbers that captures its meaning.
+3. Store them in a **vector database**.
+4. When a question comes in, find the chunks with the **most similar meaning**.
+5. Add those chunks to the prompt, and the model answers using them.
+
+**Analogy:** an open-book exam. The model doesn't memorise the book. It looks up the right page first.
+
+### Agentic RAG
+
+- Normal RAG **always** searches once.
+- Agentic RAG makes search **a tool**. The agent decides *if* it needs to search, *what* to search for, and whether to **search again** if the results are weak.
+
+### RAG vs fine-tuning
+
+| | RAG | Fine-tuning |
+|---|---|---|
+| **Use for** | Knowledge: facts, docs, data | Behaviour: style, tone, format |
+| **Updating** | Just add new documents | Retrain the model |
+| **Cost** | Low | Higher |
+
+### Context limits are real
+
+- Too much context makes the model slower, more expensive and more confused.
+- Send **only what's needed** for the current step.
+- **Day 2 link:** our coder only sees the file it's working on plus a list of the other file names, not the entire project.
+
+---
+
+## 6. Agent Design Patterns (15 min)
+
+These are the building blocks behind almost every agent product.
+
+![Design patterns](assets/05-design-patterns.png)
+
+| Pattern | How it works | Real example |
+|---|---|---|
+| **Prompt chaining** | A fixed series of LLM steps, each using the last one's output | Outline → draft → proofread |
+| **Routing** | A classifier sends each request to the right specialist | Support bot: billing vs tech vs general |
+| **Orchestrator–workers** | A boss agent splits the work, workers do the parts, results get combined | Research agent searching 5 topics in parallel |
+| **Evaluator–optimizer** | One LLM creates, another checks and gives feedback, and it loops until good | Code writer + code reviewer ← **we build this on Day 2** |
+| **Human-in-the-loop** | Pause and ask a human before risky actions | "Approve before sending this email?" |
+
+### Multi-agent systems
+
+- Several **specialist agents**, each with its own prompt and tools. For example: Planner, Coder, Reviewer.
+- ✅ **Pros:** each agent has one clear job, and prompts are simpler
+- ❌ **Cons:** more API calls, more cost, and information can get lost in hand-offs
+- **Tip:** start with one agent and split only when it's clearly struggling.
+
+**Quiz:** "Which patterns does a Lovable-style app builder use?"
+*Answer:* prompt chaining (plan → code) + a loop + evaluator–optimizer (review and fix) + human-in-the-loop (you approve changes).
+
+---
+
+## 7. LangGraph Basics (10 min)
+
+### LangChain vs LangGraph
+
+- **LangChain:** building blocks like model wrappers, tools and prompts
+- **LangGraph:** connects those blocks into a **graph** that can loop, branch and keep state
+
+**Why not just write a big `while` loop?** A graph gives you:
+- clear control flow you can draw and debug
+- easy loops, retries and branches
+- saved progress (checkpoints)
+- built-in pauses for human approval
+
+### Four core concepts
+
+![LangGraph concepts](assets/06-langgraph-concepts.png)
+
+| Concept | What it is | Example |
+|---|---|---|
+| **State** | Shared data every node can read and update | `{"prompt": ..., "plan": ..., "files": ...}` |
+| **Node** | A Python function that does one job | `planner(state)` → returns the plan |
+| **Edge** | Fixed "go here next" | planner → coder |
+| **Conditional edge** | A function that *chooses* the next node | reviewer → coder (if errors) or END (if OK) |
+
+### What it looks like in code
+
+```python
+from langgraph.graph import StateGraph, END
+
+graph = StateGraph(dict)
+graph.add_node("planner", planner)
+graph.add_node("coder", coder)
+graph.add_node("reviewer", reviewer)
+
+graph.add_edge("planner", "coder")
+graph.add_edge("coder", "reviewer")
+graph.add_conditional_edges(
+    "reviewer",
+    lambda s: "coder" if s["errors"] else END,
+)
+graph.set_entry_point("planner")
+agent = graph.compile()
+```
+
+### Tomorrow's graph
+
+![Day 2 agent](assets/07-day2-agent.png)
+
+### Useful extras
+
+- **Checkpointer:** saves state after every step, so you can resume or add memory
+- **`interrupt()`:** pauses for human approval
+- **`recursion_limit`:** a built-in brake on infinite loops
+
+---
+
+## 8. Safety, Evals & Wrap-up (5 min)
+
+### A demo is not a product
+
+| Concern | What to do |
+|---|---|
+| **Guardrails** | Validate outputs, limit what tools can access, cap steps and cost |
+| **Sandboxing** | Run agent actions in a safe, isolated space |
+| **Prompt injection** | Text the agent reads (websites, files) can hide instructions, so treat it as data, never as commands |
+| **Tracing** | Log every step and tool call (LangSmith, Langfuse) |
+| **Evals** | Test on many tasks and measure the success rate |
+| **Cost** | Every loop step is another API call, and it adds up |
+
+### Day 1 recap
+
+**LLM → Structured output → Tools → Agent loop → Memory → Patterns → LangGraph → Safety**
+
+### Before Day 2
+
+Finish the [Day 2 setup](/week3/day2) and post in the chat once it works.
+
+---

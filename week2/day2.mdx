@@ -1,0 +1,457 @@
+---
+title: "Day 2"
+description: "Build a data workflow from ingestion and analysis through machine learning predictions."
+---
+
+## Session 1 — Setup
+
+Before we begin, tick off each item:
+
+- [ ] Power BI Desktop/Web App works
+- [ ] A Colab notebook with a Runtime
+- [ ] `dataset.csv` is saved somewhere easy to find
+
+## Quick recap of Day 1
+
+- **Dimensions** slice the data; **measures** are the numbers.
+- **Features** go in; the **target** comes out.
+- Always evaluate on a **test set**.
+
+---
+
+## Session 2 — Data Ingestion with Power BI
+
+## Part 1: Load and clean with Power Query
+
+Power Query is the **ETL** tool inside Power BI: **E**xtract, **T**ransform, **L**oad.
+
+<Steps>
+  <Step title="Extract: load the CSV">
+    **Home** â†’ **Get data** â†’ **Text/CSV** â†’ select `dataset.csv` â†’ **Transform Data** (not Load).
+  </Step>
+  <Step title="Transform: remove the junk index column">
+    If there is a first column called `Column1` or `Unnamed: 0`, right-click it â†’ **Remove**. It is only a row number.
+  </Step>
+  <Step title="Transform: fix data types">
+    Click the small icon in each column header. Set `popularity` to **Whole Number**; `danceability`, `energy`, `valence`, `acousticness`, `tempo` and similar to **Decimal Number**; `explicit` to **True/False**.
+  </Step>
+  <Step title="Transform: remove blank rows">
+    Select `track_name` â†’ **Home** â†’ **Remove Rows** â†’ **Remove Blank Rows**. A handful of tracks have no name.
+  </Step>
+  <Step title="Transform: remove duplicates">
+    Select `track_id` â†’ right-click â†’ **Remove Duplicates**. Why? The same track appears once per genre it belongs to.
+  </Step>
+  <Step title="Add the target column">
+    **Add Column** â†’ **Custom Column**, name it `viral_label`, formula:
+
+    ```text
+    if [popularity] >= 58.0 then "Viral" else "Not viral"
+    ```
+  </Step>
+  <Step title="Load">
+    **Home** â†’ **Close & Apply**.
+  </Step>
+</Steps>
+
+{/* ILLUSTRATION I-16: Before/after Power Query screenshot pair with a draggable divider. Annotate each step number on the "applied steps" panel. */}
+
+<Note>
+  The threshold `58.0` is a starting choice. Facilitators: check what share of tracks it labels viral on this data and adjust (Session 4 shows how). The aim is a minority class large enough for the model to learn from.
+</Note>
+
+## Part 2: Build the dashboard
+
+You will build this dashboard in a **starter template** 
+
+{/* ILLUSTRATION I-17: Screenshot of the finished dashboard (one dark page: Spotify logo, Genre Family and Explicit slicers across the top, then OVERVIEW, GENRES and SOUND panels). */}
+
+The template already has the dark page, the green panel shapes, the **OVERVIEW**, **GENRES** and **SOUND** titles, and the theme. Open the file first, then load the data into it using Part 1. You only need to add the charts.
+
+<Note>
+  The theme is applied inside the template, so you don't need to import a theme file. If a chart appears with a white background, ask your instructor for the theme file and import it from **Design**â†’ **Themes** â†’ **Browse for themes**.
+</Note>
+
+### Step 1: Create two helper columns
+
+A helper column is a new column we build from existing ones. Right-click the table in the **Data** pane â†’ **New column**, and add each of these.
+
+**Explicitness.** The `explicit` column holds True/False, which looks awkward on a slicer. This turns it into readable text:
+
+```text
+Explicitness = IF('dataset'[explicit] = TRUE(), "Explicit", "Not Explicit")
+```
+
+**Genre Family.** There are 114 genres, far too many for a slicer. This groups them into 8 families:
+
+```text
+Genre Family =
+SWITCH(
+    TRUE(),
+    'dataset'[track_genre] IN {"pop", "indie-pop", "power-pop", "synth-pop", "k-pop", "j-pop", "cantopop", "mandopop", "pop-film", "j-idol"}, "Pop",
+    'dataset'[track_genre] IN {"rock", "alt-rock", "alternative", "hard-rock", "psych-rock", "punk-rock", "punk", "grunge", "emo", "goth", "industrial", "ska", "rockabilly", "rock-n-roll", "j-rock", "indie", "guitar", "metal", "heavy-metal", "black-metal", "death-metal", "metalcore", "grindcore", "hardcore"}, "Rock & Metal",
+    'dataset'[track_genre] IN {"hip-hop", "r-n-b", "soul", "funk", "groove", "trip-hop", "gospel"}, "Hip-hop & R&B",
+    'dataset'[track_genre] IN {"edm", "electro", "electronic", "dance", "club", "house", "deep-house", "chicago-house", "progressive-house", "techno", "minimal-techno", "detroit-techno", "trance", "hardstyle", "dubstep", "drum-and-bass", "breakbeat", "idm", "dub", "garage", "disco", "j-dance", "party"}, "Electronic & Dance",
+    'dataset'[track_genre] IN {"latin", "latino", "reggaeton", "salsa", "samba", "pagode", "sertanejo", "forro", "mpb", "brazil", "tango", "spanish", "reggae", "dancehall", "afrobeat", "world-music", "indian", "french", "german", "swedish", "turkish", "iranian", "malay"}, "Latin & World",
+    'dataset'[track_genre] IN {"acoustic", "ambient", "chill", "sleep", "study", "new-age", "piano", "sad", "singer-songwriter", "songwriter", "folk", "country", "bluegrass", "honky-tonk"}, "Chill & Acoustic",
+    'dataset'[track_genre] IN {"jazz", "blues", "classical", "opera", "show-tunes"}, "Jazz & Classical",
+    "Other"
+)
+```
+
+<Note>
+  If your table isn't called `dataset`, replace `'dataset'` with its name. Any genre not listed falls into **Other**.
+</Note>
+
+### Step 2: Overview panel
+
+**Three cards.** Add three **Card** visuals side by side:
+
+- **Count of** `track_id`, renamed "Tracks"
+- **Average of** `popularity` (not Sum), renamed "Avg.pop"
+- A **Viral %** measure. **Modeling** â†’ **New measure**:
+
+```text
+Viral Share = DIVIDE(COUNTROWS(FILTER('dataset', 'dataset'[popularity] >= 58)), COUNTROWS('dataset'))
+```
+
+Format it as a percentage.
+
+**Donut chart.** Under the cards, add a **Donut chart**. **Legend:** `viral_label`. **Values:** **Count of** `track_id`. Show the labels as percentages, and set Viral to green and Not viral to grey.
+
+### Step 3: Genres panel
+
+Add a **Clustered bar chart**. **Y-axis:** `track_genre`. **X-axis:** **Average of** `popularity`. In the **Filters** pane set **Top N** to 10 by that value, and turn on **Data labels**.
+
+### Step 4: Sound panel
+
+**Energy vs Valence.** Add a **Scatter chart** with these fields:
+
+| Well | Field |
+| --- | --- |
+| **X Axis** | Average of `energy` |
+| **Y Axis** | Average of `valence` (the "happiness" of a track) |
+| **Details** | `track_genre` |
+| **Size** | Count of `track_id` |
+| **Legend** | `Genre Family` |
+| **Play Axis** | _leave empty_ |
+
+Each bubble is a **genre**, coloured by family.
+
+**Sound Profile.** Under the scatter plot add a **Clustered column chart**. **X-axis:** `viral_label`. **Y-axis:** add four fields, each set to **Average**: `energy`, `danceability`, `valence`, `acousticness`. This compares viral and non-viral tracks across four audio features, and it is the best evidence for your hypotheses in the next session.
+
+### Step 5: Slicers
+
+Add two **Slicers** in the framed boxes at the top of the page:
+
+- **Genre Family:** use the `Genre Family` column.
+- **Explicit:** use the `Explicitness` column, so it shows "Explicit" and "Not Explicit".
+
+Hold **Ctrl** and click two genre families. Every visual updates, which is the point of a dashboard.
+
+<Check>
+  Your dashboard should have three cards, a donut, a top-10 genre bar chart, an energy vs valence scatter plot, a sound profile column chart, and two slicers that filter everything.
+</Check>
+
+---
+
+## Session 3 — Deciphering Insights
+
+## How to read a dashboard
+
+Ask these four questions of any chart:
+
+1. **What is being measured?** (Check the axes and the aggregation: average, sum, count.)
+2. **What is being compared?** (Which dimension slices it?)
+3. **Where are the clusters, gaps and outliers?**
+4. **What would I want to ask next?**
+
+## Form a hypothesis
+
+A good hypothesis names a **feature**, a **direction** and ideally a **size**, and is based on what you actually see.
+
+<Tabs>
+  <Tab title="Template">
+    *When I filter to ______, the viral share is ______ compared with ______, which suggests that ______ matters for going viral.*
+  </Tab>
+  <Tab title="Example">
+    *When I filter to the "pop" genre, the viral share is higher than for "classical", which suggests genre matters for going viral.*
+  </Tab>
+  <Tab title="Weak vs strong">
+    **Weak:** "Energy matters."
+
+    **Strong:** "In the sound profile chart, viral tracks have higher average danceability than non-viral ones."
+  </Tab>
+</Tabs>
+
+export const HypothesisBuilder = () => {
+  const features = ["danceability", "energy", "loudness", "speechiness", "acousticness", "instrumentalness", "liveness", "valence", "tempo"];
+  const visuals = ["the sound profile chart", "the energy vs valence scatter plot", "the genre bar chart", "the viral share card", "the genre family slicer"];
+  const [f, setF] = useState("");
+  const [d, setD] = useState("");
+  const [v, setV] = useState("");
+  const [g, setG] = useState("");
+  const sel = "ml-2 px-2 py-1 rounded-md border border-zinc-300 dark:border-zinc-600 bg-transparent";
+  const ready = f && d && v;
+  const checks = [[f, "Names a feature"], [d, "Gives a direction"], [v, "Points to evidence"]];
+  return (
+    <div className="my-6 rounded-xl border border-zinc-200 dark:border-zinc-700 p-4">
+      <p className="font-semibold m-0">Try it: build a hypothesis</p>
+      <p className="text-sm mt-1">Fill in the blanks using what you see on your dashboard.</p>
+      <div className="grid gap-2 text-sm">
+        <label>Feature
+          <select className={sel} value={f} onChange={(e) => setF(e.target.value)}>
+            <option value="">choose...</option>
+            {features.map((x) => <option key={x} value={x}>{x}</option>)}
+          </select>
+        </label>
+        <label>Viral tracks tend to have
+          <select className={sel} value={d} onChange={(e) => setD(e.target.value)}>
+            <option value="">choose...</option>
+            <option value="higher">higher</option>
+            <option value="lower">lower</option>
+            <option value="about the same">about the same</option>
+          </select>
+          values than non-viral ones
+        </label>
+        <label>Evidence from
+          <select className={sel} value={v} onChange={(e) => setV(e.target.value)}>
+            <option value="">choose...</option>
+            {visuals.map((x) => <option key={x} value={x}>{x}</option>)}
+          </select>
+        </label>
+        <label>Genre I filtered to (optional)
+          <input className={sel} value={g} onChange={(e) => setG(e.target.value)} placeholder="e.g. pop" />
+        </label>
+      </div>
+      <div className="mt-3 rounded-lg px-3 py-2 text-sm border border-zinc-200 dark:border-zinc-700">
+        {ready
+          ? <span><strong>My hypothesis:</strong> {g ? "In " + g + ", v" : "V"}iral tracks tend to have {d} {f} than non-viral ones, based on {v}.</span>
+          : <span className="opacity-70">Your sentence appears here once you've picked a feature, a direction and your evidence.</span>}
+      </div>
+      <p className="mt-2 mb-0 text-sm">{checks.map(([ok, label]) => <span key={label} className="mr-3" style={{ color: ok ? "#1DB954" : "inherit", opacity: ok ? 1 : 0.6 }}>{ok ? "âœ“" : "â—‹"} {label}</span>)}</p>
+      <p className="m-0 mt-1 text-xs opacity-70">Write your sentence down. After the model runs, you'll check it against the feature importance chart.</p>
+    </div>
+  );
+};
+
+<HypothesisBuilder />
+
+<Warning>
+**Correlation is not causation.** If viral songs have high energy, that doesn't prove that raising a song's energy makes it viral. A dashboard shows *patterns*, not *reasons*.
+</Warning>
+
+---
+
+## Session 4 — ML Prediction Engine
+
+Open a new Colab notebook. Paste each block into its own cell and run it with **Shift + Enter**.
+
+## Step 1: Load the data
+
+Click the folder icon on the left of Colab, then the upload icon, and upload `dataset.csv`.
+
+```python
+import pandas as pd
+
+df = pd.read_csv("/content/dataset.csv")
+print(df.shape)
+df.head()
+```
+
+## Step 2: Clean it (the same steps as Power Query)
+
+```python
+df = df.drop(columns=["Unnamed: 0"], errors="ignore")  # row-number column
+df = df.dropna(subset=["track_name"])                  # remove blank rows
+df = df.drop_duplicates(subset="track_id")             # one row per track
+print(df.shape)
+```
+
+## Step 3: Define the target
+
+```python
+df["viral"] = (df["popularity"] >= 58).astype(int)
+print(df["viral"].mean())   # share of tracks labelled viral
+```
+
+<Note>
+Use the same threshold as in Power BI. If the printed share is extremely small (for example under 5%), lower the threshold so the model has enough viral examples to learn from.
+</Note>
+
+## Step 4: Pick features and split the data
+
+```python
+from sklearn.model_selection import train_test_split
+
+features = ["danceability", "energy", "loudness", "speechiness",
+            "acousticness", "instrumentalness", "liveness",
+            "valence", "tempo"]
+
+X = df[features]   # inputs
+y = df["viral"]    # target
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42, stratify=y
+)
+```
+
+## Step 5: Train the random forest
+
+```python
+from sklearn.ensemble import RandomForestClassifier
+
+model = RandomForestClassifier(
+    n_estimators=100, max_depth=12, class_weight="balanced",
+    random_state=42, n_jobs=-1
+)
+model.fit(X_train, y_train)
+```
+
+## Step 6: Check it on unseen data
+
+```python
+from sklearn.metrics import accuracy_score
+
+print("Train accuracy:", accuracy_score(y_train, model.predict(X_train)))
+print("Test accuracy: ", accuracy_score(y_test,  model.predict(X_test)))
+print("Guessing 'not viral' every time would score:", 1 - y_test.mean())
+```
+
+<Warning>
+Compare the last line to the test accuracy. If the model barely beats "always say not viral", it has found little signal. That is an honest and useful result: audio features alone only partly explain popularity. Also, if train accuracy is far above test accuracy, that is overfitting from Day 1.
+</Warning>
+
+{/* ILLUSTRATION I-19: Side-by-side bar of Train vs Test vs "always guess no" baseline accuracy, with a tooltip explaining each. */}
+
+## Step 7: Which features matter?
+
+```python
+import matplotlib.pyplot as plt
+
+importance = pd.Series(model.feature_importances_, index=features).sort_values()
+importance.plot(kind="barh", title="Feature importance")
+plt.show()
+```
+
+{/* ILLUSTRATION I-20: Feature importance chart next to the students' saved hypotheses from Session 3, so they can mark each hypothesis "supported / not supported". */}
+
+Compare this chart with the hypotheses you wrote. Did the model agree?
+
+## The experiment: be the business stakeholder
+
+```python
+def predict_viral(danceability, energy, loudness, speechiness,
+                  acousticness, instrumentalness, liveness, valence, tempo):
+    row = pd.DataFrame([[danceability, energy, loudness, speechiness,
+                         acousticness, instrumentalness, liveness,
+                         valence, tempo]], columns=features)
+    return model.predict_proba(row)[0][1]
+
+p = predict_viral(0.75, 0.80, -5.0, 0.05, 0.10, 0.0, 0.15, 0.70, 120)
+print(f"Chance of going viral: {p:.0%}")
+```
+
+Want sliders? Run this cell too:
+
+```python
+import ipywidgets as w
+
+w.interact(
+    lambda danceability=0.7, energy=0.7, loudness=-6.0, speechiness=0.05,
+           acousticness=0.2, instrumentalness=0.0, liveness=0.15,
+           valence=0.5, tempo=120:
+        print(f"Chance of going viral: {predict_viral(danceability, energy, loudness, speechiness, acousticness, instrumentalness, liveness, valence, tempo):.0%}"),
+    danceability=(0.0, 1.0, 0.05), energy=(0.0, 1.0, 0.05),
+    loudness=(-40.0, 0.0, 1.0), speechiness=(0.0, 1.0, 0.05),
+    acousticness=(0.0, 1.0, 0.05), instrumentalness=(0.0, 1.0, 0.05),
+    liveness=(0.0, 1.0, 0.05), valence=(0.0, 1.0, 0.05),
+    tempo=(40, 220, 5)
+)
+```
+
+{/* ILLUSTRATION I-21: Embedded web version of the slider panel (HTML) with a probability gauge, so students can play even if Colab is slow. */}
+
+### Iterate: push a variable to the extreme
+
+Set `danceability` to `0`, then `1`. Then try `energy = 0`, then `instrumentalness = 1`. Watch the probability.
+
+<Tip>
+Features with large swings have more influence on the model. Compare this with the importance chart. Do they match? Remember, though, that sliders can create combinations no real song has, so treat extremes as a way to understand the model rather than as advice for musicians.
+</Tip>
+
+---
+
+## Session 5 — Connecting BI and ML
+
+## Why connect them?
+
+Executives do not read Python scripts. They open a dashboard. For model results to change decisions, they need to appear where decision-makers already look.
+
+{/* ILLUSTRATION I-22: Loop diagram: Data â†’ Colab model â†’ predictions CSV â†’ Power BI dashboard â†’ decision â†’ new data. Each arrow clickable for one sentence of detail. */}
+
+## Step 1: Export predictions from Colab
+
+Add a column of predicted probabilities and download the file.
+
+```python
+df["predicted_viral_prob"] = model.predict_proba(df[features])[:, 1]
+
+from google.colab import files
+df[["track_id", "track_name", "track_genre", "popularity",
+    "viral", "predicted_viral_prob"]].to_csv("predictions.csv", index=False)
+files.download("predictions.csv")
+```
+
+## Step 2: Load into Power BI
+
+<Steps>
+  <Step title="Import the new file">
+    **Get data** â†’ **Text/CSV** â†’ `predictions.csv` â†’ **Load**.
+  </Step>
+  <Step title="Add a visual">
+    Create a bar chart: **Y** = `track_genre`, **X** = **Average of** `predicted_viral_prob`, Top 10.
+  </Step>
+  <Step title="Compare with reality">
+    Place it beside your earlier average-popularity bar chart. Where do predicted and actual rankings differ?
+  </Step>
+</Steps>
+
+{/* ILLUSTRATION I-23: Screenshot of the finished "actual vs predicted by genre" view, with the differences circled. */}
+
+## The enterprise reality
+
+In a real company the export step is automated: the model runs on a schedule, writes to a warehouse, and Power BI refreshes by itself. Analysts and executives interact only with the dashboard. Remember the **drift** from Day 1: someone still needs to monitor whether those predictions stay accurate.
+
+---
+
+## Session 6 — Cleanup and Next Steps
+
+## Save your work
+
+- In Power BI: **File** â†’ **Save as** â†’ keep your `.pbix` file.
+- In Colab: **File** â†’ **Save a copy in Drive**, and download your `predictions.csv`.
+
+## Where to go next
+
+<CardGroup cols={2}>
+  <Card title="Learn SQL" icon="database" href="https://sqlbolt.com">
+    The most useful single skill for any data role. SQLBolt is a free interactive intro.
+  </Card>
+  <Card title="Learn Python for data" icon="python" href="https://pandas.pydata.org/docs/getting_started/intro_tutorials/index.html">
+    The official pandas getting-started tutorials.
+  </Card>
+  <Card title="Machine learning course" icon="graduation-cap" href="https://www.kaggle.com/learn/intro-to-machine-learning">
+    Kaggle's free Intro to Machine Learning, using the same scikit-learn tools you used.
+  </Card>
+  <Card title="Power BI learning path" icon="chart-column" href="https://learn.microsoft.com/en-us/training/powerplatform/power-bi">
+    Microsoft Learn's free Power BI training, with a certification path.
+  </Card>
+</CardGroup>
+
+## Try it yourself
+
+- Change the viral threshold and see what happens to model accuracy.
+- Add `track_genre` as a feature. Does it help?
+- Try a different dataset on Kaggle and repeat the workflow.
+
+<Check>Thank you for taking part. Keep building!</Check>
