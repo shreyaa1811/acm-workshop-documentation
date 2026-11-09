@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="290" viewBox="0 0 960 290" role="img" aria-label="An image goes from laptop to registry to Cloud Run">
+<title>An image goes from laptop to registry to Cloud Run</title>
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="#475569"/>
+  </marker>
+</defs>
+<rect x="1" y="1" width="958" height="288" rx="14" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2"/>
+<g font-family="Segoe UI, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#0f172a">
+<text x="32" y="46" font-size="22" font-weight="bold" fill="#0f172a" text-anchor="start">Build, push, pull, run</text>
+<text x="32" y="72" font-size="14" font-weight="normal" fill="#475569" text-anchor="start">A registry is where images live so other machines (and the cloud) can use them.</text>
+<rect x="32" y="110" width="160" height="92" rx="10" fill="#ffffff" stroke="#475569" stroke-width="2"/>
+<text x="112.0" y="146" font-size="16" font-weight="bold" fill="#475569" text-anchor="middle">Your laptop</text>
+<text x="112.0" y="170" font-size="13" font-weight="normal" fill="#475569" text-anchor="middle">docker build</text>
+<rect x="282" y="110" width="180" height="92" rx="10" fill="#ffffff" stroke="#0d9488" stroke-width="2"/>
+<text x="372.0" y="146" font-size="16" font-weight="bold" fill="#0d9488" text-anchor="middle">Registry</text>
+<text x="372.0" y="170" font-size="13" font-weight="normal" fill="#475569" text-anchor="middle">Artifact Registry,</text>
+<text x="372.0" y="188" font-size="13" font-weight="normal" fill="#475569" text-anchor="middle">Docker Hub, ECR, ACR</text>
+<rect x="552" y="110" width="150" height="92" rx="10" fill="#ffffff" stroke="#1a73e8" stroke-width="2"/>
+<text x="627.0" y="146" font-size="16" font-weight="bold" fill="#1a73e8" text-anchor="middle">Cloud Run</text>
+<text x="627.0" y="170" font-size="13" font-weight="normal" fill="#475569" text-anchor="middle">pulls and runs it</text>
+<rect x="792" y="110" width="136" height="92" rx="10" fill="#ffffff" stroke="#188038" stroke-width="2"/>
+<text x="860.0" y="146" font-size="16" font-weight="bold" fill="#188038" text-anchor="middle">Public URL</text>
+<text x="860.0" y="170" font-size="13" font-weight="normal" fill="#475569" text-anchor="middle">https://...run.app</text>
+<line x1="194" y1="166" x2="278" y2="166" stroke="#475569" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="236.0" y="154" font-size="13" font-weight="bold" fill="#475569" text-anchor="middle">docker push</text>
+<line x1="464" y1="166" x2="548" y2="166" stroke="#475569" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="506.0" y="154" font-size="13" font-weight="bold" fill="#475569" text-anchor="middle">pull</text>
+<line x1="704" y1="166" x2="788" y2="166" stroke="#475569" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="746.0" y="154" font-size="13" font-weight="bold" fill="#475569" text-anchor="middle">serves</text>
+<path d="M32,222 v10 h160 v-10" fill="none" stroke="#475569" stroke-width="2"/>
+<text x="112" y="254" font-size="13" font-weight="bold" fill="#475569" text-anchor="middle">Day 1: you stop here</text>
+<path d="M282,222 v10 h646 v-10" fill="none" stroke="#1a73e8" stroke-width="2"/>
+<text x="605" y="254" font-size="13" font-weight="bold" fill="#1a73e8" text-anchor="middle">Day 2: the whole path, then automated</text>
+</g>
+</svg>

@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="340" viewBox="0 0 960 340" role="img" aria-label="Docker port mapping, correct and wrong">
+<title>Docker port mapping, correct and wrong</title>
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="#475569"/>
+  </marker>
+</defs>
+<rect x="1" y="1" width="958" height="338" rx="14" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2"/>
+<g font-family="Segoe UI, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#0f172a">
+<text x="32" y="46" font-size="22" font-weight="bold" fill="#0f172a" text-anchor="start">Port mapping: -p host:container</text>
+<text x="32" y="72" font-size="14" font-weight="normal" fill="#475569" text-anchor="start">A container is sealed off until you open a door from your laptop into it.</text>
+<rect x="32" y="92" width="896" height="104" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+<text x="52" y="118" font-size="13" font-weight="bold" fill="#475569" text-anchor="start">Your laptop</text>
+<rect x="52" y="130" width="200" height="46" rx="8" fill="#eef4fe" stroke="#1a73e8" stroke-width="2"/>
+<text x="152" y="159" font-size="14" font-weight="bold" fill="#1a73e8" text-anchor="middle">localhost:8080</text>
+<line x1="256" y1="153" x2="560" y2="153" stroke="#188038" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="408" y="144" font-size="14" font-family="Consolas, Menlo, monospace" font-weight="bold" fill="#188038" text-anchor="middle">-p 8080:8080</text>
+<rect x="566" y="114" width="342" height="70" rx="8" fill="#e6f4f1" stroke="#0d9488" stroke-width="2"/>
+<text x="582" y="138" font-size="14" font-weight="bold" fill="#0d9488" text-anchor="start">Container, port 8080</text>
+<text x="582" y="164" font-size="13" font-weight="normal" fill="#475569" text-anchor="start">app listens on 0.0.0.0:8080</text>
+<rect x="32" y="212" width="896" height="104" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+<text x="52" y="238" font-size="13" font-weight="bold" fill="#475569" text-anchor="start">Your laptop</text>
+<rect x="52" y="250" width="200" height="46" rx="8" fill="#eef4fe" stroke="#1a73e8" stroke-width="2"/>
+<text x="152" y="279" font-size="14" font-weight="bold" fill="#1a73e8" text-anchor="middle">localhost:8080</text>
+<line x1="256" y1="273" x2="560" y2="273" stroke="#c5221f" stroke-width="2.5" marker-end="url(#arrow)" stroke-dasharray="7 5"/>
+<text x="408" y="264" font-size="14" font-family="Consolas, Menlo, monospace" font-weight="bold" fill="#c5221f" text-anchor="middle">-p 8080:5000</text>
+<rect x="566" y="234" width="342" height="70" rx="8" fill="#e6f4f1" stroke="#0d9488" stroke-width="2"/>
+<text x="582" y="258" font-size="14" font-weight="bold" fill="#0d9488" text-anchor="start">Container, port 5000</text>
+<text x="582" y="284" font-size="13" font-weight="normal" fill="#c5221f" text-anchor="start">nothing listens on 5000</text>
+<text x="32" y="330" font-size="13" font-weight="normal" fill="#475569" text-anchor="start" font-style="italic">Second row: the app is fine, the door leads to the wrong room. Day 2 breaks it like this on purpose.</text>
+</g>
+</svg>

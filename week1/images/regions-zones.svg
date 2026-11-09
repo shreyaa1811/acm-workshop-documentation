@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="320" viewBox="0 0 960 320" role="img" aria-label="A region with three zones and nearby edge locations">
+<title>A region with three zones and nearby edge locations</title>
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="#475569"/>
+  </marker>
+</defs>
+<rect x="1" y="1" width="958" height="318" rx="14" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2"/>
+<g font-family="Segoe UI, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#0f172a">
+<text x="32" y="46" font-size="22" font-weight="bold" fill="#0f172a" text-anchor="start">Regions, zones and edge locations</text>
+<text x="32" y="72" font-size="14" font-weight="normal" fill="#475569" text-anchor="start">A region is a place. Zones are separate datacentres inside it. Edges sit close to users.</text>
+<rect x="32" y="100" width="560" height="190" rx="10" fill="#eef4fe" stroke="#1a73e8" stroke-width="2"/>
+<text x="52" y="128" font-size="16" font-weight="bold" fill="#1a73e8" text-anchor="start">Region: me-central1 (Doha)</text>
+<rect x="52" y="146" width="160" height="120" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+<text x="132" y="176" font-size="15" font-weight="bold" fill="#0f172a" text-anchor="middle">Zone a</text>
+<text x="132" y="198" font-size="13" font-weight="normal" fill="#475569" text-anchor="middle">its own datacentre,</text>
+<text x="132" y="216" font-size="13" font-weight="normal" fill="#475569" text-anchor="middle">power and cooling</text>
+<rect x="90" y="232" width="22" height="22" rx="3" fill="#1a73e8" opacity="0.75"/>
+<rect x="120" y="232" width="22" height="22" rx="3" fill="#1a73e8" opacity="0.75"/>
+<rect x="150" y="232" width="22" height="22" rx="3" fill="#1a73e8" opacity="0.75"/>
+<rect x="232" y="146" width="160" height="120" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+<text x="312" y="176" font-size="15" font-weight="bold" fill="#0f172a" text-anchor="middle">Zone b</text>
+<text x="312" y="198" font-size="13" font-weight="normal" fill="#475569" text-anchor="middle">its own datacentre,</text>
+<text x="312" y="216" font-size="13" font-weight="normal" fill="#475569" text-anchor="middle">power and cooling</text>
+<rect x="270" y="232" width="22" height="22" rx="3" fill="#1a73e8" opacity="0.75"/>
+<rect x="300" y="232" width="22" height="22" rx="3" fill="#1a73e8" opacity="0.75"/>
+<rect x="330" y="232" width="22" height="22" rx="3" fill="#1a73e8" opacity="0.75"/>
+<rect x="412" y="146" width="160" height="120" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+<text x="492" y="176" font-size="15" font-weight="bold" fill="#0f172a" text-anchor="middle">Zone c</text>
+<text x="492" y="198" font-size="13" font-weight="normal" fill="#475569" text-anchor="middle">its own datacentre,</text>
+<text x="492" y="216" font-size="13" font-weight="normal" fill="#475569" text-anchor="middle">power and cooling</text>
+<rect x="450" y="232" width="22" height="22" rx="3" fill="#1a73e8" opacity="0.75"/>
+<rect x="480" y="232" width="22" height="22" rx="3" fill="#1a73e8" opacity="0.75"/>
+<rect x="510" y="232" width="22" height="22" rx="3" fill="#1a73e8" opacity="0.75"/>
+<rect x="660" y="120" width="130" height="52" rx="10" fill="#fff7ec" stroke="#e37400" stroke-width="2"/>
+<text x="725" y="151" font-size="13" font-weight="bold" fill="#e37400" text-anchor="middle">Edge location</text>
+<line x1="658" y1="146" x2="596" y2="146" stroke="#e37400" stroke-width="2.5" marker-end="url(#arrow)" stroke-dasharray="6 4"/>
+<rect x="660" y="220" width="130" height="52" rx="10" fill="#fff7ec" stroke="#e37400" stroke-width="2"/>
+<text x="725" y="251" font-size="13" font-weight="bold" fill="#e37400" text-anchor="middle">Edge location</text>
+<line x1="658" y1="246" x2="596" y2="230" stroke="#e37400" stroke-width="2.5" marker-end="url(#arrow)" stroke-dasharray="6 4"/>
+<circle cx="880" cy="136" r="11" fill="#475569"/>
+<path d="M862,168 a18,16 0 0 1 36,0 z" fill="#475569"/>
+<line x1="860" y1="148" x2="794" y2="146" stroke="#475569" stroke-width="2.5" marker-end="url(#arrow)"/>
+<circle cx="880" cy="236" r="11" fill="#475569"/>
+<path d="M862,268 a18,16 0 0 1 36,0 z" fill="#475569"/>
+<line x1="860" y1="248" x2="794" y2="246" stroke="#475569" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="880" y="296" font-size="13" font-weight="bold" fill="#475569" text-anchor="middle">Users</text>
+</g>
+</svg>

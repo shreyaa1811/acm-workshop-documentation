@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="400" viewBox="0 0 960 400" role="img" aria-label="Career prospects: Cloud">
+<title>Career prospects: Cloud</title>
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="#475569"/>
+  </marker>
+</defs>
+<rect x="1" y="1" width="958" height="398" rx="14" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2"/>
+<g font-family="Segoe UI, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#0f172a">
+<text x="32" y="46" font-size="22" font-weight="bold" fill="#0f172a" text-anchor="start">Career prospects: Cloud</text>
+<text x="32" y="72" font-size="14" font-weight="normal" fill="#475569" text-anchor="start">Where the cloud fundamentals from this workshop can take you</text>
+<rect x="32" y="86" width="896" height="4" rx="2" fill="#1a73e8"/>
+<text x="32" y="122" font-size="13" font-weight="bold" fill="#1a73e8" text-anchor="start">ROLES</text>
+<rect x="32" y="134" width="440" height="66" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+<rect x="32" y="134" width="6" height="66" rx="3" fill="#1a73e8"/>
+<text x="52" y="161" font-size="16" font-weight="bold" fill="#0f172a" text-anchor="start">Cloud Engineer</text>
+<text x="52" y="184" font-size="13.5" font-weight="normal" fill="#475569" text-anchor="start">Builds and runs systems on AWS, Azure or Google Cloud</text>
+<rect x="32" y="210" width="440" height="66" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+<rect x="32" y="210" width="6" height="66" rx="3" fill="#1a73e8"/>
+<text x="52" y="237" font-size="16" font-weight="bold" fill="#0f172a" text-anchor="start">Solutions Architect</text>
+<text x="52" y="260" font-size="13.5" font-weight="normal" fill="#475569" text-anchor="start">Designs how the services fit together, for cost and scale</text>
+<rect x="32" y="286" width="440" height="66" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+<rect x="32" y="286" width="6" height="66" rx="3" fill="#1a73e8"/>
+<text x="52" y="313" font-size="16" font-weight="bold" fill="#0f172a" text-anchor="start">Cloud Security Engineer</text>
+<text x="52" y="336" font-size="13.5" font-weight="normal" fill="#475569" text-anchor="start">Owns identity, secrets, network rules and compliance</text>
+<text x="504" y="122" font-size="13" font-weight="bold" fill="#1a73e8" text-anchor="start">SKILLS EMPLOYERS ASK FOR</text>
+<circle cx="510" cy="145" r="3.5" fill="#1a73e8"/>
+<text x="524" y="150" font-size="14" font-weight="normal" fill="#0f172a" text-anchor="start">Linux and networking basics</text>
+<circle cx="510" cy="169" r="3.5" fill="#1a73e8"/>
+<text x="524" y="174" font-size="14" font-weight="normal" fill="#0f172a" text-anchor="start">One cloud in depth: IAM, compute, storage, networking</text>
+<circle cx="510" cy="193" r="3.5" fill="#1a73e8"/>
+<text x="524" y="198" font-size="14" font-weight="normal" fill="#0f172a" text-anchor="start">Scripting in Python or Bash</text>
+<circle cx="510" cy="217" r="3.5" fill="#1a73e8"/>
+<text x="524" y="222" font-size="14" font-weight="normal" fill="#0f172a" text-anchor="start">Reading a bill and keeping costs down</text>
+<text x="504" y="260" font-size="13" font-weight="bold" fill="#1a73e8" text-anchor="start">CERTIFICATIONS TO START WITH</text>
+<circle cx="510" cy="283" r="3.5" fill="#1a73e8"/>
+<text x="524" y="288" font-size="14" font-weight="normal" fill="#0f172a" text-anchor="start">AWS Cloud Practitioner, AZ-900 or Google Cloud Digital Leader</text>
+<circle cx="510" cy="307" r="3.5" fill="#1a73e8"/>
+<text x="524" y="312" font-size="14" font-weight="normal" fill="#0f172a" text-anchor="start">Then: AWS Solutions Architect Associate, AZ-104</text>
+<circle cx="510" cy="331" r="3.5" fill="#1a73e8"/>
+<text x="524" y="336" font-size="14" font-weight="normal" fill="#0f172a" text-anchor="start">or Google Associate Cloud Engineer</text>
+<text x="32" y="380" font-size="13" font-weight="normal" fill="#475569" text-anchor="start" font-style="italic">Pick one cloud and go deep. The ideas transfer, as the AWS / Azure / Google Cloud table shows.</text>
+</g>
+</svg>

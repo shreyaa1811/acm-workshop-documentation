@@ -5,58 +5,54 @@ description: "Build a foundation in cloud computing concepts"
 hideFooterPagination: true
 ---
 
-# Day 1 — Student Guide: Cloud, Containers and DevOps
+# Day 1: Cloud, Containers and DevOps
 
 **What you'll get out of today:** a mental map of the cloud (what it is, how AWS, Azure and Google Cloud compare, who is responsible for what), a working understanding of Docker, and a laptop that's ready for Day 2. At the end you'll **build a game into a container and play it** to prove your setup works.
 
-**Tomorrow (Day 2, with Kalyani):** you take an AI meme generator from your laptop to a live public URL on Google Cloud, then make it deploy itself with GitHub Actions.
 
-[![Get the game code — Cloud Quest](https://img.shields.io/badge/%F0%9F%8E%AE%20Get%20the%20game%20code-Cloud%20Quest-3d5afe?style=for-the-badge)](https://github.com/aaaditt/acm-cloud-devops-workshop)
+<p align="center">
+  <a href="https://github.com/aaaditt/acm-cloud-devops-workshop">
+    <img src="https://img.shields.io/badge/Get%20the%20game%20code-Cloud%20Quest-3d5afe?style=for-the-badge" alt="Cloud Quest repo" />
+  </a>
+</p>
 
 ---
 
 ## Contents
 
-1. [Before the session: get your laptop ready](#before-the-session-get-your-laptop-ready)
-2. [Part 1: The cloud in plain words](#part-1-the-cloud-in-plain-words)
-3. [Part 2: AWS, Azure and Google Cloud side by side](#part-2-aws-azure-and-google-cloud-side-by-side)
-4. [Part 3: Docker and containers](#part-3-docker-and-containers)
-5. [Part 4: DevOps and CI/CD](#part-4-devops-and-cicd)
-6. [Part 5: Setup lab: play Cloud Quest](#part-5-setup-lab-play-cloud-quest-)
-7. [Glossary](#glossary)
-8. [Troubleshooting](#troubleshooting)
-9. [Ready for Day 2?](#ready-for-day-2)
+1. [Where this can take you](#1-where-this-can-take-you)
+2. [The cloud in plain words](#2-the-cloud-in-plain-words)
+3. [AWS, Azure and Google Cloud side by side](#3-aws-azure-and-google-cloud-side-by-side)
+4. [Docker and containers](#4-docker-and-containers)
+5. [DevOps and CI/CD](#5-devops-and-cicd)
+6. [Setup lab: play Cloud Quest](#6-setup-lab-play-cloud-quest)
+7. [Glossary](#7-glossary)
+8. [Troubleshooting](#8-troubleshooting)
 
 ---
 
-## Before the session: get your laptop ready
+## 1. Where this can take you
 
-Takes about 30–45 minutes. If something doesn't work, don't worry: there's a setup lab at the end of Day 1, and you can ask in the chat.
+![Career roadmap: foundations, cloud, containers, then automation, leading to cloud and DevOps roles](images/career-roadmap.svg)
 
-You need a laptop (Windows 10/11, macOS or Linux) where you can install software, a stable connection, and a few GB of free disk space.
+Most people who end up in cloud or DevOps jobs follow roughly this path. Linux, networking and Git come first. Then they learn one cloud properly, then containers, then the automation that ties it all together. These two days cover steps 2 and 3, plus a first taste of step 4.
 
-1. **Install Git** from [git-scm.com](https://git-scm.com). Check: `git --version` shows a version number.
-2. **Install VS Code** from [code.visualstudio.com](https://code.visualstudio.com). Open it once.
-3. **Install Docker Desktop** from [docker.com](https://www.docker.com/products/docker-desktop/). On Windows it may ask to enable WSL 2 and restart. Start Docker Desktop and wait until the whale icon is steady. Check: `docker run hello-world` prints "Hello from Docker!".
-4. **Install the Google Cloud CLI** from [cloud.google.com/sdk/docs/install](https://cloud.google.com/sdk/docs/install). Open a **new** terminal, then check: `gcloud version`, then `gcloud auth login` (opens your browser to sign in).
-5. **Activate the Google Cloud free trial** at [cloud.google.com/free](https://cloud.google.com/free). New accounts get free credit for 90 days. Google asks for a card to verify you're a real person; you are **not** charged unless you choose to upgrade. No card? Tell us and you'll pair with someone on Day 2.
-6. **Get the Day 1 game:** `git clone https://github.com/aaaditt/acm-cloud-devops-workshop.git cloud-quest` ([Cloud Quest](https://github.com/aaaditt/acm-cloud-devops-workshop)). You'll build and play it in the setup lab.
-7. **Save time later:** `docker pull python:3.12-slim` (the base image you'll build on).
+You don't need to finish the whole roadmap before applying for anything. Plenty of people get a first cloud or junior DevOps role after step 2 or 3 and learn the rest on the job. Certifications are optional. If you want one, pick a single cloud's entry-level cert rather than all three.
 
-```bash
-git --version
-docker run hello-world
-gcloud version
-gcloud auth login
-```
-
-> ⚠️ Cloud resources can cost money (or eat your credit) while they exist. On Day 2 we delete everything at the end. If you create anything while practising, delete it afterwards.
+Each part below starts with a short look at the jobs that part leads to.
 
 ---
 
-## Part 1: The cloud in plain words
 
-### What is "the cloud"?
+## 2. The cloud in plain words
+
+### 2.1 Career prospects
+
+![Career prospects in cloud: Cloud Engineer, Solutions Architect, Cloud Security Engineer](images/career-cloud.svg)
+
+Nearly every company now runs at least part of its software on a cloud provider, so people who understand how the cloud works are in demand well beyond tech firms. A **Cloud Engineer** builds and runs things on AWS, Azure or Google Cloud. A **Solutions Architect** decides how the pieces should fit together. A **Cloud Security Engineer** looks after identity, secrets and access. Everything in this part and the next is the groundwork for those roles.
+
+### 2.2 What is "the cloud"?
 
 Renting someone else's computers over the internet, by the minute, instead of buying your own.
 
@@ -66,9 +62,9 @@ Renting someone else's computers over the internet, by the minute, instead of bu
 | Speed | Weeks to order and install | Minutes to start |
 | Capacity | Guess, then over-buy | Grow and shrink on demand (**elasticity**) |
 
-Think buying a car vs using a ride-hailing app. The cloud isn't always cheaper, but you get capacity in minutes and only pay while you use it.
+Think of it as buying a car vs using a ride-hailing app. The cloud isn't always cheaper, but you get capacity in minutes and only pay while you use it.
 
-### IaaS, PaaS, SaaS: how much do you manage?
+### 2.3 IaaS, PaaS, SaaS: how much do you manage?
 
 | Model | Think of it as… | You manage | Examples |
 | --- | --- | --- | --- |
@@ -76,15 +72,19 @@ Think buying a car vs using a ride-hailing app. The cloud isn't always cheaper, 
 | **PaaS** (Platform) | Renting a furnished flat | Just your app | **Google Cloud Run**, App Engine, Azure App Service |
 | **SaaS** (Software) | A hotel room | Nothing, just use it | Gmail, Google Docs, Zoom |
 
+![Who manages each layer in on-premises, IaaS, PaaS and SaaS](images/service-models.svg)
+
 > On Day 2 you deploy to **Cloud Run** (PaaS). You never touch an operating system.
 
-### Public, private, hybrid
+### 2.4 Public, private, hybrid
 
 - **Public cloud:** shared provider infrastructure (AWS, Azure, Google Cloud)
 - **Private cloud:** infrastructure used by one organisation only
 - **Hybrid:** a mix, e.g. sensitive data on-premises, the website in the public cloud
 
-### Where the cloud physically lives
+### 2.5 Where the cloud physically lives
+
+![A region contains several zones; edge locations sit close to users](images/regions-zones.svg)
 
 - **Region:** a geographic area with datacentres
 - **Availability zone:** a separate datacentre inside a region, so one failure doesn't take you down
@@ -94,7 +94,7 @@ Region choice matters for **latency** (closer is faster), **data residency** (so
 
 Nearby: AWS has a UAE region; Azure has UAE North (Dubai) and UAE Central (Abu Dhabi); Google Cloud's nearest are `me-central1` (Doha) and `me-central2` (Dammam). **Day 2 uses `me-central1`.**
 
-### Shared responsibility: who secures what?
+### 2.6 Shared responsibility: who secures what?
 
 | Layer | IaaS | PaaS | SaaS |
 | --- | --- | --- | --- |
@@ -104,31 +104,31 @@ Nearby: AWS has a UAE region; Azure has UAE North (Dubai) and UAE Central (Abu D
 | Your app's code and config | **You** | **You** | Provider |
 | Your data and who can access it | **You** | **You** | **You** |
 
-> The provider secures **the cloud**. You secure **what you put in it**. The bottom row never moves: leak your own API key and it's on you, in every model. That's why on Day 2 your AI key goes in Secret Manager, never in code.
+> The provider secures **the cloud**. You secure **what you put in it**. The bottom row never moves: if you leak your own API key, that's on you in every model. That's why on Day 2 your AI key goes in Secret Manager, never in code.
 
-### Scaling and pricing
+### 2.7 Scaling and pricing
 
 - **Scale up:** a bigger machine. **Scale out:** more machines (usually preferred)
 - **Elasticity:** adding and removing resources automatically as demand changes
 - **Pay-as-you-go** bills you for usage; **free tiers and trial credits** are for learning
 - **Idle resources can still cost money.** A VM bills even with zero visitors. Cloud Run scales to zero, but always delete what you don't need
 
-<details>
-<summary><b>Check yourself</b> (click to reveal answers)</summary>
+**Check yourself** (click to reveal each answer)
 
-1. Is Gmail IaaS, PaaS or SaaS? → **SaaS**
-2. Your Compute Engine VM gets hacked because nobody installed OS updates. Whose fault? → **Yours**: in IaaS, the OS is your job.
-3. Which is usually preferred: scale up or scale out? → **Scale out**: more machines, no single point of failure.
-
-</details>
+1. Is Gmail IaaS, PaaS or SaaS?
+   <details><summary>Show answer</summary><b>SaaS</b></details>
+2. Your Compute Engine VM gets hacked because nobody installed OS updates. Whose fault?
+   <details><summary>Show answer</summary><b>Yours</b>: in IaaS, the OS is your job.</details>
+3. Which is usually preferred: scale up or scale out?
+   <details><summary>Show answer</summary><b>Scale out</b>: more machines, no single point of failure.</details>
 
 ---
 
-## Part 2: AWS, Azure and Google Cloud side by side
+## 3. AWS, Azure and Google Cloud side by side
 
 The three big clouds offer the same building blocks under different names. Learn the idea once and you can translate.
 
-### How each cloud organises your stuff
+### 3.1 How each cloud organises your stuff
 
 | AWS | Azure | Google Cloud |
 | --- | --- | --- |
@@ -137,7 +137,9 @@ The three big clouds offer the same building blocks under different names. Learn
 
 > On Google Cloud, a **project** is the box that holds everything for one app: resources, permissions, billing and enabled APIs. **Delete the project and everything inside goes with it.** On Day 2 you create one, and delete it at the end.
 
-### The cheat sheet: save this table 📸
+> **Tags / Labels** are `name = value` notes you stick on resources, like `env = prod` or `team = payments`. They don't change how anything runs, but they let you split the bill by team, find resources quickly, and automate things like "shut down everything labelled `env = dev` at night". (Google Cloud also has a separate feature called *tags*, used for access and firewall rules. Its equivalent of AWS/Azure tags is *labels*.)
+
+### 3.2 The cheat sheet 
 
 | Area | AWS | Azure | Google Cloud | The idea |
 | --- | --- | --- | --- | --- |
@@ -148,36 +150,44 @@ The three big clouds offer the same building blocks under different names. Learn
 | Firewall | Security groups | NSGs | Firewall rules | Who can talk to what |
 | Database | RDS | Azure SQL | Cloud SQL | Provider handles backups and patching |
 | Serverless functions | Lambda | Azure Functions | Cloud Run functions | Run code on events, no server |
-| Container registry | ECR | ACR | **Artifact Registry** ⭐ | Store your Docker images |
-| Run containers | ECS / Fargate | Container Apps / ACI | **Cloud Run** ⭐ | Run an image, get a URL |
+| Container registry | ECR | ACR | Artifact Registry | Store your Docker images |
+| Run containers | ECS / Fargate | Container Apps / ACI | Cloud Run  | Run an image, get a URL |
 | Kubernetes | EKS | AKS | GKE | Orchestrate many containers |
 | App hosting | Elastic Beanstalk | App Service | App Engine / Cloud Run | Upload your app, it runs |
-| Secrets | Secrets Manager | Key Vault | **Secret Manager** ⭐ | Keep keys out of your code |
-| AI models | Bedrock | Azure OpenAI | Vertex AI / **Gemini** ⭐ | Call an AI model via an API |
-| Grouping | Account, tags | Subscription, resource group | **Project** ⭐, labels | One box per app |
+| Secrets | Secrets Manager | Key Vault | Secret Manager | Keep keys out of your code |
+| AI models | Bedrock | Azure OpenAI | Vertex AI / Gemini | Call an AI model via an API |
+| Grouping | Account, tags | Subscription, resource group | Project , labels | One box per app |
 
-⭐ = you use it on Day 2.
+### 3.3 How do companies choose?
 
-**How do companies choose?** Existing tools (Microsoft shops lean Azure; Google Workspace and data/AI teams often lean GCP), pricing deals and credits, team skills, compliance and data residency. Plenty use more than one.
+Existing tools (Microsoft shops lean Azure; Google Workspace and data/AI teams often lean GCP), pricing deals and credits, team skills, compliance and data residency. Plenty use more than one.
 
-<details>
-<summary><b>Check yourself</b></summary>
+**Check yourself** (click to reveal each answer)
 
-1. AWS S3 on Google Cloud? → **Cloud Storage**
-2. Azure resource group on Google Cloud? → **Project**
-3. Where will your Docker image live on Day 2? → **Artifact Registry**
-
-</details>
+1. AWS S3 on Google Cloud?
+   <details><summary>Show answer</summary><b>Cloud Storage</b></details>
+2. Azure resource group on Google Cloud?
+   <details><summary>Show answer</summary><b>Project</b></details>
+3. Where will your Docker image live on Day 2?
+   <details><summary>Show answer</summary><b>Artifact Registry</b></details>
 
 ---
 
-## Part 3: Docker and containers
+## 4. Docker and containers
 
-### The problem containers solve
+### 4.1 Career prospects
+
+![Career prospects in containers: Platform Engineer, Kubernetes Administrator, Backend Developer](images/career-containers.svg)
+
+Containers are how most new software gets shipped, so Docker has gone from a nice extra to something employers simply expect. It shows up in backend and full-stack job posts as often as in ops ones. If you enjoy this part, the next step is Kubernetes, which runs containers at scale. That leads to **Platform Engineer** and **Kubernetes Administrator** roles, and the CKAD and CKA certifications are well known in hiring.
+
+### 4.2 The problem containers solve
 
 "It works on my machine." Your app needs the right Python version, the right packages, the right settings. A **container** packages the app *with* everything it needs, so it runs the same on your laptop, your friend's laptop and the cloud.
 
-### Containers vs virtual machines
+### 4.3 Containers vs virtual machines
+
+![Virtual machines each carry a guest OS; containers share the host's kernel](images/containers-vs-vms.svg)
 
 | | Virtual machine | Container |
 | --- | --- | --- |
@@ -188,13 +198,15 @@ The three big clouds offer the same building blocks under different names. Learn
 
 A container is an **isolated process**, not a mini-VM.
 
-### Images, containers and layers
+### 4.4 Images, containers and layers
+
+![A Dockerfile builds an image, and one image runs as many containers](images/image-to-container.svg)
 
 - **Image:** a read-only template, like a class in programming
 - **Container:** a running instance of an image, like an object. One image → many containers
 - **Layers:** each Dockerfile instruction makes a layer, and Docker **caches** unchanged layers. Put slow, rarely-changing steps (installing packages) first and often-changing steps (your code) last
 
-### A Dockerfile, line by line
+### 4.5 A Dockerfile, line by line
 
 ```dockerfile
 # Start from a small official Python image
@@ -226,21 +238,29 @@ CMD ["python", "app.py"]
 | `EXPOSE` | Document the port (doesn't publish it by itself) |
 | `CMD` | Command that runs at **container start** |
 
-> **`RUN` vs `CMD`** is the classic mix-up: `RUN` happens once while *building*. `CMD` happens every time a container *starts*.
+Here's what the layer cache does with that Dockerfile when you only edit your code:
 
-### Registries, names and tags
+![Layers below the first change stay cached; layers from COPY . . upward rebuild](images/docker-layers.svg)
+
+> **`RUN` vs `CMD`** is the classic mix-up. `RUN` happens once while *building*. `CMD` happens every time a container *starts*.
+
+### 4.6 Registries, names and tags
+
+![Build on your laptop, push to a registry, Cloud Run pulls it and serves a public URL](images/registry-flow.svg)
 
 - Full image name: `registry/name:tag`. On Google Cloud it looks like `me-central1-docker.pkg.dev/my-project/my-repo/myapp:v1`
 - Registries: Docker Hub, Google Artifact Registry, Amazon ECR, Azure ACR
 - **Avoid `:latest`.** It's a moving label, so you can't tell which version is running. Use explicit tags like `:v1`
 - **`.dockerignore`** keeps `.git`, secrets and junk out of your image
 
-### Ports and lifecycle
+### 4.7 Ports and lifecycle
+
+![-p 8080:8080 connects your laptop to the app; -p 8080:5000 points at a port where nothing listens](images/port-mapping.svg)
 
 - `-p 8080:8080` means **host port : container port**. Containers are isolated until you map a port
 - Containers are **disposable**: anything saved inside is lost when the container is removed. **Volumes** are storage that outlives a container; **Docker Compose** runs several containers together from one file
 
-### Commands you'll use
+### 4.8 Commands you'll use
 
 ```bash
 docker build -t myapp:v1 .         # build an image from the Dockerfile in this folder
@@ -253,47 +273,50 @@ docker rm <container-id>           # delete it
 docker images                      # list images on your machine
 ```
 
-<details>
-<summary><b>Check yourself</b></summary>
+**Check yourself** (click to reveal each answer)
 
-1. `RUN pip install ...` happens when? → At **build** time.
-2. Why copy `requirements.txt` before the rest of the code? → So the install layer stays **cached** when only your code changes.
-3. Your app runs in the container but `localhost:8080` won't load. Two likely causes? → No `-p 8080:8080`, or the app listens on `127.0.0.1` instead of `0.0.0.0`.
-
-</details>
+1. `RUN pip install ...` happens when?
+   <details><summary>Show answer</summary>At <b>build</b> time.</details>
+2. Why copy `requirements.txt` before the rest of the code?
+   <details><summary>Show answer</summary>So the install layer stays <b>cached</b> when only your code changes.</details>
+3. Your app runs in the container but `localhost:8080` won't load. Two likely causes?
+   <details><summary>Show answer</summary>No <code>-p 8080:8080</code>, or the app listens on <code>127.0.0.1</code> instead of <code>0.0.0.0</code>.</details>
 
 ---
 
-## Part 4: DevOps and CI/CD
+## 5. DevOps and CI/CD
 
-- **DevOps** is a culture and set of practices where developers and operations work together and **automate** the path from code to production. Not a job title, not a tool.
+### 5.1 Career prospects
+
+![Career prospects in DevOps: DevOps Engineer, Site Reliability Engineer, DevSecOps Engineer](images/career-devops.svg)
+
+DevOps work is about making releases boring: automated, repeatable and safe. **DevOps Engineers** build the pipelines, **Site Reliability Engineers** keep services running and get paged when they don't, and **DevSecOps Engineers** build security checks into the pipeline. These are rarely first jobs. Most people move into them after a year or two as a developer or cloud engineer, so the habits you start building here pay off later.
+
+### 5.2 What DevOps and CI/CD mean
+
+- **DevOps** is a culture and set of practices where developers and operations work together and **automate** the path from code to production. It's not a job title or a tool, even though both get labelled with it.
 - **CI (Continuous Integration):** every push triggers an automated build and tests.
-- **CD:** continuous *delivery* = ready to release, a human clicks the button; continuous *deployment* = it ships automatically.
+- **CD:** continuous *delivery* means it's ready to release and a human clicks the button; continuous *deployment* means it ships automatically.
 
-### The pipeline: from `git push` to a live URL
+### 5.3 The pipeline: from `git push` to a live URL
 
-```text
-Source  →  Build  →  Test  →  Package  →  Deploy
-git push   docker    auto      tagged image    Cloud Run
-           build     tests     in Artifact     runs it
-                               Registry
-```
+![Source, build, test, package, deploy](images/cicd-pipeline.svg)
 
 The **image is the artifact**: the exact image that passed the tests is what runs in production. On Day 2, **GitHub Actions** runs this whole pipeline every time you push.
 
-**Where to go next:** Infrastructure as Code (Terraform), monitoring and observability, DevSecOps.
+### 5.4 Where to go next
 
-**Career path:** Linux, networking and Git → one cloud's fundamentals (AWS Cloud Practitioner, AZ-900 or Google Cloud Digital Leader) → Docker, then Kubernetes → CI/CD, IaC, monitoring, security. Roles: Cloud Engineer, DevOps Engineer, SRE, Platform Engineer, Cloud Security Engineer.
+Infrastructure as Code (Terraform), monitoring and observability, and DevSecOps. The career cards above list the certifications that go with each.
 
 ---
 
-## Part 5: Setup lab: play Cloud Quest 🎮
+## 6. Setup lab: play Cloud Quest
 
-Time to prove your setup works, in the most fun way possible. **Cloud Quest** is a five-level game about everything from today, and you're going to run it inside a Docker container you build yourself. Nothing gets deployed today: it only runs on your laptop. (Deploying to the cloud is Day 2.)
+Now you prove your setup works. **Cloud Quest** is a five-level game about everything from today, and you're going to run it inside a Docker container you build yourself. Nothing gets deployed today; it only runs on your laptop. (Deploying to the cloud is Day 2.)
 
 Code: [github.com/aaaditt/acm-cloud-devops-workshop](https://github.com/aaaditt/acm-cloud-devops-workshop)
 
-### 1. Check your tools
+### 6.1 Check your tools
 
 ```bash
 docker run hello-world      # Docker works
@@ -302,9 +325,8 @@ gcloud auth login           # you can sign in
 git --version               # Git installed
 ```
 
-Free trial active? Say so in the chat. If not, tell us and you'll pair with someone on Day 2.
 
-### 2. Build the game
+### 6.2 Build the game
 
 Skip the clone if you already did it during setup.
 
@@ -314,11 +336,11 @@ cd cloud-quest
 docker build -t cloud-quest:v1 .
 ```
 
-Open the `Dockerfile` while it builds: it's the exact Dockerfile from Part 3.
+Open the `Dockerfile` while it builds. It's the same Dockerfile from section 4.5.
 
 > **On an Apple Silicon Mac?** This works as is. (On Day 2 you'll add `--platform linux/amd64` for Cloud Run.)
 
-### 3. Run it and play
+### 6.3 Run it and play
 
 ```bash
 docker run -p 8080:8080 cloud-quest:v1
@@ -332,25 +354,24 @@ Open **http://localhost:8080**, enter your name and play the five levels:
 4. **Spot the Bugs:** find 3 bugs in a Dockerfile
 5. **Build the Pipeline:** put CI/CD in order
 
-Answer fast for bonus points and keep your streak going 🔥. At the end, **copy your score line into the Meet chat**. The top scorer is crowned Cloud Architect 🏆.
 
-### 4. Bonus: see Docker in action
+### 6.4 Bonus: see Docker in action
 
-- Look at the footer: **"Served by container a1b2c3…"**. In a second terminal, run `docker ps`. Same ID! That's your container.
+- Look at the footer: **"Served by container a1b2c3…"**. In a second terminal, run `docker ps`. The ID matches, because that's your container.
 - Start a **second** container from the **same image** with different config:
 
   ```bash
   docker run -p 8081:8080 -e VERSION=v2 cloud-quest:v1
   ```
 
-  Open http://localhost:8081: the footer shows `v2` and a different container ID. Same image, different behaviour, driven by `-e`. Day 2 uses exactly this trick for your AI key.
+  Open http://localhost:8081. The footer shows `v2` and a different container ID: same image, different behaviour, set by `-e`. Day 2 uses exactly this trick for your AI key.
 - Clean up: `docker ps`, then `docker stop <id>` for each container.
 
-If you can play the game, **your laptop is ready for Day 2.** ✅
+If you can play the game, your setup works.
 
 ---
 
-## Glossary
+## 7. Glossary
 
 | Term | Meaning |
 | --- | --- |
@@ -371,7 +392,7 @@ If you can play the game, **your laptop is ready for Day 2.** ✅
 
 ---
 
-## Troubleshooting
+## 8. Troubleshooting
 
 | Problem | Fix |
 | --- | --- |
@@ -387,15 +408,3 @@ If you can play the game, **your laptop is ready for Day 2.** ✅
 | No billing account after signing in | Finish the free trial at cloud.google.com/free, or pair for Day 2 |
 | Card rejected | Don't burn lab time on it. Pair for Day 2 |
 | `git clone` fails | Check the link in the chat and that you copied all of it |
-
----
-
-## Ready for Day 2?
-
-- [ ] `docker run hello-world` works
-- [ ] `gcloud auth login` works
-- [ ] Google Cloud free trial is active (or I know who I'm pairing with)
-- [ ] `git clone` works (Day 2 starts by cloning the meme generator app)
-- [ ] I played Cloud Quest in a container and posted my score 🎮
-
-**See you tomorrow, when your container goes live on the internet.** 🚀

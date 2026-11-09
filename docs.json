@@ -19,7 +19,7 @@
   "pages": [
     "index",
     {
-      "group": "Cloud Computing Workshop",
+      "group": "Cloud and Devops",
       "pages": [
         "week1/day1",
         "week1/day2"

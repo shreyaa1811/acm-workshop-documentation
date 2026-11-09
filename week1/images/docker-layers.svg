@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="380" viewBox="0 0 960 380" role="img" aria-label="Docker image layers, cached and rebuilt">
+<title>Docker image layers, cached and rebuilt</title>
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="#475569"/>
+  </marker>
+</defs>
+<rect x="1" y="1" width="958" height="378" rx="14" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2"/>
+<g font-family="Segoe UI, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#0f172a">
+<text x="32" y="46" font-size="22" font-weight="bold" fill="#0f172a" text-anchor="start">Layers and the build cache</text>
+<text x="32" y="72" font-size="14" font-weight="normal" fill="#475569" text-anchor="start">You changed app.py. Docker reuses every layer below the first change.</text>
+<rect x="32" y="96" width="470" height="32" rx="6" fill="#fff1e0" stroke="#e37400" stroke-width="2"/>
+<text x="48" y="117" font-size="13.5" font-family="Consolas, Menlo, monospace" fill="#0f172a">CMD ["python", "app.py"]</text>
+<text x="488" y="117" font-size="12" font-weight="bold" fill="#e37400" text-anchor="end">rebuilt</text>
+<rect x="32" y="134" width="470" height="32" rx="6" fill="#fff1e0" stroke="#e37400" stroke-width="2"/>
+<text x="48" y="155" font-size="13.5" font-family="Consolas, Menlo, monospace" fill="#0f172a">EXPOSE 8080</text>
+<text x="488" y="155" font-size="12" font-weight="bold" fill="#e37400" text-anchor="end">rebuilt</text>
+<rect x="32" y="172" width="470" height="32" rx="6" fill="#fff1e0" stroke="#e37400" stroke-width="2"/>
+<text x="48" y="193" font-size="13.5" font-family="Consolas, Menlo, monospace" fill="#0f172a">COPY . .</text>
+<text x="488" y="193" font-size="12" font-weight="bold" fill="#e37400" text-anchor="end">rebuilt</text>
+<rect x="32" y="210" width="470" height="32" rx="6" fill="#e7f3eb" stroke="#188038" stroke-width="2"/>
+<text x="48" y="231" font-size="13.5" font-family="Consolas, Menlo, monospace" fill="#0f172a">RUN pip install -r requirements.txt</text>
+<text x="488" y="231" font-size="12" font-weight="bold" fill="#188038" text-anchor="end">CACHED</text>
+<rect x="32" y="248" width="470" height="32" rx="6" fill="#e7f3eb" stroke="#188038" stroke-width="2"/>
+<text x="48" y="269" font-size="13.5" font-family="Consolas, Menlo, monospace" fill="#0f172a">COPY requirements.txt .</text>
+<text x="488" y="269" font-size="12" font-weight="bold" fill="#188038" text-anchor="end">CACHED</text>
+<rect x="32" y="286" width="470" height="32" rx="6" fill="#e7f3eb" stroke="#188038" stroke-width="2"/>
+<text x="48" y="307" font-size="13.5" font-family="Consolas, Menlo, monospace" fill="#0f172a">WORKDIR /app</text>
+<text x="488" y="307" font-size="12" font-weight="bold" fill="#188038" text-anchor="end">CACHED</text>
+<rect x="32" y="324" width="470" height="32" rx="6" fill="#e7f3eb" stroke="#188038" stroke-width="2"/>
+<text x="48" y="345" font-size="13.5" font-family="Consolas, Menlo, monospace" fill="#0f172a">FROM python:3.12-slim</text>
+<text x="488" y="345" font-size="12" font-weight="bold" fill="#188038" text-anchor="end">CACHED</text>
+<path d="M520,100 v100" stroke="#e37400" stroke-width="3"/>
+<path d="M520,212 v140" stroke="#188038" stroke-width="3"/>
+<text x="540" y="130" font-size="15" font-weight="bold" fill="#e37400" text-anchor="start">Changes often (your code)</text>
+<text x="540" y="152" font-size="14" font-weight="normal" fill="#475569" text-anchor="start">Put these near the top of the stack,</text>
+<text x="540" y="172" font-size="14" font-weight="normal" fill="#475569" text-anchor="start">which means the end of the Dockerfile.</text>
+<text x="540" y="262" font-size="15" font-weight="bold" fill="#188038" text-anchor="start">Changes rarely (base image, packages)</text>
+<text x="540" y="284" font-size="14" font-weight="normal" fill="#475569" text-anchor="start">Put these first. The slow pip install</text>
+<text x="540" y="304" font-size="14" font-weight="normal" fill="#475569" text-anchor="start">stays cached while you edit code.</text>
+</g>
+</svg>

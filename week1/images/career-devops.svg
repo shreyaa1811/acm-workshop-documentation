@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="400" viewBox="0 0 960 400" role="img" aria-label="Career prospects: DevOps and CI/CD">
+<title>Career prospects: DevOps and CI/CD</title>
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="#475569"/>
+  </marker>
+</defs>
+<rect x="1" y="1" width="958" height="398" rx="14" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2"/>
+<g font-family="Segoe UI, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#0f172a">
+<text x="32" y="46" font-size="22" font-weight="bold" fill="#0f172a" text-anchor="start">Career prospects: DevOps and CI/CD</text>
+<text x="32" y="72" font-size="14" font-weight="normal" fill="#475569" text-anchor="start">Teams hire for the habit of automating the path from code to production</text>
+<rect x="32" y="86" width="896" height="4" rx="2" fill="#e37400"/>
+<text x="32" y="122" font-size="13" font-weight="bold" fill="#e37400" text-anchor="start">ROLES</text>
+<rect x="32" y="134" width="440" height="66" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+<rect x="32" y="134" width="6" height="66" rx="3" fill="#e37400"/>
+<text x="52" y="161" font-size="16" font-weight="bold" fill="#0f172a" text-anchor="start">DevOps Engineer</text>
+<text x="52" y="184" font-size="13.5" font-weight="normal" fill="#475569" text-anchor="start">Automates build, test and deploy pipelines</text>
+<rect x="32" y="210" width="440" height="66" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+<rect x="32" y="210" width="6" height="66" rx="3" fill="#e37400"/>
+<text x="52" y="237" font-size="16" font-weight="bold" fill="#0f172a" text-anchor="start">Site Reliability Engineer (SRE)</text>
+<text x="52" y="260" font-size="13.5" font-weight="normal" fill="#475569" text-anchor="start">Keeps services up: monitoring, alerts, on-call</text>
+<rect x="32" y="286" width="440" height="66" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+<rect x="32" y="286" width="6" height="66" rx="3" fill="#e37400"/>
+<text x="52" y="313" font-size="16" font-weight="bold" fill="#0f172a" text-anchor="start">DevSecOps Engineer</text>
+<text x="52" y="336" font-size="13.5" font-weight="normal" fill="#475569" text-anchor="start">Adds security checks and secret handling to the pipeline</text>
+<text x="504" y="122" font-size="13" font-weight="bold" fill="#e37400" text-anchor="start">SKILLS EMPLOYERS ASK FOR</text>
+<circle cx="510" cy="145" r="3.5" fill="#e37400"/>
+<text x="524" y="150" font-size="14" font-weight="normal" fill="#0f172a" text-anchor="start">Git and a CI tool (GitHub Actions, GitLab CI, Jenkins)</text>
+<circle cx="510" cy="169" r="3.5" fill="#e37400"/>
+<text x="524" y="174" font-size="14" font-weight="normal" fill="#0f172a" text-anchor="start">Infrastructure as Code with Terraform</text>
+<circle cx="510" cy="193" r="3.5" fill="#e37400"/>
+<text x="524" y="198" font-size="14" font-weight="normal" fill="#0f172a" text-anchor="start">Monitoring: Prometheus, Grafana, Cloud Monitoring</text>
+<circle cx="510" cy="217" r="3.5" fill="#e37400"/>
+<text x="524" y="222" font-size="14" font-weight="normal" fill="#0f172a" text-anchor="start">Containers, plus one cloud in depth</text>
+<text x="504" y="260" font-size="13" font-weight="bold" fill="#e37400" text-anchor="start">CERTIFICATIONS TO START WITH</text>
+<circle cx="510" cy="283" r="3.5" fill="#e37400"/>
+<text x="524" y="288" font-size="14" font-weight="normal" fill="#0f172a" text-anchor="start">HashiCorp Terraform Associate</text>
+<circle cx="510" cy="307" r="3.5" fill="#e37400"/>
+<text x="524" y="312" font-size="14" font-weight="normal" fill="#0f172a" text-anchor="start">Later: AWS DevOps Engineer Professional, AZ-400</text>
+<circle cx="510" cy="331" r="3.5" fill="#e37400"/>
+<text x="524" y="336" font-size="14" font-weight="normal" fill="#0f172a" text-anchor="start">or Google Professional Cloud DevOps Engineer</text>
+<text x="32" y="380" font-size="13" font-weight="normal" fill="#475569" text-anchor="start" font-style="italic">DevOps is usually not an entry-level title. Most people get there from a developer or cloud role.</text>
+</g>
+</svg>

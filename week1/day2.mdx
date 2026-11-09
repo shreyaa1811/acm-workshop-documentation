@@ -6,15 +6,19 @@ hideFooterPagination: true
 ---
 
 
-# Day 2 — Student Guide: Ship an AI Meme Generator to Google Cloud
+# Day 2 : Ship an AI Meme Generator to Google Cloud
 
-**What you'll build today:** a small web app (upload a photo → AI writes a caption → you get a meme) and take it all the way from your laptop to a **live public URL** on Google Cloud — then make it deploy itself with GitHub Actions.
+**What you'll build today:** a small web app (upload a photo → AI writes a caption → you get a meme) and take it all the way from your laptop to a **live public URL** on Google Cloud, then make it deploy itself with GitHub Actions.
 
-[![Get the app code — AI Meme Generator](https://img.shields.io/badge/%F0%9F%93%A6%20Get%20the%20app%20code-AI%20Meme%20Generator-2ea44f?style=for-the-badge)](https://github.com/kalyani-2024/ai-meme-generator)
+<p align="center">
+  <a href="https://github.com/kalyani-2024/ai-meme-generator">
+    <img src="https://img.shields.io/badge/%F0%9F%93%A6%20Get%20the%20app%20code-AI%20Meme%20Generator-2ea44f?style=for-the-badge" alt="AI Meme Generator repo" />
+  </a>
+</p>
 
 ---
 
-## What you need
+## 1. What you need
 
 - **Docker Desktop** running (the whale icon in your tray is steady, not animating)
 - **Google Cloud CLI** (`gcloud`), **Git**, and **VS Code** installed — get the CLI from [cloud.google.com/sdk/docs/install](https://cloud.google.com/sdk/docs/install)
@@ -32,9 +36,9 @@ git --version               # Git installed
 
 ---
 
-## Set your variables once
+## 2. Set your variables once
 
-Your **project ID** must be **globally unique**, so add your initials and a few digits where you see the placeholders. Paste this block into your terminal at the start — every later command reuses it.
+Your **project ID** must be **globally unique**, so add your initials and a few digits where you see the placeholders. Paste this block into your terminal at the start (every later command reuses it).
 
 **PowerShell (Windows):**
 ```powershell
@@ -58,9 +62,9 @@ IMAGE_URI="$REGION-docker.pkg.dev/$PROJECT/$REPO/${IMAGE}:v1"
 
 ---
 
-## Setup — your project and your AI key
+## 3. Setup: your project and your AI key
 
-### Sign in and create today's project
+### 3.1 Sign in and create today's project
 
 ```bash
 gcloud auth login                       # sign in (opens your browser)
@@ -75,19 +79,19 @@ gcloud services enable run.googleapis.com artifactregistry.googleapis.com secret
 
 > A **project** is a labelled box that holds everything you create today. Delete the box at the end and it all goes.
 
-### Get a free Gemini API key
+### 3.2 Get a free Gemini API key
 
 1. Go to [aistudio.google.com](https://aistudio.google.com) and sign in.
 2. Click **Get API key → Create API key**.
-3. Copy the key and keep it somewhere safe for now. It's a **secret** — never paste it into code or Git.
+3. Copy the key and keep it somewhere safe for now. It's a **secret** (never paste it into code or Git).
 
-> ⚠️ Keep the project AI Studio suggests for the key. **Don't** create it in your workshop project — that project has billing on, so Gemini calls there would be charged instead of free.
+> ⚠️ Keep the project AI Studio suggests for the key. **Don't** create it in your workshop project. That project has billing on, so Gemini calls there would be charged instead of free.
 
 ---
 
-## Part 1 — Containerise the app
+## 4. Containerise the app
 
-### 1a. Run it locally first (no Docker)
+### 4.1 Run it locally first (no Docker)
 
 ```bash
 cd ai-meme-generator
@@ -97,9 +101,9 @@ python app.py
 
 Open **http://localhost:8080**. The page loads and says "AI not configured yet" — that's expected, we haven't given it a key. Stop it with `Ctrl+C`.
 
-> This only works because your laptop happens to have the right Python and packages installed. That's the "works on my machine" problem — which is exactly what a container fixes.
+> This only works because your laptop happens to have the right Python and packages installed. That's the "works on my machine" problem, which is exactly what a container fixes.
 
-### 1b. Write the Dockerfile
+### 4.2 Write the Dockerfile
 
 Create a file named **`Dockerfile`** (no extension) in the project folder.
 
@@ -131,7 +135,7 @@ Key things to remember:
 - **Requirements copied before the code** — layers are cached top to bottom, so dependencies don't reinstall every time you tweak code.
 - **No API key anywhere** — secrets never go inside the image. We add the key later, at run time.
 
-### 1c. Build the image
+### 4.3 Build the image
 
 ```bash
 docker build -t ai-meme-generator:v1 .
@@ -141,7 +145,7 @@ docker build -t ai-meme-generator:v1 .
 
 Watch each instruction become a **layer**. Build again after a small edit and you'll see some layers say `CACHED`.
 
-### 1d. Run the container (with the AI key)
+### 4.4 Run the container (with the API key)
 
 Paste your Gemini key:
 
@@ -161,11 +165,11 @@ docker run -d -p 8080:8080 \
   ai-meme-generator:v1
 ```
 
-Open **http://localhost:8080**, upload a photo, click **Make Meme**. 🎉
+Open **http://localhost:8080**, upload a photo, click **Make Meme**. 
 
-> `-p 8080:8080` means `host:container`. The `-e` flags inject config at run time — same image, different behaviour.
+> `-p 8080:8080` means `host:container`. The `-e` flags inject config at run time (same image, different behaviour).
 
-### 1e. Useful container commands
+### 4.5 Useful container commands
 
 ```bash
 docker ps                 # what's running (shows the container ID/name)
@@ -177,9 +181,9 @@ docker stop <container>   # stop it , containers are disposable
 
 ---
 
-## Part 2 — Push the image to Artifact Registry
+## 5. Push the image to Artifact Registry
 
-### 2a. Create the registry repository
+### 5.1 Create the registry repository
 
 ```bash
 gcloud artifacts repositories create $REPO `
@@ -189,7 +193,7 @@ gcloud artifacts repositories create $REPO `
 
 *(Bash: swap the backtick line-breaks for `\`.)*
 
-### 2b. Log in, tag, and push
+### 5.2 Log in, tag, and push
 
 ```bash
 # Let Docker use your gcloud login for this registry (answer Y if asked)
@@ -204,15 +208,15 @@ docker push $IMAGE_URI
 
 > We use an explicit tag `:v1`, never `:latest` — so you always know exactly what's deployed.
 
-### 2c. See it in the console
+### 5.3 See it in the console
 
 Go to [console.cloud.google.com](https://console.cloud.google.com) (check your project is selected at the top) → **Artifact Registry → `meme-repo` → `ai-meme-generator`**. Your image is now sitting in the cloud.
 
 ---
 
-## Part 3 — Deploy to Cloud Run (the live URL)
+## 6. Deploy to Cloud Run (the live URL)
 
-### 3a. First deploy (no key yet)
+### 6.1 First deploy (no key yet)
 
 ```bash
 gcloud run deploy $SERVICE `
@@ -225,9 +229,9 @@ gcloud run deploy $SERVICE `
 
 > **Cloud Run** runs your container for you — no servers to set up. `--port 8080` tells it which port the app listens on (like `-p` in Docker). `--allow-unauthenticated` makes the URL public. When nobody's using it, it scales to zero and costs nothing.
 
-It prints a **Service URL**. Open it — the page says "AI not configured yet". Let's fix that.
+It prints a **Service URL**. Open it and the page says "AI not configured yet". Let's fix that.
 
-### 3b. Store your AI key in Secret Manager
+### 6.2 Store your AI key in Secret Manager
 
 ```powershell
 # PowerShell
@@ -251,9 +255,9 @@ gcloud secrets add-iam-policy-binding gemini-api-key \
   --role="roles/secretmanager.secretAccessor"
 ```
 
-> **Secret Manager** is a locked vault for secrets. The second command gives your Cloud Run app — and only your app — permission to read this one secret.
+> **Secret Manager** is a locked vault for secrets. The second command gives your Cloud Run app, and only your app permission to read this one secret.
 
-### 3c. Attach the secret to your app
+### 6.3 Attach the secret to your app
 
 ```bash
 gcloud run services update $SERVICE --region $REGION `
@@ -262,29 +266,29 @@ gcloud run services update $SERVICE --region $REGION `
 
 > Notice: the secret key was **never** in your Dockerfile, image, or Git. Cloud Run hands it to your app at run time.
 
-### 3d. Open your live app
+### 6.4 Open your live app
 
 ```bash
 gcloud run services describe $SERVICE --region $REGION --format="value(status.url)"
 ```
 
-Open that URL, upload a photo, and make a meme. Now it's a real public website serving *your* container. 🚀
+Open that URL, upload a photo, and make a meme. Now it's a real public website serving your container. 
 
-> If the first load takes a few seconds, that's a **cold start** — Cloud Run starting your app up from zero.
+> If the first load takes a few seconds, that's a **cold start**. Cloud Run starting your app up from zero.
 
-### 3e. Change the humor without rebuilding
+### 6.5 Change the humor without rebuilding
 
 ```bash
 gcloud run services update $SERVICE --region $REGION --update-env-vars "MEME_STYLE=sarcastic"
 ```
 
-Make another meme — same image, funnier captions. Each change creates a new **revision**:
+Make another meme - same image, funnier captions. Each change creates a new **revision**:
 
 ```bash
 gcloud run revisions list --service $SERVICE --region $REGION
 ```
 
-### 3f. Handy Cloud Run commands
+### 6.6 Handy Cloud Run commands
 
 ```bash
 # see recent logs
@@ -298,7 +302,7 @@ In the console, explore **Cloud Run → `meme-generator`**: **Metrics** (request
 
 ---
 
-## Part 4 — CI/CD with GitHub Actions
+## 7. CI/CD with GitHub Actions
 
 The idea: instead of running all those commands by hand, **push code → it builds and deploys itself.**
 
@@ -335,7 +339,7 @@ Then add these under **GitHub → Settings → Secrets and variables → Actions
 | `GCP_REGION` | `me-central1` |
 | `CLOUD_RUN_SERVICE` | `meme-generator` |
 
-> Delete `gha-key.json` from your laptop once it's in GitHub, and **never commit it** — it's a password for your project.
+> Delete `gha-key.json` from your laptop once it's in GitHub, and **never commit it** (it's a password for your project).
 
 Then make a change, commit, and push:
 
@@ -345,11 +349,11 @@ git commit -m "Change page colour"
 git push origin main
 ```
 
-Watch it run in the **Actions** tab, then refresh your live URL — the change is there, and you never ran a deploy command. That's CI/CD.
+Watch it run in the **Actions** tab, then refresh your live URL. The change is there, and you never ran a deploy command. That's CI/CD.
 
 ---
 
-## Part 5 — Clean up (IMPORTANT — do this so you don't get billed)
+## 8. Clean up (IMPORTANT: do this so you don't get billed)
 
 One command deletes everything you created today:
 
@@ -363,14 +367,14 @@ Your Gemini key lives in AI Studio's own free project, so it costs nothing if yo
 
 ---
 
-## Troubleshooting
+## 9. Troubleshooting
 
 | Problem | Likely cause | Fix |
 |---|---|---|
 | `docker build` can't connect | Docker Desktop not running | Start it; wait for the steady whale icon |
 | `gcloud` not recognised | CLI just installed | Open a new terminal, re-paste your variables |
 | `localhost:8080` won't load | wrong port mapping | use `-p 8080:8080` |
-| Page says "AI not configured yet" | key not set | add `-e GEMINI_API_KEY=...` / attach the secret (step 3c) |
+| Page says "AI not configured yet" | key not set | add `-e GEMINI_API_KEY=...` / attach the secret (step 6.3) |
 | "AI call failed: ... valid API key" | wrong key or typo | re-copy the key from AI Studio |
 | "AI call failed: ... 429" | free-tier rate limit | wait a minute and try again |
 | `projects create` fails | ID taken / bad characters | lowercase letters, digits, hyphens; change the digits |
@@ -378,12 +382,12 @@ Your Gemini key lives in AI Studio's own free project, so it costs nothing if yo
 | `docker push` → denied | Docker not linked to gcloud | re-run `gcloud auth configure-docker $REGION-docker.pkg.dev` |
 | Deploy fails: "failed to start and listen on the port" | wrong port | use `--port 8080` |
 | Logs show `exec format error` | built on an Apple Silicon Mac | rebuild with `--platform linux/amd64`, push, redeploy |
-| "Permission denied on secret" | app can't read the secret | re-run the `add-iam-policy-binding` command in 3b |
+| "Permission denied on secret" | app can't read the secret | re-run the `add-iam-policy-binding` command in 6.2 |
 | URL shows 403 Forbidden | service isn't public | redeploy with `--allow-unauthenticated` |
 
 ---
 
-## Quick command reference
+## 10. Quick command reference
 
 ```bash
 # Setup
@@ -414,4 +418,4 @@ gcloud run services logs read $SERVICE --region $REGION --limit 30
 gcloud projects delete $PROJECT --quiet
 ```
 
-**Nice work — you took an AI app from your laptop to a public cloud service, and never put a secret in your code.**
+**Nice work! You took an AI app from your laptop to a public cloud service, and never put a secret in your code.**
