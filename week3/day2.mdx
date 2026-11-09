@@ -15,23 +15,47 @@ hideFooterPagination: true
 
 1. Install **Python 3.12+**, **Git** and **VS Code**.
 2. Get a free **Groq API key** at https://console.groq.com
-3. Clone the workshop repo *(link TBA)* and install the dependencies:
+3. Create a project folder and install the dependencies:
 
 ```bash
-git clone <REPO_LINK>
-cd <REPO_FOLDER>
-pip install -r requirements.txt
+mkdir agentic-ai-practice
+cd agentic-ai-practice
+python -m venv .venv
 ```
 
-4. Create a `.env` file in the repo folder:
+Activate the virtual environment using the command for your system:
+
+```powershell
+# Windows PowerShell
+.\.venv\Scripts\Activate.ps1
+```
+
+```bash
+# macOS / Linux
+source .venv/bin/activate
+```
+
+Install the packages:
+
+```bash
+python -m pip install langgraph langchain-groq langchain-core pydantic python-dotenv
+```
+
+4. Create a `.env` file in the project folder:
 
 ```
 GROQ_API_KEY=your_key_here
 ```
 
-⚠️ Never push your `.env` file to GitHub.
+Never push your `.env` file to GitHub. If you use version control, add `.env` and `.venv/` to `.gitignore`.
 
-*(Exact commands will be updated once the repo is final.)*
+5. Check the installation:
+
+```bash
+python -c "import langgraph, langchain_groq, pydantic, dotenv; print('Packages ready')"
+```
+
+This checks the installation. API access still depends on a valid key and account limits.
 
 ## Day 2 Plan
 
@@ -82,7 +106,9 @@ GROQ_API_KEY=your_key_here
 
 **Push to GitHub** with a README (diagram, tech stack, setup, demo GIF). It makes a solid portfolio project.
 
-**Learn next:** MCP · multi-agent systems · agent evals · LangSmith · FastAPI + Docker
+**Learn next:** [LangGraph persistence](https://docs.langchain.com/oss/python/langgraph/persistence), the [LangGraph Graph API](https://docs.langchain.com/oss/python/langgraph/graph-api), MCP, multi-agent systems, agent evals, LangSmith, FastAPI and Docker.
+
+For a portfolio project, document what the agent can do, show a short demo and describe its limitations. Add a simple interface with FastAPI and package the application with Docker when you are ready to share it.
 
 ---
 
