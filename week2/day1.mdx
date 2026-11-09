@@ -1,13 +1,14 @@
 ---
-title: "Day 1"
+title: "Week 2 : Data Analytics"
+sidebarTitle: "Day 1"
 description: "Explore data careers, ecosystems, visual analytics, machine learning, and production pipelines."
 ---
 
-# Data Analytics — Day 1
+# Data Analytics (Day 1)
 
-## Session 1 — Framing
+## 1. Framing
 
-## Roadmap to data careers
+### 1.1 Roadmap to data careers
 
 "Data" is not one job. Think of a data team as three groups that hand work to each other.
 
@@ -57,11 +58,13 @@ export const RolesRoadmap = () => {
   </Card>
 </CardGroup>
 
+![Data analyst career path and skills to learn](/week2/images/data-analyst-career-path.png)
+
 <Tip>
-In this workshop you will do a taste of all three: clean data (engineering), build a dashboard (analytics) and train a model (science).
+In this workshop, you will play all three roles. You will clean data as a data engineer, build a dashboard as a data analyst, and train a model as a data scientist.
 </Tip>
 
-### How the three roles work together
+**How the three roles work together**
 
 The roles are links in a chain. Each one depends on the one before it.
 
@@ -71,9 +74,9 @@ The roles are links in a chain. Each one depends on the one before it.
 | Explore and explain data | Data analyst | Dashboards and insights |
 | Predict what happens next | Data scientist | A model and its predictions |
 
-If the engineer's pipeline breaks, the dashboard is wrong. If the dashboard is wrong, the model learns from bad information. That is why all three roles need a basic understanding of each other.
+If the data pipeline introduces errors, the dashboard can show misleading results and the model can learn from incorrect data. That is why all three roles need a basic understanding of each other.
 
-### Skills at a glance
+**Skills at a glance**
 
 |  | Engineering | Analytics | Science |
 | --- | --- | --- | --- |
@@ -82,22 +85,22 @@ If the engineer's pipeline breaks, the dashboard is wrong. If the dashboard is w
 | **Main output** | Pipelines and tables | Dashboards and reports | Models and forecasts |
 | **Mindset** | Reliability | Clarity | Experimentation |
 
-## How do labels quantify a "hit"?
+### 1.2 How do labels quantify a "hit"?
 
 Every day, around 100,000 new tracks are uploaded to streaming platforms. Almost nobody hears most of them. A record label has to decide where to put its marketing money.
 
 Songs don't come with a "hit" label, so we need to define one. We will say a track is **viral** if its popularity score is above a threshold (you will choose it on Day 2). That turns the business problem into a yes/no prediction.
 
-### What a good prediction problem looks like
+**What a good prediction problem looks like**
 
 Before building a model, ask:
 
-1. **Is there a decision it will change?** (Where to spend marketing money.)
+1. **What decision are we depending on the model for?** (Where to spend marketing money.)
 2. **Do we have past examples with known outcomes?** (Tracks with popularity scores.)
 3. **Can we measure the inputs before the outcome happens?** (Audio features exist before release.)
 4. **How will we know it worked?** (Accuracy on tracks the model has never seen.)
 
-## What you will build on Day 2
+### 1.3 What you will build on Day 2
 
 {/* ILLUSTRATION I-03: Preview of the finished product. Short screen recording: dashboard filtering by genre, then a slider panel where energy/danceability change a "viral probability" gauge. */}
 
@@ -105,7 +108,7 @@ Here is a preview of the end result: a dashboard exploring popularity, and a mod
 
 ![Image](/week2/images/image-5.png "Image")
 
-### Key terms you will hear this week
+**Key terms you will hear this week**
 
 | Term | Plain-English meaning |
 | --- | --- |
@@ -129,9 +132,11 @@ export const Reveal = ({ question, answer }) => {
 
 ---
 
-## Session 2 — The Data Ecosystem
+## 2. The Data Ecosystem
 
-## What kind of data are we dealing with?
+### 2.1 What kind of data are we dealing with?
+
+A **CSV** (comma-separated values) file stores a table as plain text. The first row usually names the columns, and each following row contains one record. In our Spotify file, each record describes a track, with columns for values like genre and popularity. When you import a CSV, check how your tool interprets each column. For example, an ID like `00123` can lose its leading zeros if it is read as a number.
 
 | Type | What it looks like | Example |
 | --- | --- | --- |
@@ -141,7 +146,7 @@ export const Reveal = ({ question, answer }) => {
 
 Today's data is structured. The audio features (`danceability`, `energy` and so on) were _computed_ from unstructured audio files.
 
-### Common file formats
+**Common file formats**
 
 | Format | Best for | Notes |
 | --- | --- | --- |
@@ -149,7 +154,7 @@ Today's data is structured. The audio features (`danceability`, `energy` and so 
 | **JSON** | Data from web APIs | Handles nested information |
 | **Parquet** | Big data in warehouses | Compressed and fast to read |
 
-## Where does data live?
+### 2.2 Where does data live?
 
 | | On-premises | Cloud data warehouse |
 |---|---|---|
@@ -206,7 +211,7 @@ export const CloudToggle = () => {
 
 A streaming platform that stores billions of plays a day cannot realistically fit that into a single office server, which is why most use cloud warehouses.
 
-## The data lifecycle
+### 2.3 The data lifecycle
 
 <Steps>
   <Step title="Extract">
@@ -222,6 +227,8 @@ A streaming platform that stores billions of plays a day cannot realistically fi
     Present results so people can act on them. *In our workshop:* the Power BI dashboard.
   </Step>
 </Steps>
+
+![Spotify data moves from CSV extraction through Power Query and a random forest to a Power BI dashboard](/week2/images/data-lifecycle.svg)
 
 export const LifecyclePipeline = () => {
   const [sel, setSel] = useState(0);
@@ -256,7 +263,7 @@ export const LifecyclePipeline = () => {
 
 <LifecyclePipeline />
 
-## Data Cleaning
+### 2.4 Data Cleaning
 
 A commonly quoted rule of thumb says about **80% of data work is cleaning**. It is a rough figure, not a law, but the point is real: models and charts are only as good as the data under them. 
 
@@ -270,7 +277,7 @@ Examples you will meet in the Spotify data:
 **The cost of bad data.** If duplicates make one song look five times as common, your model may "learn" that its features matter five times more than they do. A wrong prediction leads to a wrong decision about where to spend money, and that is a real cost.
 </Warning>
 
-### What does "good data" mean?
+**What does "good data" mean?**
 
 | Quality | Question | Spotify example |
 | --- | --- | --- |
@@ -281,7 +288,7 @@ Examples you will meet in the Spotify data:
 | **Accuracy** | Is it actually correct? | A tempo of 2000 BPM |
 | **Timeliness** | Is it up to date? | Popularity scores from years ago |
 
-### How we fix common problems
+**How we fix common problems**
 
 | Problem | Typical fix |
 | --- | --- |
@@ -295,7 +302,7 @@ Examples you will meet in the Spotify data:
   Never clean blindly. Record each step you take so someone else can repeat it and trust the result. Power Query does this automatically in its "Applied steps" list.
 </Tip>
 
-### Data and responsibility
+**Data and responsibility**
 
 Even harmless-looking data can be sensitive. Before using a dataset, ask where it came from, whether it contains personal information, and whether you have permission to use it. Our Spotify dataset describes songs, not listeners, which is part of why it's safe to use in a workshop.
 
@@ -346,7 +353,7 @@ export const SpotTheProblem = () => {
         <p className="m-0 text-lg font-bold">Data Detective</p>
         <p className="m-0 mt-1 text-sm">Six errors are hiding in this slice of the Spotify data. Tap any cell you think is wrong to flag it, then press Check.</p>
         <p className="m-0 mt-2 text-xs font-semibold">
-          <span style={{ background: "rgba(255,255,255,0.25)", borderRadius: 999, padding: "2px 10px", marginRight: 8 }}>ðŸš© {flagged.length} flagged</span>
+          <span style={{ background: "rgba(255,255,255,0.25)", borderRadius: 999, padding: "2px 10px", marginRight: 8 }}>{flagged.length} flagged</span>
           <span style={{ background: "rgba(255,255,255,0.25)", borderRadius: 999, padding: "2px 10px" }}> {keys.length} hidden</span>
         </p>
       </div>
@@ -402,9 +409,9 @@ export const Reveal = ({ question, answer }) => {
 
 ---
 
-## Session 3 — Visual Analytics with Power BI
+## 3. Visual Analytics with Power BI
 
-## Connecting data
+### 3.1 Connecting data
 
 Power BI can read data in two main ways:
 
@@ -416,12 +423,14 @@ Power BI can read data in two main ways:
 
 We use a CSV today because it is simple and needs no server.
 
-## Dimensions vs measures
+### 3.2 Dimensions vs measures
 
 This one idea unlocks most of Power BI.
 
 - A **dimension** is a category you *slice by*: genre, explicit (yes/no), key.
 - A **measure** is a number you *calculate*: average popularity, count of tracks, average energy.
+
+![Bar chart showing genre as the dimension and average popularity as the measure, with illustrative values](/week2/images/dimensions-vs-measures.svg)
 
 export const SortGame = () => {
   const items = [
@@ -469,7 +478,7 @@ export const SortGame = () => {
 
 <SortGame />
 
-## Choosing the right visual
+### 3.3 Choosing the right visual
 
 | Goal | Chart | Spotify example |
 |---|---|---|
@@ -524,13 +533,13 @@ export const ChartChooser = () => {
 
 <ChartChooser />
 
-### Track-specific examples
+**Track-specific examples**
 
 - **Bar chart:** average popularity (measure) by genre (dimension).
 - **Scatter plot:** each dot is a group, such as a genre; position shows two audio features.
 - **KPI card:** the share of tracks that count as viral.
 
-## KPIs
+### 3.4 KPIs
 
 A **KPI** (Key Performance Indicator) is one number that tells you, at a glance, how well something is going. On a dashboard, KPIs sit at the top because they answer the first question anyone asks: _"So, how are we doing?"_
 
@@ -541,7 +550,7 @@ A KPI is not just any number. A good one is:
 - **Comparable:** it means more with context, such as a target, last month, or another group.
 - **Simple to read:** a person should get it in about three seconds.
 
-### KPIs for our Spotify dashboard
+**KPIs for our Spotify dashboard**
 
 | KPI | What it answers | Calculation in Power BI |
 | --- | --- | --- |
@@ -554,7 +563,7 @@ A KPI is not just any number. A good one is:
   Every KPI is a **measure** (a calculated number), but not every measure deserves to be a KPI. Choose the few that drive decisions.
 </Note>
 
-### Card vs KPI visual
+**Card vs KPI visual**
 
 Power BI has two ways to show a headline number:
 
@@ -566,7 +575,7 @@ Power BI has two ways to show a headline number:
 
 We use **Cards** in this workshop because they are the simplest. The KPI visual becomes useful once you have a goal to compare against, for example _"Our aim is 15% viral share"_.
 
-### Common KPI mistakes
+**Common KPI mistakes**
 
 - **Wrong aggregation.** Summing `popularity` gives a meaningless number. Average it.
 - **No context.** "Viral share: 12%" is hard to judge. Is that high or low? Add a target, or compare genres using the slicer.
@@ -577,11 +586,11 @@ We use **Cards** in this workshop because they are the simplest. The KPI visual 
 **Heads-up about the dataset:** it has a `popularity` score (0–100) but no raw stream counts, so wherever you see "streams" in other material, we use **popularity** instead.
 </Note>
 
-## How this connects to Day 2's ML model
+### 3.5 How this connects to Day 2's ML model
 
 Every pattern you spot in a chart is a *hypothesis* about which features drive popularity. On Day 2 you will write those hypotheses down, then check whether the model agrees. Dashboard first, model second.
 
-## Mini-demo: California Housing
+### 3.6 Mini-demo: California Housing
 
 Before touching Spotify, we practice on something simpler. The **California Housing** dataset is built into Google Colab at `/content/sample_data/california_housing_train.csv`.
 
@@ -614,13 +623,13 @@ Before touching Spotify, we practice on something simpler. The **California Hous
 
 ---
 
-## Session 4 — Machine Learning Fundamentals
+## 4. Machine Learning Fundamentals
 
-## What is machine learning?
+### 4.1 What is machine learning?
 
 Normally you write rules: *if energy is above 0.8, call it a hit.* In machine learning you give the computer many **examples** with known answers and let it **find the rules itself**. The algorithm finds mathematical patterns in past data and uses them to predict new cases.
 
-## Supervised vs unsupervised
+### 4.2 Supervised vs unsupervised
 
 - **Supervised learning:** every example comes with the right answer. *"Here are 100,000 songs and whether each went viral. Learn the link."*
 - **Unsupervised learning:** no answers given. *"Here are 100,000 songs. Group similar ones together."*
@@ -629,7 +638,7 @@ Normally you write rules: *if energy is above 0.8, call it a hit.* In machine le
 Our workshop uses **supervised learning**, because we know each track's popularity.
 </Note>
 
-## Features and targets
+### 4.3 Features and targets
 
 - **Features** are the inputs: things we know about a song before release.
 - **Target** (or **label**) is the output we want to predict.
@@ -643,7 +652,7 @@ Our workshop uses **supervised learning**, because we know each track's populari
 
 Because the target is a **category** (viral or not) rather than a number, this is a **classification** problem. If we predicted the exact popularity number, it would be **regression**.
 
-## Training vs testing, and overfitting
+### 4.4 Training vs testing, and overfitting
 
 Imagine studying for an exam by memorising last year's paper word for word. You'd score 100% on *that* paper and fail a new one. Models do the same thing, and it is called **overfitting**.
 
@@ -651,6 +660,8 @@ To catch it, we split the data:
 
 - **Training set (about 80%):** the model learns from this.
 - **Testing set (about 20%):** hidden during learning, used only to grade the model on songs it has never seen.
+
+![Two plots compare a trend line near held-out test points with a curve that follows the training points too closely](/week2/images/training-vs-overfitting.svg)
 
 export const OverfitDemo = () => {
   const [depth, setDepth] = useState(3);
@@ -690,11 +701,13 @@ export const OverfitDemo = () => {
 A model with great training accuracy but poor testing accuracy has not learned anything useful. Always judge a model on the **test** set.
 </Warning>
 
-## Models 
+### 4.5 Models 
 
 There is no single best model. Each one learns patterns in a different way, and the right choice depends on your data and your goal. Here are five common ones for our "will this track go viral?" problem.
 
-### 1. Logistic regression: the weighted score
+**1. Logistic regression: the weighted score**
+
+![S-shaped logistic regression curve with predictions between zero and one](/week2/images/logistic-regression.png)
 
 Despite the name, this is a **classification** model. It gives each feature a weight, adds up a score, and squashes that score into a probability between 0 and 1.
 
@@ -703,7 +716,9 @@ Despite the name, this is a **classification** model. It gives each feature a we
 - **Weaknesses:** it only captures straight-line relationships.
 - **Use it when:** you want a quick, understandable baseline.
 
-### 2. k-Nearest Neighbors (k-NN): ask your neighbors
+**2. k-Nearest Neighbors (k-NN): ask your neighbors**
+
+![Before and after k-nearest neighbors assigns a new point to a class](/week2/images/k-nearest-neighbors.png)
 
 To judge a new song, it finds the _k_ most similar songs in the training data and takes a vote.
 
@@ -712,7 +727,9 @@ To judge a new song, it finds the _k_ most similar songs in the training data an
 - **Weaknesses:** slow on huge datasets, and sensitive to features on different scales (tempo goes up to 200 while danceability stops at 1).
 - **Use it when:** you have a small dataset and similarity makes sense.
 
-### 3. Decision tree: a flowchart of questions
+**3. Decision tree: a flowchart of questions**
+
+![Decision tree with yes and no branches leading to outcomes](/week2/images/decision-tree.png)
 
 It asks a chain of yes/no questions: _Is energy above 0.6? Is acousticness below 0.3?_ Each answer leads to another question until it reaches a decision.
 
@@ -720,7 +737,9 @@ It asks a chain of yes/no questions: _Is energy above 0.6? Is acousticness below
 - **Weaknesses:** one tree tends to **overfit**. It memorizes the training data.
 - **Use it when:** explanation matters more than top accuracy.
 
-### 4. Random forest: a council of trees
+**4. Random forest: a council of trees**
+
+![Random forest combining predictions from three trees by majority vote](/week2/images/random-forest.png)
 
 It builds hundreds of slightly different trees, each trained on a random slice of the data, and lets them **vote**. Averaging many opinions cancels out individual mistakes.
 
@@ -728,7 +747,9 @@ It builds hundreds of slightly different trees, each trained on a random slice o
 - **Weaknesses:** harder to explain than one tree, and slower to train.
 - **Use it when:** you want a strong, dependable model without much tuning. **This is the model we use on Day 2.**
 
-### 5. Gradient boosting: learning from mistakes
+**5. Gradient boosting: learning from mistakes**
+
+![Gradient boosting trains each successive tree on the remaining errors](/week2/images/gradient-boosting.png)
 
 Trees are built **one after another**, and each new tree focuses on the songs the previous trees got wrong. Together they gradually improve. Popular versions include XGBoost and LightGBM.
 
@@ -736,7 +757,7 @@ Trees are built **one after another**, and each new tree focuses on the songs th
 - **Weaknesses:** more settings to tune, and it can overfit if pushed too hard.
 - **Use it when:** you want maximum accuracy and are comfortable tuning.
 
-### Side by side
+**Side by side**
 
 | Model | Idea | Easy to explain? | Typical accuracy | scikit-learn class |
 | --- | --- | --- | --- | --- |
@@ -750,11 +771,11 @@ Trees are built **one after another**, and each new tree focuses on the songs th
   Start simple. A model you can explain, and that performs close to the fancy one, is often the better business choice.
 </Tip>
 
-### Supervised vs unsupervised: where do these fit?
+**Supervised vs unsupervised: where do these fit?**
 
 All five models above are **supervised**, since they learn from tracks with a known label. An unsupervised example is **k-means clustering**, which groups songs that sound alike with no labels at all. A label might use it to discover "types" of tracks before deciding what to predict.
 
-## How do we know a model is good?
+### 4.6 How do we know a model is good?
 
 Accuracy alone can mislead. If only 10% of tracks are viral, a model that says "not viral" every time is 90% accurate and completely useless. So we also look at:
 
@@ -766,6 +787,8 @@ Accuracy alone can mislead. If only 10% of tracks are viral, a model that says "
 | --- | --- | --- |
 | **Actually viral** | Hit (true positive) | Missed hit (false negative) |
 | **Actually not viral** | False alarm (false positive) | Correct rejection (true negative) |
+
+![Confusion matrix comparing actual and predicted classes across true positives, false negatives, false positives, and true negatives](/week2/images/confusion-matrix.png)
 
 A record label might care most about **recall** (don't miss a future hit) or **precision** (don't waste marketing on a flop). The right metric depends on the business goal.
 
@@ -826,11 +849,11 @@ export const Reveal = ({ question, answer }) => {
 
 ---
 
-## Session 5 — Production Pipelines
+## 5. Production Pipelines
 
 A model sitting in a notebook helps nobody. To be useful, it has to be **deployed** so other systems can use it.
 
-## The model's life after training
+### 5.1 The model's life after training
 
 Training is only the middle of the story. A complete workflow looks like this:
 
@@ -854,7 +877,7 @@ Training is only the middle of the story. A complete workflow looks like this:
 
 This loop is often called **MLOps**: machine learning plus the operational habits that keep it running.
 
-## Deployment and APIs
+### 5.2 Deployment and APIs
 
 The most common approach is to wrap the model in an **API** (Application Programming Interface): a doorway other software can knock on.
 
@@ -864,7 +887,7 @@ The most common approach is to wrap the model in an **API** (Application Program
 
 Getting an answer on demand like this is called **real-time inference**.
 
-### Batch vs real-time predictions
+**Batch vs real-time predictions**
 
 |  | Batch | Real-time |
 | --- | --- | --- |
@@ -875,7 +898,7 @@ Getting an answer on demand like this is called **real-time inference**.
 
 Our Day 2 export to Power BI is a small example of **batch** scoring.
 
-### Other ways models get used
+**Other ways models get used**
 
 - **Inside an app** (a recommendation shown to a listener).
 - **In a spreadsheet or dashboard** (predictions loaded into Power BI).
@@ -883,7 +906,7 @@ Our Day 2 export to Power BI is a small example of **batch** scoring.
 
 {/* ILLUSTRATION I-13: Animated request/response flow: App → API → Model → App, with a sample JSON request and response that students can edit (change energy and see a new fake probability). */}
 
-## Model drift
+### 5.3 Model drift
 
 The world changes, and models don't notice. This is **model drift**.
 
@@ -947,7 +970,7 @@ export const Reveal = ({ question, answer }) => {
   );
 };
 
-### Responsible deployment checklist
+**Responsible deployment checklist**
 
 - Do we know what the model should **not** be used for?
 - Does it perform fairly across genres and not just the popular ones?
@@ -957,24 +980,3 @@ export const Reveal = ({ question, answer }) => {
 <Note>
   A model that predicts "viral" is a tool to support a decision, not to replace the people who make it.
 </Note>
-
----
-
-## Session 6 — Environment Setup Lab
-
-<Steps>
-  <Step title="Open Power BI Desktop">
-    On your computer, find **Power BI Desktop** / **Power BI Web App** in the Start menu. Open it and confirm you reach the blank report canvas. (Try downloading the App from the Microsoft Store).
-  </Step>
-  <Step title="Check Google Colab">
-    Go to [colab.research.google.com](https://colab.research.google.com), sign in, click **New notebook**. In the first cell, type `print("hello")` and press **Shift + Enter**. You should see `hello`.
-  </Step>
-  <Step title="Download the dataset">
-    Open the [Spotify Tracks Dataset](https://www.kaggle.com/datasets/maharshipandya/-spotify-tracks-dataset) on Kaggle, sign in, click **Download**, and unzip. You will have a file named `dataset.csv`.
-  </Step>
-  <Step title="Open the file once">
-    Open `dataset.csv` in Excel or Notepad. Notice the columns (`danceability`, `energy`, `popularity`, `track_genre` and so on).
-  </Step>
-</Steps>
-
-{/* ILLUSTRATION I-15: Setup checklist widget with tick boxes that save progress; optional short screen recording for each step. */}
