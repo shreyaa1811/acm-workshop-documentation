@@ -18,18 +18,6 @@ hideFooterPagination: true
 
 ---
 
-## Contents
-
-1. [Where this can take you](#1-where-this-can-take-you)
-2. [The cloud in plain words](#2-the-cloud-in-plain-words)
-3. [AWS, Azure and Google Cloud side by side](#3-aws-azure-and-google-cloud-side-by-side)
-4. [Docker and containers](#4-docker-and-containers)
-5. [DevOps and CI/CD](#5-devops-and-cicd)
-6. [Setup lab: play Cloud Quest](#6-setup-lab-play-cloud-quest)
-7. [Glossary](#7-glossary)
-8. [Troubleshooting](#8-troubleshooting)
-
----
 
 ## 1. Where this can take you
 
@@ -50,7 +38,11 @@ Each part below starts with a short look at the jobs that part leads to.
 
 ![Career prospects in cloud: Cloud Engineer, Solutions Architect, Cloud Security Engineer](images/career-cloud.svg)
 
-Nearly every company now runs at least part of its software on a cloud provider, so people who understand how the cloud works are in demand well beyond tech firms. A **Cloud Engineer** builds and runs things on AWS, Azure or Google Cloud. A **Solutions Architect** decides how the pieces should fit together. A **Cloud Security Engineer** looks after identity, secrets and access. Everything in this part and the next is the groundwork for those roles.
+Nearly every company now runs at least part of its software on a cloud provider, so people who understand how the cloud works are in demand well beyond tech firms. 
+- A **Cloud Engineer** builds and runs things on AWS, Azure or Google Cloud. 
+- A **Solutions Architect** decides how the pieces should fit together. 
+- A **Cloud Security Engineer** looks after identity, secrets and access. 
+Everything in this part and the next is the groundwork for those roles.
 
 ### 2.2 What is "the cloud"?
 
@@ -113,15 +105,6 @@ Nearby: AWS has a UAE region; Azure has UAE North (Dubai) and UAE Central (Abu D
 - **Pay-as-you-go** bills you for usage; **free tiers and trial credits** are for learning
 - **Idle resources can still cost money.** A VM bills even with zero visitors. Cloud Run scales to zero, but always delete what you don't need
 
-**Check yourself** (click to reveal each answer)
-
-1. Is Gmail IaaS, PaaS or SaaS?
-   <details><summary>Show answer</summary><b>SaaS</b></details>
-2. Your Compute Engine VM gets hacked because nobody installed OS updates. Whose fault?
-   <details><summary>Show answer</summary><b>Yours</b>: in IaaS, the OS is your job.</details>
-3. Which is usually preferred: scale up or scale out?
-   <details><summary>Show answer</summary><b>Scale out</b>: more machines, no single point of failure.</details>
-
 ---
 
 ## 3. AWS, Azure and Google Cloud side by side
@@ -161,15 +144,6 @@ The three big clouds offer the same building blocks under different names. Learn
 ### 3.3 How do companies choose?
 
 Existing tools (Microsoft shops lean Azure; Google Workspace and data/AI teams often lean GCP), pricing deals and credits, team skills, compliance and data residency. Plenty use more than one.
-
-**Check yourself** (click to reveal each answer)
-
-1. AWS S3 on Google Cloud?
-   <details><summary>Show answer</summary><b>Cloud Storage</b></details>
-2. Azure resource group on Google Cloud?
-   <details><summary>Show answer</summary><b>Project</b></details>
-3. Where will your Docker image live on Day 2?
-   <details><summary>Show answer</summary><b>Artifact Registry</b></details>
 
 ---
 
@@ -273,15 +247,6 @@ docker rm <container-id>           # delete it
 docker images                      # list images on your machine
 ```
 
-**Check yourself** (click to reveal each answer)
-
-1. `RUN pip install ...` happens when?
-   <details><summary>Show answer</summary>At <b>build</b> time.</details>
-2. Why copy `requirements.txt` before the rest of the code?
-   <details><summary>Show answer</summary>So the install layer stays <b>cached</b> when only your code changes.</details>
-3. Your app runs in the container but `localhost:8080` won't load. Two likely causes?
-   <details><summary>Show answer</summary>No <code>-p 8080:8080</code>, or the app listens on <code>127.0.0.1</code> instead of <code>0.0.0.0</code>.</details>
-
 ---
 
 ## 5. DevOps and CI/CD
@@ -290,7 +255,12 @@ docker images                      # list images on your machine
 
 ![Career prospects in DevOps: DevOps Engineer, Site Reliability Engineer, DevSecOps Engineer](images/career-devops.svg)
 
-DevOps work is about making releases boring: automated, repeatable and safe. **DevOps Engineers** build the pipelines, **Site Reliability Engineers** keep services running and get paged when they don't, and **DevSecOps Engineers** build security checks into the pipeline. These are rarely first jobs. Most people move into them after a year or two as a developer or cloud engineer, so the habits you start building here pay off later.
+DevOps work is about making releases boring: automated, repeatable and safe. 
+- **DevOps Engineers** build the pipelines 
+- **Site Reliability Engineers** keep services running and get paged when they don't 
+- **DevSecOps Engineers** build security checks into the pipeline. 
+
+These are rarely first jobs. Most people move into them after a year or two as a developer or cloud engineer, so the habits you start building here pay off later.
 
 ### 5.2 What DevOps and CI/CD mean
 
@@ -303,10 +273,6 @@ DevOps work is about making releases boring: automated, repeatable and safe. **D
 ![Source, build, test, package, deploy](images/cicd-pipeline.svg)
 
 The **image is the artifact**: the exact image that passed the tests is what runs in production. On Day 2, **GitHub Actions** runs this whole pipeline every time you push.
-
-### 5.4 Where to go next
-
-Infrastructure as Code (Terraform), monitoring and observability, and DevSecOps. The career cards above list the certifications that go with each.
 
 ---
 
