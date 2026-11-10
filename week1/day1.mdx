@@ -122,24 +122,64 @@ The three big clouds offer the same building blocks under different names. Learn
 
 > **Tags / Labels** are `name = value` notes you stick on resources, like `env = prod` or `team = payments`. They don't change how anything runs, but they let you split the bill by team, find resources quickly, and automate things like "shut down everything labelled `env = dev` at night". (Google Cloud also has a separate feature called *tags*, used for access and firewall rules. Its equivalent of AWS/Azure tags is *labels*.)
 
-### 3.2 The cheat sheet 
+### 3.2 The cheat sheet
 
-| Area | AWS | Azure | Google Cloud | The idea |
-| --- | --- | --- | --- | --- |
-| Virtual machines | EC2 | Virtual Machines | Compute Engine | Rentable servers sized by CPU and memory |
-| Object storage | S3 | Blob Storage | Cloud Storage | Files over HTTP |
-| Identity | IAM | Entra ID + RBAC | Cloud IAM + service accounts | Least privilege: only the access needed |
-| Network | VPC | VNet | VPC | Your private network |
-| Firewall | Security groups | NSGs | Firewall rules | Who can talk to what |
-| Database | RDS | Azure SQL | Cloud SQL | Provider handles backups and patching |
-| Serverless functions | Lambda | Azure Functions | Cloud Run functions | Run code on events, no server |
-| Container registry | ECR | ACR | Artifact Registry | Store your Docker images |
-| Run containers | ECS / Fargate | Container Apps / ACI | Cloud Run  | Run an image, get a URL |
-| Kubernetes | EKS | AKS | GKE | Orchestrate many containers |
-| App hosting | Elastic Beanstalk | App Service | App Engine / Cloud Run | Upload your app, it runs |
-| Secrets | Secrets Manager | Key Vault | Secret Manager | Keep keys out of your code |
-| AI models | Bedrock | Azure OpenAI | Vertex AI / Gemini | Call an AI model via an API |
-| Grouping | Account, tags | Subscription, resource group | Project , labels | One box per app |
+<Tabs>
+  <Tab title="AWS">
+    | Area | Service | What it does |
+    | --- | --- | --- |
+    | Virtual machines | EC2 | Rentable servers sized by CPU and memory |
+    | Object storage | S3 | Files over HTTP |
+    | Identity | IAM | Least privilege: only the access needed |
+    | Network | VPC | Your private network |
+    | Firewall | Security groups | Who can talk to what |
+    | Database | RDS | Provider handles backups and patching |
+    | Serverless functions | Lambda | Run code on events, no server |
+    | Container registry | ECR | Store your Docker images |
+    | Run containers | ECS / Fargate | Run an image, get a URL |
+    | Kubernetes | EKS | Orchestrate many containers |
+    | App hosting | Elastic Beanstalk | Upload your app, it runs |
+    | Secrets | Secrets Manager | Keep keys out of your code |
+    | AI models | Bedrock | Call an AI model via an API |
+    | Grouping | Account, tags | One box per app |
+  </Tab>
+  <Tab title="Azure">
+    | Area | Service | What it does |
+    | --- | --- | --- |
+    | Virtual machines | Virtual Machines | Rentable servers sized by CPU and memory |
+    | Object storage | Blob Storage | Files over HTTP |
+    | Identity | Entra ID + RBAC | Least privilege: only the access needed |
+    | Network | VNet | Your private network |
+    | Firewall | NSGs | Who can talk to what |
+    | Database | Azure SQL | Provider handles backups and patching |
+    | Serverless functions | Azure Functions | Run code on events, no server |
+    | Container registry | ACR | Store your Docker images |
+    | Run containers | Container Apps / ACI | Run an image, get a URL |
+    | Kubernetes | AKS | Orchestrate many containers |
+    | App hosting | App Service | Upload your app, it runs |
+    | Secrets | Key Vault | Keep keys out of your code |
+    | AI models | Azure OpenAI | Call an AI model via an API |
+    | Grouping | Subscription, resource group | One box per app |
+  </Tab>
+  <Tab title="Google Cloud">
+    | Area | Service | What it does |
+    | --- | --- | --- |
+    | Virtual machines | Compute Engine | Rentable servers sized by CPU and memory |
+    | Object storage | Cloud Storage | Files over HTTP |
+    | Identity | Cloud IAM + service accounts | Least privilege: only the access needed |
+    | Network | VPC | Your private network |
+    | Firewall | Firewall rules | Who can talk to what |
+    | Database | Cloud SQL | Provider handles backups and patching |
+    | Serverless functions | Cloud Run functions | Run code on events, no server |
+    | Container registry | Artifact Registry | Store your Docker images |
+    | Run containers | **Cloud Run** | Run an image, get a URL |
+    | Kubernetes | GKE | Orchestrate many containers |
+    | App hosting | App Engine / Cloud Run | Upload your app, it runs |
+    | Secrets | Secret Manager | Keep keys out of your code |
+    | AI models | Vertex AI / Gemini | Call an AI model via an API |
+    | Grouping | **Project**, labels | One box per app |
+  </Tab>
+</Tabs>
 
 ### 3.3 How do companies choose?
 

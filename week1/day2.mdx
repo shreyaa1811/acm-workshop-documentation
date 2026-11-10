@@ -131,9 +131,9 @@ CMD ["gunicorn", "--bind", "0.0.0.0:8080", "app:app"]
 ```
 
 Key things to remember:
-- **`RUN` vs `CMD`** — `RUN` runs while *building* the image (install stuff). `CMD` runs when the container *starts* (run the app).
-- **Requirements copied before the code** — layers are cached top to bottom, so dependencies don't reinstall every time you tweak code.
-- **No API key anywhere** — secrets never go inside the image. We add the key later, at run time.
+- **`RUN` vs `CMD`** : `RUN` runs while *building* the image (install stuff). `CMD` runs when the container *starts* (run the app).
+- **Requirements copied before the code** : layers are cached top to bottom, so dependencies don't reinstall every time you tweak code.
+- **No API key anywhere** : secrets never go inside the image. We add the key later, at run time.
 
 ### 4.3 Build the image
 

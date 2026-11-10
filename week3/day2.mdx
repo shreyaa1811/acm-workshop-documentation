@@ -5,3 +5,195 @@ description: "Build an AI agent with LangGraph that plans, codes, reviews, and f
 hideFooterPagination: true
 ---
 
+## 1. Build an App-Builder Agent
+
+- Build a small website generator with **LangGraph**, **Groq** and a local browser interface.
+  - Describe a simple app in natural language.
+  - Follow the planner, architect, coder and reviewer as they work through the request.
+  - Interact with the generated website, edit its source and download it as one HTML file.
+- The frontend uses **DM Sans from Google Fonts** and contains its HTML, CSS and JavaScript in a single file.
+- The Python backend runs the model calls and keeps your API key out of the browser.
+
+## 2. Get the Codebase
+
+- **GitHub:** [RiyanBhargava/acm-day2-agentic-ai](https://github.com/RiyanBhargava/acm-day2-agentic-ai)
+- **ZIP:** [Download the codebase](https://github.com/RiyanBhargava/acm-day2-agentic-ai/raw/refs/heads/main/agentic-ai-app.zip)
+  - The ZIP contains only the application source and its README.
+  - It excludes API keys, virtual environments and installed packages.
+
+### 2.1 Option A: Clone with Git
+
+Install Git, open a terminal and run:
+
+```text
+git clone https://github.com/RiyanBhargava/acm-day2-agentic-ai.git
+cd acm-day2-agentic-ai
+```
+
+### 2.2 Option B: Download the ZIP
+
+- Download `agentic-ai-app.zip`[(link)](https://github.com/RiyanBhargava/acm-day2-agentic-ai/raw/refs/heads/main/agentic-ai-app.zip) and extract it.
+- Open the extracted `agentic-ai-app` folder in VS Code.
+- Open a terminal in that folder, where `main.py` and `requirements.txt` are located.
+
+Use either option. The setup and run commands below work from the project folder for both.
+
+## 3. Setup and Run
+
+### 3.1 What You Need
+
+- **Python 3.12** and an editor such as **VS Code**.
+- **Git**, if using the clone option.
+- A **Groq API key** from [Groq Console](https://console.groq.com).
+- A web browser and an internet connection for installation and AI generation.
+
+### 3.2 Windows PowerShell
+
+Run these commands from the project folder:
+
+```powershell
+python -m venv .venv
+.venv\Scripts\python.exe -m pip install -r requirements.txt
+Copy-Item .env.example .env
+```
+
+Edit `.env` in your editor:
+
+- Replace `your_groq_api_key_here` with your Groq key.
+- Keep the default `GROQ_MODEL` unless you need another available tool-capable model.
+- Keep `.env` private. Do not paste its contents into the frontend or share it.
+
+Start the server:
+
+```powershell
+.venv\Scripts\python.exe -m uvicorn main:app --host 127.0.0.1 --port 8000 --reload
+```
+
+### 3.3 macOS / Linux
+
+```bash
+python3 -m venv .venv
+.venv/bin/python -m pip install -r requirements.txt
+cp .env.example .env
+```
+
+Edit `.env` and add your key, then start the server:
+
+```bash
+.venv/bin/python -m uvicorn main:app --host 127.0.0.1 --port 8000 --reload
+```
+
+### 3.4 Open the Application
+
+- Wait for `Application startup complete` in the terminal.
+- Open **http://127.0.0.1:8000** in your browser.
+  - Use this HTTP address rather than double-clicking `index.html`.
+  - Keep the terminal open while using the application.
+- Press **Ctrl+C** in the terminal to stop the server.
+- Restart the server after changing `.env`.
+- If port 8000 is occupied, use `--port 8001` and open `http://127.0.0.1:8001`.
+
+## 4. Understand the Codebase
+
+- **`main.py`: backend and agent workflow**
+  - Loads `.env` and connects to the selected Groq model.
+  - Defines Pydantic schemas for the plan, architecture, generated page and review.
+  - Defines the four system prompts and corresponding graph nodes.
+  - Connects the nodes with LangGraph and limits revisions.
+  - Serves the frontend and streams progress and results through the API.
+- **`index.html`: complete frontend**
+  - Contains the page layout, Google Font, CSS and JavaScript.
+  - Sends the app description to the Python API.
+  - Displays build progress and remaining review issues.
+  - Provides Preview and Code views, a preview runner, mobile view and HTML download.
+  - Includes a fixed interactive example for testing without an API key.
+- **`requirements.txt`: Python dependencies**
+  - Lists the direct dependency versions used for the application.
+- **`.env.example`: configuration template**
+  - Shows the `GROQ_API_KEY` and `GROQ_MODEL` settings.
+  - Copy it to a private `.env` before generating apps.
+- **`.gitignore`: files to exclude from version control**
+  - Excludes `.env`, the virtual environment and Python caches.
+- **`README.md`: standalone instructions**
+  - Explains how to install, run and use the application outside this workshop document.
+
+## 5. Follow the Agent Workflow
+
+- **User request**
+  - A short description of the desired website enters the graph.
+- **Planner**
+  - Chooses an app name and up to five small, testable features.
+- **Architect**
+  - Defines the layout, interactions and element IDs needed to implement the plan.
+- **Coder**
+  - Produces one complete HTML document with embedded CSS and JavaScript.
+  - Receives the previous HTML and review feedback when revising.
+- **Reviewer**
+  - Inspects the source against the request, plan and architecture.
+  - Returns specific issues, or an empty list if it finds none.
+- **Revision and result**
+  - Python routes the graph back to the coder when issues remain and a revision is allowed.
+  - One initial coding attempt and one revision are permitted.
+  - The result and any unresolved issues are returned to the frontend.
+
+All four roles use the same model with different system prompts. Shared state carries the request, plan, architecture, HTML, feedback and attempt count. The reviewer reads source; it does not run browser tests.
+
+## 6. Use the Interface
+
+### 6.1 Try the Example
+
+- Select **Try an interactive example**.
+- Add, complete and delete tasks in the preview.
+- This is a fixed task tracker. It makes no model calls and works without a Groq key.
+
+### 6.2 Generate an App
+
+Example request:
+
+> Build a dark-themed task tracker. Let me add tasks, mark them complete and delete them. Keep the tasks in memory and make the layout work on a phone.
+
+- Enter the request and select **Build my app**.
+- Follow the progress through each role.
+  - Generation may take several minutes.
+  - Only one build runs at a time in the local server.
+- Test the result in **Preview** and read any remaining review issues below it.
+
+### 6.3 Edit, Preview and Download
+
+- Select **Code** to inspect or edit the complete HTML source.
+- Select **Run preview** to render the current source and restart its JavaScript.
+- Use **Mobile view** to check a phone-width layout.
+- Select **Download HTML** to save the current page as `my-app.html`.
+  - The downloaded page contains its own CSS and JavaScript and the preview's restrictive content policy.
+  - It can run without the Python server.
+
+## 7. Scope and Testing
+
+- Keep generated apps small and self-contained.
+  - Suitable examples include counters, calculators, timers, quizzes and task trackers.
+  - Use ordinary HTML, CSS and JavaScript with in-memory state.
+  - Reloading the preview resets that state.
+- The preview uses the browser's HTML/CSS/JavaScript engine.
+  - It is not a compiler for Python, React, JSX or TypeScript.
+  - The sandbox restricts network access, browser storage and access to the surrounding page.
+  - Backend services, authentication and external integrations are outside this version's scope.
+- Test every requested feature with sample data.
+  - Check button actions, empty inputs, keyboard access and mobile layout.
+  - For a task tracker, check adding, completing and deleting tasks.
+  - Inspect browser developer tools if the page fails.
+- An empty review list is not proof that the app works.
+  - Browser failures are not automatically sent to the reviewer.
+  - Model outputs can vary, and API calls consume your Groq allowance.
+  - Download results you want to keep before refreshing the main interface.
+
+## 8. Troubleshooting
+
+- **Python is not found:** check the installation; try `py -3.12` on Windows or `python3` on macOS/Linux.
+- **A package is missing:** install requirements with the same virtual-environment Python used to start the server.
+- **Cannot import `main`:** run the start command from the folder containing `main.py`.
+- **The page cannot reach the server:** keep Uvicorn running and use its HTTP address.
+- **The key is missing or rejected:** check `.env`, replace the placeholder and restart the server.
+- **The model or structured response fails:** confirm model availability and tool support, then try a smaller request.
+- **Rate limit reached:** wait before retrying and reduce the app's scope.
+- **A build is already running:** wait for it to finish; closing a tab does not guarantee cancellation of its model call.
+- **The preview is empty or a button fails:** inspect the source and browser console, then correct the code or simplify the request.

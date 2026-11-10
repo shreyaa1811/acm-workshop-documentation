@@ -5,53 +5,35 @@ description: "Learn the concepts behind AI agents, including tools, loops, memor
 hideFooterPagination: true
 ---
 
-# Agentic AI Workshop
+# Agentic AI Workshop: Day 1
 
-| Day | Focus | Format |
-|---|---|---|
-| **Day 1** | How AI agents work | Concepts + live demos by the speaker (nothing to install) |
-| **Day 2** | Live coding from scratch | Follow the speaker and code along |
+## 1. Introduction
 
-> **The big idea:** an LLM-based agent uses a model to decide what to do next, calls tools and uses the results to continue. The application limits how long it can run and checks its work.
-> Day 1 introduces the concepts. On Day 2, the speaker will build a small app-building agent with LangGraph from scratch, using specialist roles such as a planner, architect and coder.
+An LLM-based agent uses a language model to decide what to do next, calls tools and uses the results to continue. The application manages state, limits the actions available and checks the outcome.
 
-## <span style="font-family: 'Times New Roman', Times, serif;">1. Career Prospects in Agentic AI</span>
+This session introduces models, prompts, structured output, tools, agent loops, memory and LangGraph. By the end, you should be able to explain how these pieces work together and recognise common design patterns and failure cases.
+
+The practical project in [Day 2](/week3/day2) is a small app builder using LangGraph, with planner, architect, coding and review roles. The [setup instructions](/week3/day2#3-setup-and-run) cover Python, packages and a Groq API key.
+
+---
+
+## 2. Career Prospects in Agentic AI
 
 ![Agentic AI career paths: AI application engineer, automation engineer, AI platform engineer and AI evaluation engineer, with the skills used in each role.](assets/09-career-prospects.svg)
 
-<span style="font-family: 'Arial', Times, serif;">Agentic AI skills apply to several kinds of work. **AI application engineers** build model-powered products; **automation engineers** connect tools and business processes; **AI platform engineers** support deployment, monitoring and reliability; and **AI evaluation engineers** test quality and failure cases. Job titles vary by organisation, and these paths also require broader software engineering, data and domain knowledge.</span>
+Agentic AI skills apply to several kinds of work. 
+- **AI application engineers** build model-powered products
+- **Automation engineers** connect tools and business processes
+- **AI platform engineers** support deployment, monitoring and reliability 
+- **AI evaluation engineers** test quality and failure cases. 
 
-<span style="font-family: 'Arial', Times, serif;">This workshop introduces shared foundations: Python, APIs, tool use, state management and evaluation.</span>
-
----
-
-## 2. Day 1: How Agents Work
-
-**Day 1 is concepts only.** Participants watch demonstrations and ask questions in chat. The speaker runs every demo live over screen share.
-
-**Contents**
-
-- [2.1 Welcome & Intro](#21-welcome--intro)
-- [2.2 From Chatbots to Agents](#22-from-chatbots-to-agents)
-- [2.3 LLMs: The Agent's Brain](#23-llms-the-agents-brain)
-- [2.4 Structured Output & Tool Calling](#24-structured-output--tool-calling)
-- [2.5 The Agent Loop](#25-the-agent-loop)
-- [2.6 Memory & Context](#26-memory--context)
-- [2.7 Agent Design Patterns](#27-agent-design-patterns)
-- [2.8 LangGraph Basics](#28-langgraph-basics)
-- [2.9 Safety & Evals](#29-safety--evals)
+Job titles vary by organisation, and these paths also require broader software engineering, data and domain knowledge. This workshop introduces shared foundations: Python, APIs, tool use, state management and evaluation.
 
 ---
 
-### 2.1 Welcome & Intro
+## 3. From Chatbots to Agents
 
-The speakers will introduce themselves and ACM BPDC, then explain the workshop plan. This session covers how agents work through simple examples and live demonstrations. Ask questions in chat at any point; there will also be time for questions after each section.
-
----
-
-### 2.2 From Chatbots to Agents
-
-#### 2.2.1 What is "agentic" AI?
+### 3.1 What is "agentic" AI?
 
 - A **chatbot** answers your question and stops.
 - An **agent** is given a *goal*. It works out the steps, takes actions with tools, checks what happened and continues until it finishes or reaches a stopping condition.
@@ -59,7 +41,7 @@ The speakers will introduce themselves and ACM BPDC, then explain the workshop p
   - A chatbot is like asking a friend for directions.
   - An agent is like a taxi driver. You give the destination and they handle the route, traffic and detours.
 
-#### 2.2.2 The three levels of AI apps
+### 3.2 The three levels of AI apps
 
 ![Autonomy spectrum](assets/01-autonomy-spectrum.png)
 
@@ -69,13 +51,13 @@ The speakers will introduce themselves and ACM BPDC, then explain the workshop p
 | **2. Workflow** | **Your code** decides the steps, and the LLM fills them in | Email → classify → draft reply → send |
 | **3. Agent** | **The LLM** decides the steps at runtime | "Fix the failing tests in this repo" |
 
-#### 2.2.3 Workflow vs agent: when to use which
+### 3.3 Workflow vs agent: when to use which
 
 - **Use a workflow** when you already know the steps. It's predictable, cheaper and easier to debug.
 - **Use an agent** when the steps depend on what happens along the way, like research, debugging or open-ended tasks.
 - **Golden rule:** use the *simplest* option that works. More autonomy means more cost and more ways to go wrong.
 
-#### 2.2.4 Agents you've already seen
+### 3.4 Agents you've already seen
 
 | Agent | What it does |
 |---|---|
@@ -83,19 +65,19 @@ The speakers will introduce themselves and ACM BPDC, then explain the workshop p
 | **Deep research tools** | Search the web many times, read sources, write a report |
 | **Customer-support agents** | Look up orders, issue refunds, escalate to humans |
 
-#### 2.2.5 Where the AI engineer fits
+### 3.5 Where the AI engineer fits
 
 AI engineers working on agent applications build the system around the model: the tools it can use, the loop that controls its work, the memory it can access and the checks that limit its actions. They also design evaluations to measure whether the system completes tasks reliably.
 
-**Chat question:** "Name one boring task you'd love an agent to do for you."
+**Consider:** "Name one boring task you'd love an agent to do for you."
 
 ---
 
-### 2.3 LLMs: The Agent's Brain
+## 4. LLMs: The Agent's Brain
 
-We only need enough LLM background to understand agents.
+The following concepts explain how language models fit into an agent system.
 
-#### 2.3.1 Traditional ML vs generative AI
+### 4.1 Traditional ML vs generative AI
 
 | Traditional ML | Generative AI (LLMs) |
 |---|---|
@@ -103,7 +85,7 @@ We only need enough LLM background to understand agents.
 | "Is this email spam?" | "Write a reply to this email" |
 | Trained for one task | One model, many tasks |
 
-#### 2.3.2 Foundation models
+### 4.2 Foundation models
 
 Foundation models are pretrained on large datasets and can handle many tasks. In this workshop we use an existing model through an API rather than training one. Running a trained model to generate a response is called **inference**.
 
@@ -111,15 +93,15 @@ You can use a hosted API or run a suitable open-weight model locally. Hosted ser
 
 The workshop uses **Groq**, a hosted inference service. Check its [current models](https://console.groq.com/docs/models) and [rate limits](https://console.groq.com/docs/rate-limits) before the session; free access is subject to limits.
 
-#### 2.3.3 How an LLM works (the simple version)
+### 4.3 How an LLM works (the simple version)
 
 - Text is split into **tokens**, which may be words, parts of words or punctuation. Token length varies by language and model.
 - The model predicts the **next token**, again and again, to build up a response.
 - **Context window:** the token budget available for input and generated output, subject to the model's limits. It's like its working desk.
 - **Conversation memory comes from the application.** The model needs relevant earlier information supplied in its context. An app may send message history, a summary or retrieved memories; some APIs manage this state for you.
-- **This is why agents need state and memory** (Section 2.6).
+- **This is why agents need state and memory** (Section 7).
 
-#### 2.3.4 Anatomy of an API call
+### 4.4 Anatomy of an API call
 
 ```python
 from dotenv import load_dotenv
@@ -138,7 +120,7 @@ response = llm.invoke(messages)
 - **User message:** the actual request
 - **Assistant message:** the model's reply
 
-#### 2.3.5 Prompting basics
+### 4.5 Prompting basics
 
 A good prompt has four parts:
 
@@ -147,7 +129,7 @@ A good prompt has four parts:
 3. **Examples:** show the format or style you want
 4. **Output format:** "Reply in JSON", "Use bullet points", etc.
 
-#### 2.3.6 Designing a Role-Specific System Prompt
+### 4.6 Designing a Role-Specific System Prompt
 
 A useful system prompt defines a clear responsibility, the information available, the expected output and the conditions for asking for help. A role name such as "expert assistant" is less useful than concrete instructions and an example of an acceptable result.
 
@@ -166,24 +148,24 @@ The document and checklist must still be supplied as context. A system prompt gu
 
 **Short exercise:** improve "You are a helpful reviewer" by adding a responsibility, an output format and a rule for missing information.
 
-#### 2.3.7 Temperature
+### 4.7 Temperature
 
 - **Low (0-0.3):** usually less varied output; a useful starting point for code and tool use. It does not guarantee identical or correct responses.
 - **Higher (for example, 0.7-1.0):** usually more varied output, which can help with brainstorming. Supported ranges and behaviour vary by model.
 
-**Live demo:** send the same prompt at temperature 0 and at 1 and compare the outputs.
+**Example:** compare the same prompt at temperature 0 and at 1 and observe how the outputs vary.
 
-#### 2.3.8 Key takeaway
+### 4.8 Key takeaway
 
 > The LLM is the **brain**. It can reason, but on its own it **can't act** and **can't remember**. The next sections fix both problems.
 
 ---
 
-### 2.4 Structured Output & Tool Calling
+## 5. Structured Output & Tool Calling
 
 Tool calling lets the application act on the model's requests. Structured output gives those requests and intermediate results a format that code can validate.
 
-#### 2.4.1 Part A: Structured output
+### 5.1 Part A: Structured output
 
 **The problem:** LLMs reply in free text, which code can't use reliably.
 
@@ -214,23 +196,23 @@ class Appointment(BaseModel):
 
 Validate the response against the schema. A valid format does not guarantee correct values, so check the information before using it. Structured output helps when one step's result becomes another step's input.
 
-#### 2.4.2 Part B: Tool calling
+### 5.2 Part B: Tool calling
 
 **The problem:** an LLM can only produce text. It can't check the weather, read a file or send an email.
 
 **The fix:** give it **tools**.
 
-1. You **describe** your tools to the model: a name, a description and the inputs.
+1. The application **describes** your tools to the model: a name, a description and the inputs.
 2. The model reads the user's request and **asks** for a tool call, e.g. `get_weather(city="Dubai")`.
 3. **Your code** runs the tool. The model never runs anything itself.
-4. You **send the result back** to the model.
+4. The application **sends the result back** to the model.
 5. The model either calls another tool or gives the final answer.
 
 ![Tool calling flow](assets/02-tool-calling.png)
 
 **Analogy:** the LLM is a manager who can't use a computer. It tells an assistant (your code) "look up the weather in Dubai". The assistant does it and reports back, and then the manager decides what's next.
 
-#### 2.4.3 Examples of tools
+### 5.3 Examples of tools
 
 | Tool | What it lets the agent do |
 |---|---|
@@ -241,7 +223,7 @@ Validate the response against the schema. A valid format does not guarantee corr
 | Run code | Test what it wrote |
 | Send email / API call | Take actions in the real world |
 
-#### 2.4.4 Live Demo: A Tool Call
+### 5.4 Example: A Tool Call
 
 ```python
 from dotenv import load_dotenv
@@ -252,7 +234,7 @@ load_dotenv()
 
 @tool
 def get_weather(city: str) -> str:
-    """Return simulated weather for a city for this workshop demo."""
+    """Return simulated weather for a city for this example."""
     return f"Simulated weather for {city}: 31°C, 5% chance of rain"
 
 llm = ChatGroq(model="openai/gpt-oss-120b", temperature=0).bind_tools([get_weather])
@@ -263,24 +245,22 @@ print(msg.tool_calls)
 
 The tool returns fixed demonstration data, not a live forecast. Inspect `msg.tool_calls` before executing anything. To continue, run each requested tool and return a `ToolMessage` with the matching tool-call ID, along with the original messages and assistant response. Limit repeated calls in a complete agent loop.
 
-#### 2.4.5 Writing good tools
+### 5.5 Writing good tools
 
 - **Clear name:** `search_orders`, not `tool1`
 - **Description that says *when* to use it:** the model reads it to decide
 - **Few, simple inputs**
 - **Helpful error messages:** "City not found, try a full city name" helps the model recover
 
-#### 2.4.6 Bonus: MCP (Model Context Protocol)
+### 5.6 Bonus: MCP (Model Context Protocol)
 
 MCP is a protocol for exposing tools, resources and prompts to compatible AI applications. An MCP server can provide access to services such as GitHub or Google Drive. The client must support the protocol and handle authentication and permissions.
 
-**Poll:** "Which tool would you give your first agent?" (search / files / email / calendar)
-
 ---
 
-### 2.5 The Agent Loop
+## 6. The Agent Loop
 
-#### 2.5.1 ReAct: Reason + Act
+### 6.1 ReAct: Reason + Act
 
 A common pattern for tool-using agents:
 
@@ -291,7 +271,7 @@ A common pattern for tool-using agents:
 
 ![Agent loop](assets/03-agent-loop.png)
 
-#### 2.5.2 Walkthrough: Find the Library's Opening Hours
+### 6.2 Walkthrough: Find the Library's Opening Hours
 
 | Step | Decision | Action | Result |
 |---|---|---|---|
@@ -302,12 +282,12 @@ A common pattern for tool-using agents:
 
 The agent changes its next action based on what it finds, rather than answering from the first search result.
 
-#### 2.5.3 Planning
+### 6.3 Planning
 
 - **Plan-and-execute:** make the full plan first, then do each step. Good for building things.
 - **Step-by-step (ReAct):** decide one step at a time. Good for exploring and research.
 
-#### 2.5.4 Stop conditions
+### 6.4 Stop conditions
 
 An agent without stop conditions can run forever and burn money. Always have:
 
@@ -317,13 +297,13 @@ An agent without stop conditions can run forever and burn money. Always have:
 - **Error it can't recover from**
 - **A human says stop**
 
-#### 2.5.5 Errors are feedback
+### 6.5 Errors are feedback
 
 - Return recoverable tool errors to the model with enough context to retry. Stop on permission failures or unsafe actions, and avoid exposing secrets in error messages.
 - "File not found" → the agent can try a different path.
 - This is how agents fix themselves.
 
-#### 2.5.6 Common ways agents fail
+### 6.6 Common ways agents fail
 
 | Failure | Example | Fix |
 |---|---|---|
@@ -332,19 +312,17 @@ An agent without stop conditions can run forever and burn money. Always have:
 | Hallucination | Uses a file or package that doesn't exist | Verify before using |
 | Gives up early | Says "done" when it isn't | A reviewer step |
 
-#### 2.5.7 Retries and Actions That Must Not Happen Twice
+### 6.7 Retrying Safely
 
-A timeout does not always mean an action failed. If an agent retries a payment or a message send, it could perform the action twice. Where the service supports it, use an **idempotency key**, a unique operation identifier that makes repeated requests count as one action. Otherwise, check the action's status before repeating it.
+Retry temporary errors, such as rate limits, with a short delay and a fixed retry limit. Invalid inputs need correction; missing permission needs help from a user. Before retrying an action such as sending a message, check whether it already succeeded so it does not happen twice.
 
-Retry temporary failures, such as rate limits, with a short, increasing delay and a fixed retry limit. Invalid inputs need correction; missing permission needs escalation. Repeating the same request cannot fix every error.
-
-**Chat question:** "What could go wrong if an agent could send emails with no stop conditions?"
+**Consider:** "What could go wrong if an agent could send emails with no stop conditions?"
 
 ---
 
-### 2.6 Memory & Context
+## 7. Memory & Context
 
-#### 2.6.1 Context is everything
+### 7.1 Context is everything
 
 The agent only knows what's in its **context window** at each step. Deciding what to put there is called **context engineering**.
 
@@ -359,7 +337,7 @@ What goes in:
 - **Conversation and tool history:** what has happened so far
 - **Current task**
 
-#### 2.6.2 Two kinds of memory
+### 7.2 Two kinds of memory
 
 | | Short-term memory | Long-term memory |
 |---|---|---|
@@ -367,11 +345,11 @@ What goes in:
 | **Example** | "I already checked the opening-hours page" | "This user prefers dark mode" |
 | **Stored in** | The message list / graph state | A database or memory store |
 
-#### 2.6.3 State vs memory
+### 7.3 State vs memory
 
 State is the structured data your program passes between steps, such as a task, retrieved sources and errors. Memory retains information within a conversation or across sessions. The application selects which state and memories to include in the model's context.
 
-#### 2.6.4 RAG (Retrieval-Augmented Generation)
+### 7.4 RAG (Retrieval-Augmented Generation)
 
 **The problem:** the model doesn't know your private or recent data, like your college handbook or your company docs.
 
@@ -385,12 +363,12 @@ State is the structured data your program passes between steps, such as a task, 
 
 **Analogy:** an open-book exam. The model doesn't memorise the book. It looks up the right page first.
 
-#### 2.6.5 Agentic RAG
+### 7.5 Agentic RAG
 
 - A basic RAG workflow retrieves relevant information before generating an answer. More advanced workflows may retrieve several times.
 - Agentic RAG makes search **a tool**. The agent decides *if* it needs to search, *what* to search for, and whether to **search again** if the results are weak.
 
-#### 2.6.6 RAG vs fine-tuning
+### 7.6 RAG vs fine-tuning
 
 | | RAG | Fine-tuning |
 |---|---|---|
@@ -398,7 +376,7 @@ State is the structured data your program passes between steps, such as a task, 
 | **Updating** | Just add new documents | Run another fine-tuning job |
 | **Trade-off** | Retrieval infrastructure and additional context at inference time | Training data preparation, training and model maintenance |
 
-#### 2.6.7 Context limits are real
+### 7.7 Context limits are real
 
 - Too much context makes the model slower, more expensive and more confused.
 - Send **only what's needed** for the current step.
@@ -406,7 +384,7 @@ State is the structured data your program passes between steps, such as a task, 
 
 ---
 
-### 2.7 Agent Design Patterns
+## 8. Agent Design Patterns
 
 These patterns help organise common agent and LLM workflows.
 
@@ -420,7 +398,7 @@ These patterns help organise common agent and LLM workflows.
 | **Evaluator-optimizer** | One LLM creates, another checks and gives feedback, and it loops until good | Draft writer + checklist reviewer |
 | **Human-in-the-loop** | Pause and ask a human before risky actions | "Approve before sending this email?" |
 
-#### 2.7.1 Multi-agent systems
+### 8.1 Multi-agent systems
 
 - Several **specialist agents**, each with its own prompt and tools. For example: Researcher, Writer, Reviewer.
 - **Pros:** each agent has one clear job, and prompts are simpler
@@ -430,7 +408,7 @@ These patterns help organise common agent and LLM workflows.
 **Quiz:** "Which patterns could a research-and-writing assistant use?"
 *Possible answer:* prompt chaining (research → draft), an evaluator-optimizer loop (review and revise), and human approval before publishing.
 
-#### 2.7.2 How Specialists Share Work
+### 8.2 How Specialists Share Work
 
 Specialists can use the **same underlying model** with different prompts, tools and context. They do not automatically see one another's conversations. The application must pass useful results through shared state or explicit messages.
 
@@ -440,9 +418,9 @@ Several role-specific model calls in a fixed sequence form a workflow. More auto
 
 ---
 
-### 2.8 LangGraph Basics
+## 9. LangGraph Basics
 
-#### 2.8.1 LangChain vs LangGraph
+### 9.1 LangChain vs LangGraph
 
 - **LangChain:** building blocks like model wrappers, tools and prompts
 - **LangGraph:** connects those blocks into a **graph** that can loop, branch and keep state
@@ -454,7 +432,7 @@ Several role-specific model calls in a fixed sequence form a workflow. More auto
 - saved progress (checkpoints)
 - built-in pauses for human approval
 
-#### 2.8.2 Four core concepts
+### 9.2 Four core concepts
 
 | Concept | What it is | Example |
 |---|---|---|
@@ -463,7 +441,7 @@ Several role-specific model calls in a fixed sequence form a workflow. More auto
 | **Edge** | Fixed "go here next" | researcher → writer |
 | **Conditional edge** | A function that *chooses* the next node | reviewer → writer (if errors) or END (if OK) |
 
-#### 2.8.3 What It Looks Like in Code
+### 9.3 What It Looks Like in Code
 
 This graph skeleton assumes `researcher`, `writer` and `reviewer` are defined elsewhere. Each node returns updates to the shared state. The writer must use reviewer feedback, and the reviewer must update `errors` after each check.
 
@@ -494,13 +472,13 @@ agent = graph.compile()
 # Set a recursion_limit and handle exhaustion in the application.
 ```
 
-#### 2.8.4 Useful extras
+### 9.4 Useful extras
 
 - **Checkpointer:** saves state after every step, so you can resume or add memory
 - **`interrupt()`:** pauses for human approval
 - **`recursion_limit`:** a built-in brake on infinite loops
 
-#### 2.8.5 What the Graph Controls
+### 9.5 What the Graph Controls
 
 A node can call a model, run ordinary Python, use a tool or validate a result. Not every node needs an LLM. The graph controls the order of execution, while state carries the information between steps. Keep facts in state and construct the prompt each node needs from those facts.
 
@@ -508,9 +486,9 @@ Checkpointing must be configured to save progress. Human approval also needs an 
 
 ---
 
-### 2.9 Safety & Evals
+## 10. Safety & Evals
 
-#### 2.9.1 A demo is not a product
+### 10.1 A demo is not a product
 
 | Concern | What to do |
 |---|---|
@@ -521,7 +499,7 @@ Checkpointing must be configured to save progress. Human approval also needs an 
 | **Evals** | Test on many tasks and measure the success rate |
 | **Cost** | Model calls, tool calls and retries can add cost; track usage across the run |
 
-#### 2.9.2 A Simple Evaluation Before You Trust the Agent
+### 10.2 A Simple Evaluation Before You Trust the Agent
 
 Choose a small set of tasks with clear success criteria before changing prompts. Include a normal request, missing information, a tool failure and misleading instructions inside retrieved content. Run the same cases after each change so you can compare results.
 
@@ -537,80 +515,25 @@ Use deterministic checks where possible and human review for qualities that are 
 
 ---
 
-## 3. Setup
+## 11. Setup Before Day 2
 
-The speaker will write the code from scratch. If you want to code along, complete the following setup. No starter repository or GitHub download is needed.
+Complete the following before the practical session:
 
-### 3.1 Install Python and an Editor
+- Install **Python 3.12**. On Windows, enable **Add Python to PATH** during installation. Check that `python --version` works; on macOS or Linux, try `python3 --version`.
+- Install **VS Code** or another code editor.
+- Install **Git** from [git-scm.com](https://git-scm.com/downloads) and check that `git --version` works. This lets you clone the Day 2 codebase.
+- Create a **Groq account and API key** at [Groq Console](https://console.groq.com). Keep the key private.
+- Clone the [Day 2 GitHub repository](https://github.com/RiyanBhargava/acm-day2-agentic-ai), or download the codebase ZIP linked in [Day 2, Section 2](/week3/day2#2-get-the-codebase).
+- Create a **Python virtual environment**, install `requirements.txt` and copy `.env.example` to a private **`.env`** file using the commands in [Day 2, Section 3](/week3/day2#3-setup-and-run). Add your Groq key to `.env`.
+- Have an up-to-date **web browser** and a working **internet connection** ready.
 
-Install **Python 3.12** and **VS Code**. On Windows, enable **Add Python to PATH** during installation. Open a terminal and check:
-
-```text
-python --version
-```
-
-On macOS or Linux, use `python3` if `python` is not available.
-
-### 3.2 Create a Groq API Key
-
-Create an account at [Groq Console](https://console.groq.com) and generate an API key. Keep it private and check the available models and account limits before the session. The workshop uses **Groq**, the inference service.
-
-### 3.3 Create a Project and Install Packages
-
-Create a folder for your work, open it in VS Code and use the integrated terminal:
+To clone the codebase, run:
 
 ```text
-mkdir agentic-ai-practice
-cd agentic-ai-practice
-python -m venv .venv
+git clone https://github.com/RiyanBhargava/acm-day2-agentic-ai.git
+cd acm-day2-agentic-ai
 ```
 
-Activate the virtual environment using the command for your system:
-
-```powershell
-# Windows PowerShell
-.\.venv\Scripts\Activate.ps1
-```
-
-```bash
-# macOS / Linux
-source .venv/bin/activate
-```
-
-Install the packages directly:
-
-```text
-python -m pip install langgraph langchain-groq langchain-core pydantic python-dotenv
-```
-
-### 3.4 Store the API Key
-
-Create a file named `.env` in your project folder:
-
-```text
-GROQ_API_KEY=your_key_here
-```
-
-Replace `your_key_here` with your key. The Python examples use `load_dotenv()` to load it. Do not share your `.env` file or display the key during screen sharing. If you later use version control, add `.env` and `.venv/` to `.gitignore`.
-
-### 3.5 Check the Installation
-
-Run this command in the activated environment to check that the main packages import correctly:
-
-```text
-python -c "import langgraph, langchain_groq, pydantic, dotenv; print('Packages ready')"
-```
-
-This checks the installation; API access also depends on a valid key and your account limits.
-
----
-
-## 4. Where to Go Next
-
-Start with a small agent for a familiar task, such as researching a topic or answering questions from documents. Test whether it completes the task correctly and keep a few example requests so you can compare changes.
-
-Then explore [LangGraph persistence](https://docs.langchain.com/oss/python/langgraph/persistence) for saved state and human approval, and the [Graph API](https://docs.langchain.com/oss/python/langgraph/graph-api) for branching and control flow. Learn MCP when you need reusable tool integrations. Try multi-agent designs once a single-agent implementation gives you a useful baseline.
-
-For a portfolio project, document what the agent can do, show a short demo and describe its limitations. Add a simple interface with FastAPI and package the application with Docker when you are ready to share it.
+The setup commands, codebase summary and run instructions are in [Day 2](/week3/day2). You do not need Node.js or Docker.
 
 ---
