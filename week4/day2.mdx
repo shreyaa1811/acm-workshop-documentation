@@ -26,7 +26,6 @@ You have been hired to perform a short, ethical assessment before MegaCorp launc
 
 - A browser with developer tools
 - The [MegaCorp workshop application](https://shreyaa1811.pythonanywhere.com/)
-- The worksheet or notes area provided for the workshop
 - Curiosity, patience, and a habit of recording evidence
 
 You do not need to install tools or interact with a real company.
@@ -148,7 +147,7 @@ The application treated part of the input as SQL syntax instead of as ordinary d
 
 ### 5.2 Blue-team pause
 
-Write down:
+Lets think about :
 
 - What event should be logged?
 - What repeated attempts would look suspicious?
@@ -231,24 +230,6 @@ Review the sample logs and find the requests associated with your test. Then map
 <Callout type="success" title="The defender's goal">
   You do not need to block every request perfectly. You need enough prevention, detection, and response to break the attack chain before sensitive data is lost.
 </Callout>
-
-## 10. Checkpoint six: harden and replay
-
-This is the most important comparison in the exercise. After completing the vulnerable run, stop and restart the app in hardened mode:
-
-```powershell
-$env:MEGACORP_MODE = "hardened"
-python app.py
-```
-
-Repeat the same login and search tests:
-
-1. The SQL injection now produces a normal login failure because the query uses parameterized values.
-2. The XSS input appears as text because the search term is escaped.
-3. The portal no longer displays password hashes.
-4. The response includes defensive headers such as `Content-Security-Policy`, `X-Content-Type-Options`, and `Referrer-Policy`.
-
-Record the result in the same worksheet. A control is easier to understand when you can show that the original test no longer succeeds.
 
 **Day 1 gave you the concepts. Day 2 gives you the evidence. The professional skill is connecting the two.**
 
