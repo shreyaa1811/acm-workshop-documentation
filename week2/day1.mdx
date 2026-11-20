@@ -59,7 +59,7 @@ export const RolesRoadmap = () => {
   </Card>
 </CardGroup>
 
-![Data analyst career path and skills to learn](/week1/images/data-analyst-career-path.png)
+![Data analyst career path and skills to learn](/week2/images/data-analyst-career-path.png)
 
 <Tip>
 In this workshop, you will play all three roles. You will clean data as a data engineer, build a dashboard as a data analyst, and train a model as a data scientist.
@@ -107,7 +107,7 @@ Before building a model, ask:
 
 Here is a preview of the end result: a dashboard exploring popularity, and a model where you move sliders for a new song's features and watch the predicted probability of going viral change.
 
-![Image](/week1/images/image-5.png "Image")
+![Image](/week2/images/image-5.png "Image")
 
 **Key terms you will hear this week**
 
@@ -229,7 +229,7 @@ A streaming platform that stores billions of plays a day cannot realistically fi
   </Step>
 </Steps>
 
-![Spotify data moves from CSV extraction through Power Query and a random forest to a Power BI dashboard](/week1/images/data-lifecycle.svg)
+![Spotify data moves from CSV extraction through Power Query and a random forest to a Power BI dashboard](/week2/images/data-lifecycle.svg)
 
 export const LifecyclePipeline = () => {
   const [sel, setSel] = useState(0);
@@ -431,7 +431,7 @@ This one idea unlocks most of Power BI.
 - A **dimension** is a category you *slice by*: genre, explicit (yes/no), key.
 - A **measure** is a number you *calculate*: average popularity, count of tracks, average energy.
 
-![Bar chart showing genre as the dimension and average popularity as the measure, with illustrative values](/week1/images/dimensions-vs-measures.svg)
+![Bar chart showing genre as the dimension and average popularity as the measure, with illustrative values](/week2/images/dimensions-vs-measures.svg)
 
 export const SortGame = () => {
   const items = [
@@ -620,7 +620,7 @@ Before touching Spotify, we practice on something simpler. The **California Hous
 
 {/* ILLUSTRATION I-09: Screenshot of the finished housing scatter plot, showing the outline of California emerging from the dots, with callouts on step 3 settings. */}
 
-![Adobe Express Photos 1b6c6a5d0d274414a766537e72bb1d2e Copy Edited](/week1/images/AdobeExpressPhotos_1b6c6a5d0d274414a766537e72bb1d2e_CopyEdited.jpg "Adobe Express Photos 1b6c6a5d0d274414a766537e72bb1d2e Copy Edited")
+![Adobe Express Photos 1b6c6a5d0d274414a766537e72bb1d2e Copy Edited](/week2/images/AdobeExpressPhotos_1b6c6a5d0d274414a766537e72bb1d2e_CopyEdited.jpg "Adobe Express Photos 1b6c6a5d0d274414a766537e72bb1d2e Copy Edited")
 
 ---
 
@@ -662,7 +662,7 @@ To catch it, we split the data:
 - **Training set (about 80%):** the model learns from this.
 - **Testing set (about 20%):** hidden during learning, used only to grade the model on songs it has never seen.
 
-![Two plots compare a trend line near held-out test points with a curve that follows the training points too closely](/week1/images/training-vs-overfitting.svg)
+![Two plots compare a trend line near held-out test points with a curve that follows the training points too closely](/week2/images/training-vs-overfitting.svg)
 
 export const OverfitDemo = () => {
   const [depth, setDepth] = useState(3);
@@ -708,7 +708,7 @@ There is no single best model. Each one learns patterns in a different way, and 
 
 **1. Logistic regression: the weighted score**
 
-![S-shaped logistic regression curve with predictions between zero and one](/week1/images/logistic-regression.png)
+![S-shaped logistic regression curve with predictions between zero and one](/week2/images/logistic-regression.png)
 
 Despite the name, this is a **classification** model. It gives each feature a weight, adds up a score, and squashes that score into a probability between 0 and 1.
 
@@ -719,7 +719,7 @@ Despite the name, this is a **classification** model. It gives each feature a we
 
 **2. k-Nearest Neighbors (k-NN): ask your neighbors**
 
-![Before and after k-nearest neighbors assigns a new point to a class](/week1/images/k-nearest-neighbors.png)
+![Before and after k-nearest neighbors assigns a new point to a class](/week2/images/k-nearest-neighbors.png)
 
 To judge a new song, it finds the _k_ most similar songs in the training data and takes a vote.
 
@@ -730,7 +730,7 @@ To judge a new song, it finds the _k_ most similar songs in the training data an
 
 **3. Decision tree: a flowchart of questions**
 
-![Decision tree with yes and no branches leading to outcomes](/week1/images/decision-tree.png)
+![Decision tree with yes and no branches leading to outcomes](/week2/images/decision-tree.png)
 
 It asks a chain of yes/no questions: _Is energy above 0.6? Is acousticness below 0.3?_ Each answer leads to another question until it reaches a decision.
 
@@ -740,7 +740,7 @@ It asks a chain of yes/no questions: _Is energy above 0.6? Is acousticness below
 
 **4. Random forest: a council of trees**
 
-![Random forest combining predictions from three trees by majority vote](/week1/images/random-forest.png)
+![Random forest combining predictions from three trees by majority vote](/week2/images/random-forest.png)
 
 It builds hundreds of slightly different trees, each trained on a random slice of the data, and lets them **vote**. Averaging many opinions cancels out individual mistakes.
 
@@ -750,7 +750,7 @@ It builds hundreds of slightly different trees, each trained on a random slice o
 
 **5. Gradient boosting: learning from mistakes**
 
-![Gradient boosting trains each successive tree on the remaining errors](/week1/images/gradient-boosting.png)
+![Gradient boosting trains each successive tree on the remaining errors](/week2/images/gradient-boosting.png)
 
 Trees are built **one after another**, and each new tree focuses on the songs the previous trees got wrong. Together they gradually improve. Popular versions include XGBoost and LightGBM.
 
@@ -789,7 +789,7 @@ Accuracy alone can mislead. If only 10% of tracks are viral, a model that says "
 | **Actually viral** | Hit (true positive) | Missed hit (false negative) |
 | **Actually not viral** | False alarm (false positive) | Correct rejection (true negative) |
 
-![Confusion matrix comparing actual and predicted classes across true positives, false negatives, false positives, and true negatives](/week1/images/confusion-matrix.png)
+![Confusion matrix comparing actual and predicted classes across true positives, false negatives, false positives, and true negatives](/week2/images/confusion-matrix.png)
 
 A record label might care most about **recall** (don't miss a future hit) or **precision** (don't waste marketing on a flop). The right metric depends on the business goal.
 
