@@ -1,438 +1,445 @@
 ---
-title: "Week 1 : Cloud Computing and Devops"
+title: "Week 2 : Data Analytics"
 sidebarTitle: "Day 2"
-description: "Host your own application using concepts from the first session!"
+description: "Build a data workflow from ingestion and analysis through machine learning predictions."
 hideFooterPagination: true
 ---
 
+## 1. Data Ingestion with Power BI
 
-# Day 2 : Ship an AI Meme Generator to Google Cloud
+### 1.1 Part 1: Load and clean with Power Query
 
-**What you'll build today:** a small web app (upload a photo → AI writes a caption → you get a meme) and take it all the way from your laptop to a **live public URL** on Google Cloud, then make it deploy itself with GitHub Actions.
+Download and unzip the [Spotify Tracks Dataset](https://www.kaggle.com/datasets/maharshipandya/-spotify-tracks-dataset) to get `dataset.csv`.
 
-<p align="center">
-  <a href="https://github.com/kalyani-2024/ai-meme-generator">
-    <img src="https://img.shields.io/badge/%F0%9F%93%A6%20Get%20the%20app%20code-AI%20Meme%20Generator-2ea44f?style=for-the-badge" alt="AI Meme Generator repo" />
-  </a>
-</p>
+Power Query is the **ETL** tool inside Power BI: **E**xtract, **T**ransform, **L**oad.
+
+<Steps>
+  <Step title="Extract: load the CSV">
+    **Home** → **Get data** → **Text/CSV** → select `dataset.csv` → **Transform Data** (not Load).
+  </Step>
+  <Step title="Transform: remove the junk index column">
+    If there is a first column called `Column1` or `Unnamed: 0`, right-click it → **Remove**. It is only a row number.
+  </Step>
+  <Step title="Transform: fix data types">
+    Click the small icon in each column header. Set `popularity` to **Whole Number**; `danceability`, `energy`, `valence`, `acousticness`, `tempo` and similar to **Decimal Number**; `explicit` to **True/False**.
+  </Step>
+  <Step title="Transform: remove blank rows">
+    Select `track_name` → **Home** → **Remove Rows** → **Remove Blank Rows**. A handful of tracks have no name.
+  </Step>
+  <Step title="Transform: remove duplicates">
+    Select `track_id` → right-click → **Remove Duplicates**. Why? The same track appears once per genre it belongs to.
+  </Step>
+  <Step title="Add the target column">
+    **Add Column** → **Custom Column**, name it `viral_label`, formula:
+
+    ```text
+    if [popularity] >= 58.0 then "Viral" else "Not viral"
+    ```
+  </Step>
+  <Step title="Load">
+    **Home** → **Close & Apply**.
+  </Step>
+</Steps>
+
+{/* ILLUSTRATION I-16: Before/after Power Query screenshot pair with a draggable divider. Annotate each step number on the "applied steps" panel. */}
+
+<Note>
+  The threshold `58.0` is a starting choice. Facilitators: check what share of tracks it labels viral on this data and adjust (Session 4 shows how). The aim is a minority class large enough for the model to learn from.
+</Note>
+
+### 1.2 Part 2: Build the dashboard
+
+You will build this dashboard in a **starter template** 
+
+{/* ILLUSTRATION I-17: Screenshot of the finished dashboard (one dark page: Spotify logo, Genre Family and Explicit slicers across the top, then OVERVIEW, GENRES and SOUND panels). */}
+
+The template already has the dark page, the green panel shapes, the **OVERVIEW**, **GENRES** and **SOUND** titles, and the theme. Open the file first, then load the data into it using Part 1. You only need to add the charts.
+
+<Note>
+  The theme is applied inside the template, so you don't need to import a theme file. If a chart appears with a white background, ask your instructor for the theme file and import it from **Design** → **Themes** → **Browse for themes**.
+</Note>
+
+**Step 1: Create two helper columns**
+
+A helper column is a new column we build from existing ones. Right-click the table in the **Data** pane → **New column**, and add each of these.
+
+**Explicitness.** The `explicit` column holds True/False, which looks awkward on a slicer. This turns it into readable text:
+
+```text
+Explicitness = IF('dataset'[explicit] = TRUE(), "Explicit", "Not Explicit")
+```
+
+**Genre Family.** There are 114 genres, far too many for a slicer. This groups them into 8 families:
+
+```text
+Genre Family =
+SWITCH(
+    TRUE(),
+    'dataset'[track_genre] IN {"pop", "indie-pop", "power-pop", "synth-pop", "k-pop", "j-pop", "cantopop", "mandopop", "pop-film", "j-idol"}, "Pop",
+    'dataset'[track_genre] IN {"rock", "alt-rock", "alternative", "hard-rock", "psych-rock", "punk-rock", "punk", "grunge", "emo", "goth", "industrial", "ska", "rockabilly", "rock-n-roll", "j-rock", "indie", "guitar", "metal", "heavy-metal", "black-metal", "death-metal", "metalcore", "grindcore", "hardcore"}, "Rock & Metal",
+    'dataset'[track_genre] IN {"hip-hop", "r-n-b", "soul", "funk", "groove", "trip-hop", "gospel"}, "Hip-hop & R&B",
+    'dataset'[track_genre] IN {"edm", "electro", "electronic", "dance", "club", "house", "deep-house", "chicago-house", "progressive-house", "techno", "minimal-techno", "detroit-techno", "trance", "hardstyle", "dubstep", "drum-and-bass", "breakbeat", "idm", "dub", "garage", "disco", "j-dance", "party"}, "Electronic & Dance",
+    'dataset'[track_genre] IN {"latin", "latino", "reggaeton", "salsa", "samba", "pagode", "sertanejo", "forro", "mpb", "brazil", "tango", "spanish", "reggae", "dancehall", "afrobeat", "world-music", "indian", "french", "german", "swedish", "turkish", "iranian", "malay"}, "Latin & World",
+    'dataset'[track_genre] IN {"acoustic", "ambient", "chill", "sleep", "study", "new-age", "piano", "sad", "singer-songwriter", "songwriter", "folk", "country", "bluegrass", "honky-tonk"}, "Chill & Acoustic",
+    'dataset'[track_genre] IN {"jazz", "blues", "classical", "opera", "show-tunes"}, "Jazz & Classical",
+    "Other"
+)
+```
+
+<Note>
+  If your table isn't called `dataset`, replace `'dataset'` with its name. Any genre not listed falls into **Other**.
+</Note>
+
+**Step 2: Overview panel**
+
+**Three cards.** Add three **Card** visuals side by side:
+
+- **Count of** `track_id`, renamed "Tracks"
+- **Average of** `popularity` (not Sum), renamed "Avg.pop"
+- A **Viral %** measure. **Modeling** → **New measure**:
+
+```text
+Viral Share = DIVIDE(COUNTROWS(FILTER('dataset', 'dataset'[popularity] >= 58)), COUNTROWS('dataset'))
+```
+
+Format it as a percentage.
+
+**Donut chart.** Under the cards, add a **Donut chart**. **Legend:** `viral_label`. **Values:** **Count of** `track_id`. Show the labels as percentages, and set Viral to green and Not viral to grey.
+
+**Step 3: Genres panel**
+
+Add a **Clustered bar chart**. **Y-axis:** `track_genre`. **X-axis:** **Average of** `popularity`. In the **Filters** pane set **Top N** to 10 by that value, and turn on **Data labels**.
+
+**Step 4: Sound panel**
+
+**Energy vs Valence.** Add a **Scatter chart** with these fields:
+
+| Well | Field |
+| --- | --- |
+| **X Axis** | Average of `energy` |
+| **Y Axis** | Average of `valence` (the "happiness" of a track) |
+| **Details** | `track_genre` |
+| **Size** | Count of `track_id` |
+| **Legend** | `Genre Family` |
+| **Play Axis** | _leave empty_ |
+
+Each bubble is a **genre**, coloured by family.
+
+**Sound Profile.** Under the scatter plot add a **Clustered column chart**. **X-axis:** `viral_label`. **Y-axis:** add four fields, each set to **Average**: `energy`, `danceability`, `valence`, `acousticness`. This compares viral and non-viral tracks across four audio features, and it is the best evidence for your hypotheses in the next session.
+
+**Step 5: Slicers**
+
+Add two **Slicers** in the framed boxes at the top of the page:
+
+- **Genre Family:** use the `Genre Family` column.
+- **Explicit:** use the `Explicitness` column, so it shows "Explicit" and "Not Explicit".
+
+Hold **Ctrl** and click two genre families. Every visual updates, which is the point of a dashboard.
+
+<Check>
+  Your dashboard should have three cards, a donut, a top-10 genre bar chart, an energy vs valence scatter plot, a sound profile column chart, and two slicers that filter everything.
+</Check>
 
 ---
 
-## 1. What you need
+## 2. Deciphering Insights
 
-- **Docker Desktop** running (the whale icon in your tray is steady, not animating)
-- **Google Cloud CLI** (`gcloud`), **Git**, and **VS Code** installed — get the CLI from [cloud.google.com/sdk/docs/install](https://cloud.google.com/sdk/docs/install)
-- A **Google Cloud account with billing turned on** (the free trial is fine; if you don't have one, pair up with someone who does)
-- The workshop repo **cloned** to your machine — [the AI Meme Generator app](https://github.com/kalyani-2024/ai-meme-generator) (`git clone https://github.com/kalyani-2024/ai-meme-generator.git`)
-- A free **Gemini API key** — you'll create it in the setup step below
+### 2.1 How to read a dashboard
 
-Quick check that your tools are ready:
+Ask these four questions of any chart:
 
-```bash
-docker run hello-world      # Docker works
-gcloud version              # Google Cloud CLI installed
-git --version               # Git installed
-```
+1. **What is being measured?** (Check the axes and the aggregation: average, sum, count.)
+2. **What is being compared?** (Which dimension slices it?)
+3. **Where are the clusters, gaps and outliers?**
+4. **What would I want to ask next?**
 
----
+### 2.2 Form a hypothesis
 
-## 2. Set your variables once
+A good hypothesis names a **feature**, a **direction** and ideally a **size**, and is based on what you actually see.
 
-Your **project ID** must be **globally unique**, so add your initials and a few digits where you see the placeholders. Paste this block into your terminal at the start (every later command reuses it).
+<Tabs>
+  <Tab title="Template">
+    *When I filter to ______, the viral share is ______ compared with ______, which suggests that ______ matters for going viral.*
+  </Tab>
+  <Tab title="Example">
+    *When I filter to the "pop" genre, the viral share is higher than for "classical", which suggests genre matters for going viral.*
+  </Tab>
+  <Tab title="Weak vs strong">
+    **Weak:** "Energy matters."
 
-**PowerShell (Windows):**
-```powershell
-$PROJECT   = "meme-workshop-<yourinitials>-<4digits>"   # 6-30 chars: lowercase letters, digits, hyphens
-$REGION    = "me-central1"
-$REPO      = "meme-repo"
-$SERVICE   = "meme-generator"
-$IMAGE     = "ai-meme-generator"
-$IMAGE_URI = "$REGION-docker.pkg.dev/$PROJECT/$REPO/${IMAGE}:v1"
-```
+    **Strong:** "In the sound profile chart, viral tracks have higher average danceability than non-viral ones."
+  </Tab>
+</Tabs>
 
-**Bash (macOS / Linux / WSL):**
-```bash
-PROJECT="meme-workshop-<yourinitials>-<4digits>"
-REGION="me-central1"; REPO="meme-repo"
-SERVICE="meme-generator"; IMAGE="ai-meme-generator"
-IMAGE_URI="$REGION-docker.pkg.dev/$PROJECT/$REPO/${IMAGE}:v1"
-```
+export const HypothesisBuilder = () => {
+  const features = ["danceability", "energy", "loudness", "speechiness", "acousticness", "instrumentalness", "liveness", "valence", "tempo"];
+  const visuals = ["the sound profile chart", "the energy vs valence scatter plot", "the genre bar chart", "the viral share card", "the genre family slicer"];
+  const [f, setF] = useState("");
+  const [d, setD] = useState("");
+  const [v, setV] = useState("");
+  const [g, setG] = useState("");
+  const sel = "ml-2 px-2 py-1 rounded-md border border-zinc-300 dark:border-zinc-600 bg-transparent";
+  const ready = f && d && v;
+  const checks = [[f, "Names a feature"], [d, "Gives a direction"], [v, "Points to evidence"]];
+  return (
+    <div className="my-6 rounded-xl border border-zinc-200 dark:border-zinc-700 p-4">
+      <p className="font-semibold m-0">Try it: build a hypothesis</p>
+      <p className="text-sm mt-1">Fill in the blanks using what you see on your dashboard.</p>
+      <div className="grid gap-2 text-sm">
+        <label>Feature
+          <select className={sel} value={f} onChange={(e) => setF(e.target.value)}>
+            <option value="">choose...</option>
+            {features.map((x) => <option key={x} value={x}>{x}</option>)}
+          </select>
+        </label>
+        <label>Viral tracks tend to have
+          <select className={sel} value={d} onChange={(e) => setD(e.target.value)}>
+            <option value="">choose...</option>
+            <option value="higher">higher</option>
+            <option value="lower">lower</option>
+            <option value="about the same">about the same</option>
+          </select>
+          values than non-viral ones
+        </label>
+        <label>Evidence from
+          <select className={sel} value={v} onChange={(e) => setV(e.target.value)}>
+            <option value="">choose...</option>
+            {visuals.map((x) => <option key={x} value={x}>{x}</option>)}
+          </select>
+        </label>
+        <label>Genre I filtered to (optional)
+          <input className={sel} value={g} onChange={(e) => setG(e.target.value)} placeholder="e.g. pop" />
+        </label>
+      </div>
+      <div className="mt-3 rounded-lg px-3 py-2 text-sm border border-zinc-200 dark:border-zinc-700">
+        {ready
+          ? <span><strong>My hypothesis:</strong> {g ? "In " + g + ", v" : "V"}iral tracks tend to have {d} {f} than non-viral ones, based on {v}.</span>
+          : <span className="opacity-70">Your sentence appears here once you've picked a feature, a direction and your evidence.</span>}
+      </div>
+      <p className="mt-2 mb-0 text-sm">{checks.map(([ok, label]) => <span key={label} className="mr-3" style={{ color: ok ? "#1DB954" : "inherit", opacity: ok ? 1 : 0.6 }}>{ok ? "✓" : "○"} {label}</span>)}</p>
+      <p className="m-0 mt-1 text-xs opacity-70">Write your sentence down. After the model runs, you'll check it against the feature importance chart.</p>
+    </div>
+  );
+};
 
-> If a command later fails, 90% of the time it's a typo in a name or a variable you forgot to set. Check here first. If you change `$PROJECT`, re-run the `$IMAGE_URI` line too.
+<HypothesisBuilder />
 
----
-
-## 3. Setup: your project and your AI key
-
-### 3.1 Sign in and create today's project
-
-```bash
-gcloud auth login                       # sign in (opens your browser)
-gcloud projects create $PROJECT         # if the ID is taken, change the digits
-gcloud config set project $PROJECT
-
-gcloud billing accounts list            # copy your ACCOUNT_ID
-gcloud billing projects link $PROJECT --billing-account=<ACCOUNT_ID>
-
-gcloud services enable run.googleapis.com artifactregistry.googleapis.com secretmanager.googleapis.com
-```
-
-> A **project** is a labelled box that holds everything you create today. Delete the box at the end and it all goes.
-
-### 3.2 Get a free Gemini API key
-
-1. Go to [aistudio.google.com](https://aistudio.google.com) and sign in.
-2. Click **Get API key → Create API key**.
-3. Copy the key and keep it somewhere safe for now. It's a **secret** (never paste it into code or Git).
-
-> ⚠️ Keep the project AI Studio suggests for the key. **Don't** create it in your workshop project. That project has billing on, so Gemini calls there would be charged instead of free.
-
----
-
-## 4. Containerize the app
-
-### 4.1 Run it locally first (no Docker)
-
-```bash
-cd ai-meme-generator
-pip install -r requirements.txt
-python app.py
-```
-
-Open **http://localhost:8080**. The page loads and says "AI not configured yet" — that's expected, we haven't given it a key. Stop it with `Ctrl+C`.
-
-> This only works because your laptop happens to have the right Python and packages installed. That's the "works on my machine" problem, which is exactly what a container fixes.
-
-### 4.2 Write the Dockerfile
-
-Create a file named **`Dockerfile`** (no extension) in the project folder.
-
-```dockerfile
-# Start from a small official Python image
-FROM python:3.12-slim
-
-# Work inside this folder in the image
-WORKDIR /app
-
-# Copy ONLY requirements first so this layer caches and installs don't re-run on every code change
-COPY requirements.txt .
-
-# RUN happens at BUILD time — installs packages into the image
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy the rest of the app (code + fonts + samples)
-COPY . .
-
-# Document the port the app listens on
-EXPOSE 8080
-
-# CMD happens at CONTAINER START time — runs the app
-CMD ["gunicorn", "--bind", "0.0.0.0:8080", "app:app"]
-```
-
-Key things to remember:
-- **`RUN` vs `CMD`** : `RUN` runs while *building* the image (install stuff). `CMD` runs when the container *starts* (run the app).
-- **Requirements copied before the code** : layers are cached top to bottom, so dependencies don't reinstall every time you tweak code.
-- **No API key anywhere** : secrets never go inside the image. We add the key later, at run time.
-
-### 4.3 Build the image
-
-```bash
-docker build -t ai-meme-generator:v1 .
-```
-
-> **On an Apple Silicon Mac (M1/M2/M3/M4)?** Use `docker build --platform linux/amd64 -t ai-meme-generator:v1 .` instead — Cloud Run needs `amd64` images.
-
-Watch each instruction become a **layer**. Build again after a small edit and you'll see some layers say `CACHED`.
-
-### 4.4 Run the container (with the API key)
-
-Paste your Gemini key:
-
-```powershell
-# PowerShell
-docker run -d -p 8080:8080 `
-  -e GEMINI_API_KEY="<your-gemini-key>" `
-  -e MEME_STYLE="classic" `
-  ai-meme-generator:v1
-```
-
-```bash
-# bash
-docker run -d -p 8080:8080 \
-  -e GEMINI_API_KEY="<your-gemini-key>" \
-  -e MEME_STYLE="classic" \
-  ai-meme-generator:v1
-```
-
-Open **http://localhost:8080**, upload a photo, click **Make Meme**. 
-
-> `-p 8080:8080` means `host:container`. The `-e` flags inject config at run time (same image, different behaviour).
-
-### 4.5 Useful container commands
-
-```bash
-docker ps                 # what's running (shows the container ID/name)
-docker logs <container>   # see the app's logs
-docker stop <container>   # stop it , containers are disposable
-```
-
-> Stop and start a fresh container and your meme is **gone**. Containers don't keep files. To save memes you'd use cloud storage (like Google Cloud Storage).
+<Warning>
+**Correlation is not causation.** If viral songs have high energy, that doesn't prove that raising a song's energy makes it viral. A dashboard shows *patterns*, not *reasons*.
+</Warning>
 
 ---
 
-## 5. Push the image to Artifact Registry
+## 3. ML Prediction Engine
 
-### 5.1 Create the registry repository
+Open a new Colab notebook. Paste each block into its own cell and run it with **Shift + Enter**.
 
-```bash
-gcloud artifacts repositories create $REPO `
-  --repository-format=docker `
-  --location=$REGION
+### 3.1 Step 1: Load the data
+
+Open [colab.research.google.com](https://colab.research.google.com) and create a notebook.
+
+Click the folder icon on the left of Colab, then the upload icon, and upload `dataset.csv`.
+
+```python
+import pandas as pd
+
+df = pd.read_csv("/content/dataset.csv")
+print(df.shape)
+df.head()
 ```
 
-*(Bash: swap the backtick line-breaks for `\`.)*
+### 3.2 Step 2: Clean it (the same steps as Power Query)
 
-### 5.2 Log in, tag, and push
-
-```bash
-# Let Docker use your gcloud login for this registry (answer Y if asked)
-gcloud auth configure-docker "$REGION-docker.pkg.dev"
-
-# Tag the image so it points at YOUR registry (full name = region-host/project/repo/image:tag)
-docker tag ${IMAGE}:v1 $IMAGE_URI
-
-# Push it to the cloud
-docker push $IMAGE_URI
+```python
+df = df.drop(columns=["Unnamed: 0"], errors="ignore")  # row-number column
+df = df.dropna(subset=["track_name"])                  # remove blank rows
+df = df.drop_duplicates(subset="track_id")             # one row per track
+print(df.shape)
 ```
 
-> We use an explicit tag `:v1`, never `:latest` — so you always know exactly what's deployed.
+### 3.3 Step 3: Define the target
 
-### 5.3 See it in the console
+```python
+df["viral"] = (df["popularity"] >= 58).astype(int)
+print(df["viral"].mean())   # share of tracks labelled viral
+```
 
-Go to [console.cloud.google.com](https://console.cloud.google.com) (check your project is selected at the top) → **Artifact Registry → `meme-repo` → `ai-meme-generator`**. Your image is now sitting in the cloud.
+<Note>
+Use the same threshold as in Power BI. If the printed share is extremely small (for example under 5%), lower the threshold so the model has enough viral examples to learn from.
+</Note>
+
+### 3.4 Step 4: Pick features and split the data
+
+A **stratified split** keeps the proportion of viral and non-viral tracks roughly the same in the training and test sets. If 10% of tracks in the full dataset are viral, both sets should be close to 10%. This matters because viral tracks are the minority. An unbalanced test split could leave us with too few viral examples to judge how well the model handles them. In the code below, `stratify=y` uses the viral labels to preserve those proportions.
+
+```python
+from sklearn.model_selection import train_test_split
+
+features = ["danceability", "energy", "loudness", "speechiness",
+            "acousticness", "instrumentalness", "liveness",
+            "valence", "tempo"]
+
+X = df[features]   # inputs
+y = df["viral"]    # target
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42, stratify=y
+)
+```
+
+### 3.5 Step 5: Train the random forest
+
+```python
+from sklearn.ensemble import RandomForestClassifier
+
+model = RandomForestClassifier(
+    n_estimators=100, max_depth=12, class_weight="balanced",
+    random_state=42, n_jobs=-1
+)
+model.fit(X_train, y_train)
+```
+
+### 3.6 Step 6: Check it on unseen data
+
+```python
+from sklearn.metrics import accuracy_score
+
+print("Train accuracy:", accuracy_score(y_train, model.predict(X_train)))
+print("Test accuracy: ", accuracy_score(y_test,  model.predict(X_test)))
+print("Guessing 'not viral' every time would score:", 1 - y_test.mean())
+```
+
+<Warning>
+Compare the last line to the test accuracy. If the model barely beats "always say not viral", it has found little signal. That is an honest and useful result: audio features alone only partly explain popularity. Also, if train accuracy is far above test accuracy, that is overfitting from Day 1.
+</Warning>
+
+{/* ILLUSTRATION I-19: Side-by-side bar of Train vs Test vs "always guess no" baseline accuracy, with a tooltip explaining each. */}
+
+### 3.7 Step 7: Which features matter?
+
+**Feature importance** summarizes how much the random forest relied on each input to separate viral from non-viral tracks during training. A high score for energy means splits on energy helped the trees make those distinctions. The score gives neither the direction of the relationship nor evidence that changing energy would make a track go viral. To compare it with your dashboard hypothesis, check the direction in the original data and use the importance chart to see whether the model relied on that feature.
+
+```python
+import matplotlib.pyplot as plt
+
+importance = pd.Series(model.feature_importances_, index=features).sort_values()
+importance.plot(kind="barh", title="Feature importance")
+plt.show()
+```
+
+{/* ILLUSTRATION I-20: Feature importance chart next to the students' saved hypotheses from Session 3, so they can mark each hypothesis "supported / not supported". */}
+
+Compare this chart with the hypotheses you wrote. Did the model agree?
+
+### 3.8 The experiment: be the business stakeholder
+
+```python
+def predict_viral(danceability, energy, loudness, speechiness,
+                  acousticness, instrumentalness, liveness, valence, tempo):
+    row = pd.DataFrame([[danceability, energy, loudness, speechiness,
+                         acousticness, instrumentalness, liveness,
+                         valence, tempo]], columns=features)
+    return model.predict_proba(row)[0][1]
+
+p = predict_viral(0.75, 0.80, -5.0, 0.05, 0.10, 0.0, 0.15, 0.70, 120)
+print(f"Chance of going viral: {p:.0%}")
+```
+
+Want sliders? Run this cell too:
+
+```python
+import ipywidgets as w
+
+w.interact(
+    lambda danceability=0.7, energy=0.7, loudness=-6.0, speechiness=0.05,
+           acousticness=0.2, instrumentalness=0.0, liveness=0.15,
+           valence=0.5, tempo=120:
+        print(f"Chance of going viral: {predict_viral(danceability, energy, loudness, speechiness, acousticness, instrumentalness, liveness, valence, tempo):.0%}"),
+    danceability=(0.0, 1.0, 0.05), energy=(0.0, 1.0, 0.05),
+    loudness=(-40.0, 0.0, 1.0), speechiness=(0.0, 1.0, 0.05),
+    acousticness=(0.0, 1.0, 0.05), instrumentalness=(0.0, 1.0, 0.05),
+    liveness=(0.0, 1.0, 0.05), valence=(0.0, 1.0, 0.05),
+    tempo=(40, 220, 5)
+)
+```
+
+{/* ILLUSTRATION I-21: Embedded web version of the slider panel (HTML) with a probability gauge, so students can play even if Colab is slow. */}
+
+**Iterate: push a variable to the extreme**
+
+Set `danceability` to `0`, then `1`. Then try `energy = 0`, then `instrumentalness = 1`. Watch the probability.
+
+<Tip>
+Features with large swings have more influence on the model. Compare this with the importance chart. Do they match? Remember, though, that sliders can create combinations no real song has, so treat extremes as a way to understand the model rather than as advice for musicians.
+</Tip>
 
 ---
 
-## 6. Deploy to Cloud Run (the live URL)
+## 4. Connecting BI and ML
 
-### 6.1 First deploy (no key yet)
+### 4.1 Why connect them?
 
-```bash
-gcloud run deploy $SERVICE `
-  --image $IMAGE_URI `
-  --region $REGION `
-  --port 8080 `
-  --allow-unauthenticated `
-  --set-env-vars "MEME_STYLE=classic"
+Executives do not read Python scripts. They open a dashboard. For model results to change decisions, they need to appear where decision-makers already look.
+
+{/* ILLUSTRATION I-22: Loop diagram: Data → Colab model → predictions CSV → Power BI dashboard → decision → new data. Each arrow clickable for one sentence of detail. */}
+
+### 4.2 Step 1: Export predictions from Colab
+
+Add a column of predicted probabilities and download the file.
+
+```python
+df["predicted_viral_prob"] = model.predict_proba(df[features])[:, 1]
+
+from google.colab import files
+df[["track_id", "track_name", "track_genre", "popularity",
+    "viral", "predicted_viral_prob"]].to_csv("predictions.csv", index=False)
+files.download("predictions.csv")
 ```
 
-> **Cloud Run** runs your container for you — no servers to set up. `--port 8080` tells it which port the app listens on (like `-p` in Docker). `--allow-unauthenticated` makes the URL public. When nobody's using it, it scales to zero and costs nothing.
+### 4.3 Step 2: Load into Power BI
 
-It prints a **Service URL**. Open it and the page says "AI not configured yet". Let's fix that.
+<Steps>
+  <Step title="Import the new file">
+    **Get data** → **Text/CSV** → `predictions.csv` → **Load**.
+  </Step>
+  <Step title="Add a visual">
+    Create a bar chart: **Y** = `track_genre`, **X** = **Average of** `predicted_viral_prob`, Top 10.
+  </Step>
+  <Step title="Compare with reality">
+    Place it beside your earlier average-popularity bar chart. Where do predicted and actual rankings differ?
+  </Step>
+</Steps>
 
-### 6.2 Store your AI key in Secret Manager
+{/* ILLUSTRATION I-23: Screenshot of the finished "actual vs predicted by genre" view, with the differences circled. */}
 
-```powershell
-# PowerShell
-$GEMINI_KEY = "<your-gemini-key>"
-$GEMINI_KEY | gcloud secrets create gemini-api-key --data-file=-
+### 4.4 The enterprise reality
 
-$PROJECT_NUMBER = gcloud projects describe $PROJECT --format="value(projectNumber)"
-gcloud secrets add-iam-policy-binding gemini-api-key `
-  --member="serviceAccount:$PROJECT_NUMBER-compute@developer.gserviceaccount.com" `
-  --role="roles/secretmanager.secretAccessor"
-```
-
-```bash
-# bash
-GEMINI_KEY="<your-gemini-key>"
-printf "%s" "$GEMINI_KEY" | gcloud secrets create gemini-api-key --data-file=-
-
-PROJECT_NUMBER=$(gcloud projects describe $PROJECT --format="value(projectNumber)")
-gcloud secrets add-iam-policy-binding gemini-api-key \
-  --member="serviceAccount:$PROJECT_NUMBER-compute@developer.gserviceaccount.com" \
-  --role="roles/secretmanager.secretAccessor"
-```
-
-> **Secret Manager** is a locked vault for secrets. The second command gives your Cloud Run app, and only your app permission to read this one secret.
-
-### 6.3 Attach the secret to your app
-
-```bash
-gcloud run services update $SERVICE --region $REGION `
-  --set-secrets "GEMINI_API_KEY=gemini-api-key:latest"
-```
-
-> Notice: the secret key was **never** in your Dockerfile, image, or Git. Cloud Run hands it to your app at run time.
-
-### 6.4 Open your live app
-
-```bash
-gcloud run services describe $SERVICE --region $REGION --format="value(status.url)"
-```
-
-Open that URL, upload a photo, and make a meme. Now it's a real public website serving your container. 
-
-> If the first load takes a few seconds, that's a **cold start**. Cloud Run starting your app up from zero.
-
-### 6.5 Change the humor without rebuilding
-
-```bash
-gcloud run services update $SERVICE --region $REGION --update-env-vars "MEME_STYLE=sarcastic"
-```
-
-Make another meme - same image, funnier captions. Each change creates a new **revision**:
-
-```bash
-gcloud run revisions list --service $SERVICE --region $REGION
-```
-
-### 6.6 Handy Cloud Run commands
-
-```bash
-# see recent logs
-gcloud run services logs read $SERVICE --region $REGION --limit 30
-
-# limit how many copies can run (also caps your bill)
-gcloud run services update $SERVICE --region $REGION --max-instances 3
-```
-
-In the console, explore **Cloud Run → `meme-generator`**: **Metrics** (requests and instance count), **Revisions**, **Logs**, and **Edit & deploy new revision → Variables & Secrets** (your key shows as a Secret Manager reference, never the raw value).
+In a real company the export step is automated: the model runs on a schedule, writes to a warehouse, and Power BI refreshes by itself. Analysts and executives interact only with the dashboard. Remember the **drift** from Day 1: someone still needs to monitor whether those predictions stay accurate.
 
 ---
 
-## 7. CI/CD with GitHub Actions
+## 5. Cleanup and Next Steps
 
-The idea: instead of running all those commands by hand, **push code → it builds and deploys itself.**
+### 5.1 Save your work
 
-The pipeline lives in `.github/workflows/deploy.yml` and does exactly what you did manually: checkout → build image → push to Artifact Registry → deploy to Cloud Run.
+- In Power BI: **File** → **Save as** → keep your `.pbix` file.
+- In Colab: **File** → **Save a copy in Drive**, and download your `predictions.csv`.
 
-To run it on your own fork later, first create a robot account (a **service account**) for GitHub with only the permissions it needs:
-
-```powershell
-# PowerShell
-gcloud iam service-accounts create gha-deployer --display-name "GitHub Actions deployer"
-$SA = "gha-deployer@$PROJECT.iam.gserviceaccount.com"
-foreach ($ROLE in "roles/run.developer", "roles/artifactregistry.writer", "roles/iam.serviceAccountUser") {
-  gcloud projects add-iam-policy-binding $PROJECT --member="serviceAccount:$SA" --role=$ROLE --condition=None
-}
-gcloud iam service-accounts keys create gha-key.json --iam-account=$SA
-```
-
-```bash
-# bash
-gcloud iam service-accounts create gha-deployer --display-name "GitHub Actions deployer"
-SA="gha-deployer@$PROJECT.iam.gserviceaccount.com"
-for ROLE in roles/run.developer roles/artifactregistry.writer roles/iam.serviceAccountUser; do
-  gcloud projects add-iam-policy-binding $PROJECT --member="serviceAccount:$SA" --role=$ROLE --condition=None
-done
-gcloud iam service-accounts keys create gha-key.json --iam-account=$SA
-```
-
-Then add these under **GitHub → Settings → Secrets and variables → Actions**:
-
-| Secret | Value |
-|---|---|
-| `GCP_SA_KEY` | the entire contents of `gha-key.json` |
-| `GCP_PROJECT_ID` | your project ID |
-| `GCP_REGION` | `me-central1` |
-| `CLOUD_RUN_SERVICE` | `meme-generator` |
-
-> Delete `gha-key.json` from your laptop once it's in GitHub, and **never commit it** (it's a password for your project).
-
-Then make a change, commit, and push:
-
-```bash
-git add .
-git commit -m "Change page colour"
-git push origin main
-```
-
-Watch it run in the **Actions** tab, then refresh your live URL. The change is there, and you never ran a deploy command. That's CI/CD.
-
----
-
-## 8. Clean up (IMPORTANT: do this so you don't get billed)
-
-One command deletes everything you created today:
-
-```bash
-gcloud projects delete $PROJECT --quiet
-```
-
-> This removes the registry, the Cloud Run service, the secret, and the GitHub robot account in one go. Check in the console under **IAM & Admin → Manage resources** that your project shows *Pending deletion*. Billing stops straight away.
-
-Your Gemini key lives in AI Studio's own free project, so it costs nothing if you keep it. To delete it, go to **aistudio.google.com → API keys**.
-
----
-
-## 9. Troubleshooting
-
-| Problem | Likely cause | Fix |
-|---|---|---|
-| `docker build` can't connect | Docker Desktop not running | Start it; wait for the steady whale icon |
-| `gcloud` not recognised | CLI just installed | Open a new terminal, re-paste your variables |
-| `localhost:8080` won't load | wrong port mapping | use `-p 8080:8080` |
-| Page says "AI not configured yet" | key not set | add `-e GEMINI_API_KEY=...` / attach the secret (step 6.3) |
-| "AI call failed: ... valid API key" | wrong key or typo | re-copy the key from AI Studio |
-| "AI call failed: ... 429" | free-tier rate limit | wait a minute and try again |
-| `projects create` fails | ID taken / bad characters | lowercase letters, digits, hyphens; change the digits |
-| "billing must be enabled" / "API not used in project" | billing not linked / APIs off | re-run the billing link and `services enable` commands |
-| `docker push` → denied | Docker not linked to gcloud | re-run `gcloud auth configure-docker $REGION-docker.pkg.dev` |
-| Deploy fails: "failed to start and listen on the port" | wrong port | use `--port 8080` |
-| Logs show `exec format error` | built on an Apple Silicon Mac | rebuild with `--platform linux/amd64`, push, redeploy |
-| "Permission denied on secret" | app can't read the secret | re-run the `add-iam-policy-binding` command in 6.2 |
-| URL shows 403 Forbidden | service isn't public | redeploy with `--allow-unauthenticated` |
-
----
-
-## 10. Quick command reference
-
-```bash
-# Setup
-gcloud auth login
-gcloud projects create $PROJECT
-gcloud config set project $PROJECT
-gcloud billing projects link $PROJECT --billing-account=<ACCOUNT_ID>
-gcloud services enable run.googleapis.com artifactregistry.googleapis.com secretmanager.googleapis.com
-
-# Containers
-docker build -t ai-meme-generator:v1 .
-docker run -d -p 8080:8080 ai-meme-generator:v1
-docker ps / docker logs <id> / docker stop <id>
-
-# Artifact Registry
-gcloud artifacts repositories create $REPO --repository-format=docker --location=$REGION
-gcloud auth configure-docker $REGION-docker.pkg.dev
-docker tag ai-meme-generator:v1 $IMAGE_URI
-docker push $IMAGE_URI
-
-# Cloud Run
-gcloud run deploy $SERVICE --image $IMAGE_URI --region $REGION --port 8080 --allow-unauthenticated
-gcloud run services update $SERVICE --region $REGION --set-secrets "GEMINI_API_KEY=gemini-api-key:latest"
-gcloud run services update $SERVICE --region $REGION --update-env-vars "MEME_STYLE=sarcastic"
-gcloud run services logs read $SERVICE --region $REGION --limit 30
-
-# Clean up
-gcloud projects delete $PROJECT --quiet
-```
-
-**Nice work! You took an AI app from your laptop to a public cloud service, and never put a secret in your code.**
-
-## 11. Where to go next
+### 5.2 Where to go next
 
 <CardGroup cols={2}>
-  <Card title="Automate infrastructure" icon="cloud" href="https://developer.hashicorp.com/terraform/intro">
-    Learn Terraform to define and manage cloud infrastructure as code.
+  <Card title="Learn SQL" icon="database" href="https://sqlbolt.com">
+    The most useful single skill for any data role. SQLBolt is a free interactive intro.
   </Card>
-  <Card title="Run containers at scale" icon="hammer" href="https://kubernetes.io/docs/concepts/overview/">
-    Explore Kubernetes for orchestrating containers across multiple machines.
+  <Card title="Learn Python for data" icon="python" href="https://pandas.pydata.org/docs/getting_started/intro_tutorials/index.html">
+    The official pandas getting-started tutorials.
   </Card>
-  <Card title="Monitor production systems" icon="chart-column" href="https://cloud.google.com/monitoring/docs">
-    Learn how metrics, logs, and dashboards support observability.
+  <Card title="Machine learning course" icon="graduation-cap" href="https://www.kaggle.com/learn/intro-to-machine-learning">
+    Kaggle's free Intro to Machine Learning, using the same scikit-learn tools you used.
   </Card>
-  <Card title="Secure the delivery pipeline" icon="shield-check" href="https://owasp.org/www-project-devsecops-guideline/">
-    Explore DevSecOps practices that add security checks to software delivery.
+  <Card title="Power BI learning path" icon="chart-column" href="https://learn.microsoft.com/en-us/training/powerplatform/power-bi">
+    Microsoft Learn's free Power BI training, with a certification path.
   </Card>
 </CardGroup>
+
+<Check>Thank you for taking part. Keep building!</Check>
