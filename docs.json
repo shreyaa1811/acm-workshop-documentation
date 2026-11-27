@@ -19,10 +19,9 @@
   "pages": [
     "index",
     {
-      "group": "Data Analytics",
+      "group": "Agentic AI",
       "pages": [
-        "week2/day1",
-        "week2/day2"
+        "week3/day1"
       ]
     }
     
